@@ -3,7 +3,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ProtectedRoute from "./components/protectedRoute/index.jsx";
-import NotFoundPage from "./pages/error/ErrorPage.jsx";
+import NotFoundPage from "./pages/error/NotFoundPage.jsx";
 
 import GuestLanding from "./pages/GuestLanding.jsx";
 import AboutUs from "./pages/onboard/AboutUs.jsx";
