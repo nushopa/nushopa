@@ -39,9 +39,6 @@ export default function DashboardLayout({ children }) {
     setSearchField(query);
   }, [location.search]);
 
-  // ✅ FIX: Navigate on every keystroke (live filtering) — same pattern as HeaderInfo
-  // This ensures the Store component's `location.search` watcher picks up changes
-  // immediately and filters products in real time, instead of waiting for button click.
   useEffect(() => {
     const trimmed = searchField.trim();
     if (trimmed) {
@@ -55,7 +52,6 @@ export default function DashboardLayout({ children }) {
     }
   }, [searchField]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Debounced filtering for the autocomplete dropdown
   useEffect(() => {
     clearTimeout(debounceTimer.current);
 
@@ -76,7 +72,7 @@ export default function DashboardLayout({ children }) {
       );
       setFilteredDetails(filtered);
       setShowDropdown(filtered.length > 0);
-    }, 300); // 300ms debounce — feels instant but avoids thrashing
+    }, 300); 
 
     return () => clearTimeout(debounceTimer.current);
   }, [searchField, details]);

@@ -43,7 +43,7 @@ function App() {
           <Route element={<MainLayout />}>
             <Route path="/" element={<GuestLanding />} />
             <Route path="/about-us" element={<Abouts/>} />
-            <Route path="/cart" element={<Store />} />
+            <Route path="/store" element={<Store />} />
             <Route path="/help" element={<Helps />} />
             <Route path="/logistics" element={<Logistics />} />
             <Route path="/contact" element={<Contact />} />
