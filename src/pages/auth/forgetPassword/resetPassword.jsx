@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Navigations from "../../../components/common/Navigations";
+import Navigations from "../../../components/common/navigations";
 import { useResetPasswordMutation } from "../../../services/api";
 import { toast } from "react-toastify";
 
