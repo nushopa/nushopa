@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unescaped-entities */
 import { useEffect, useState } from "react";
-import OnboardLayout from "../../layouts/OnboardLayout";
+import OnboardLayout from "../../layouts/onboardLayout";
 import { client } from "../../services/sanity/sanityClient";
 import BlockContent from "@sanity/block-content-to-react";
 import { Helmet } from "react-helmet-async";
