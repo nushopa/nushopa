@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
-import { StepperWithContent } from "../../components/atoms/stepper/Stepper";
+import { StepperWithContent } from "../../components/atoms/stepper/stepper";
 import DefaultLayout from "../../layouts/defaultLayout";
 import AddressBook from "../../components/molecule/addressBook/addressBook";
 import { useNavigate } from "react-router-dom";

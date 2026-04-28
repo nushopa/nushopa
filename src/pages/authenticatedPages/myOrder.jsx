@@ -4,7 +4,7 @@ import axios from "axios";
 import { Avatar, Button, Chip } from "@material-tailwind/react";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
-import { StepperWithContent } from "../../components/atoms/stepper/Stepper";
+import { StepperWithContent } from "../../components/atoms/stepper/stepper";
 import { Helmet } from "react-helmet-async";
 
 const Loader = () => {
