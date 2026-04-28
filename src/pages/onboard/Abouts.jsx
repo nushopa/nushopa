@@ -6,7 +6,7 @@ import Story from "./component/Story";
 import Choose from "./component/Choose";
 import { FooterWithSitemap } from "../../components/common/footer/Footer";
 
-const AboutUs = () => {
+const Abouts = () => {
   return (
     <>
       <OnboardLayout>
@@ -37,4 +37,4 @@ const AboutUs = () => {
   );
 };
 
-export default AboutUs;
+export default Abouts;

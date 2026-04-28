@@ -6,7 +6,6 @@ import ProtectedRoute from "./components/protectedRoute/index.jsx";
 import NotFoundPage from "./pages/error/NotFoundPage.jsx";
 
 import GuestLanding from "./pages/GuestLanding.jsx";
-import AboutUs from "./pages/onboard/AboutUs.jsx";
 import Store from "./pages/onboard/Store.jsx";
 import Help from "./pages/onboard/Help.jsx";
 import Contact from "./pages/onboard/Contact.jsx";
@@ -28,6 +27,7 @@ import Checkout from "./pages/authenticatedPages/Checkout.jsx";
 import MyOrder from "./pages/authenticatedPages/MyOrder.jsx";
 import OrderDetails from "./pages/authenticatedPages/OrderDetails.jsx";
 import MainLayout from "./layouts/MainLayout.jsx";
+import Abouts from "./pages/onboard/Abouts.jsx";
 
 function App() {
   return (
@@ -37,7 +37,7 @@ function App() {
           {/* Public routes with Layout (Header will be hidden on specific pages) */}
           <Route element={<MainLayout />}>
             <Route path="/" element={<GuestLanding />} />
-            <Route path="/about-us" element={<AboutUs />} />
+            <Route path="/about-us" element={<Abouts/>} />
             <Route path="/cart" element={<Store />} />
             <Route path="/help" element={<Help />} />
             <Route path="/logistics" element={<Logistics />} />
