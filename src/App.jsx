@@ -5,12 +5,6 @@ import "react-toastify/dist/ReactToastify.css";
 import ProtectedRoute from "./components/protectedRoute/index.jsx";
 import NotFoundPage from "./pages/error/NotFoundPage.jsx";
 
-import OTPVerification from "./pages/auth/OTPVerification.jsx";
-import UpdatePhoneNumber from "./pages/auth/UpdatePhoneNumber.jsx";
-import ForgottenPassword from "./pages/auth/forgetPassword/ForgottenPassword.jsx";
-import OtpPassword from "./pages/auth/forgetPassword/OtpPassword.jsx";
-import ResetPassword from "./pages/auth/forgetPassword/ResetPassword.jsx";
-
 import ProductDescription from "./pages/authenticatedPages/ProductDescription.jsx";
 import Cart from "./components/cart/Cart.jsx";
 import Checkout from "./pages/authenticatedPages/Checkout.jsx";
@@ -27,6 +21,11 @@ import TermsAndConditions from "./pages/onboard/TermsAndConditions.jsx";
 import PrivacyPolicy from "./pages/onboard/PrivacyPolicy.jsx";
 import UserSignUp from "./pages/auth/UserSignUp.jsx";
 import UserSignIn from "./pages/auth/UserSignIn.jsx";
+import OTPVerification from "./pages/auth/OTPVerification.jsx";
+import UpdatePhoneNumber from "./pages/auth/UpdatePhoneNumber.jsx";
+import ForgottenPassword from "./pages/auth/forgetPassword/ForgottenPassword.jsx";
+import OtpPassword from "./pages/auth/forgetPassword/OtpPassword.jsx";
+import ResetPassword from "./pages/auth/forgetPassword/ResetPassword.jsx";
 
 
 
