@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
-import Breadcrumb from "../../components/molecule/breadcrumbs/Breadcrumbs";
+import Breadcrumb from "../../components/molecule/breadcrumbs/breadcrumbs";
 import ProductItem from "../../components/products/ProductItem";
 import { STATIC_PRODUCTS } from "../../data/product/ProductList";
 import { setCarte } from "../../redux/cart";
