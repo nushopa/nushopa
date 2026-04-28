@@ -9,9 +9,9 @@ import GuestLanding from "./pages/GuestLanding.jsx";
 import AboutUs from "./pages/onboard/AboutUs.jsx";
 import Store from "./pages/onboard/Store.jsx";
 import Help from "./pages/onboard/Help.jsx";
-import Contact from "./pages/onboard/contact.jsx";
-import Logistics from "./pages/onboard/logistics.jsx";
-import TermsAndConditions from "./pages/onboard/termAndConditions.jsx";
+import Contact from "./pages/onboard/Contact.jsx";
+import Logistics from "./pages/onboard/Logistics.jsx";
+import TermsAndConditions from "./pages/onboard/TermAndConditions.jsx";
 import PrivacyPolicy from "./pages/onboard/PrivacyPolicy.jsx";
 
 import UserSignIn from "./pages/auth/UserSignIn.jsx";
