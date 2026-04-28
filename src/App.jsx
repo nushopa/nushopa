@@ -27,7 +27,7 @@ import OtpPassword from "./pages/auth/forgetPassword/otpPassword.jsx";
 
 
 import ResetPassword from "./pages/auth/forgetPassword/resetPassword.jsx";
-import Cart from "./components/cart/Cart.jsx";
+import Cart from "./components/cart/cart.jsx";
 import Checkout from "./pages/authenticatedPages/checkout.jsx";
 import MyOrder from "./pages/authenticatedPages/myOrder.jsx";
 import OrderDetails from "./pages/authenticatedPages/orderDetails.jsx";
