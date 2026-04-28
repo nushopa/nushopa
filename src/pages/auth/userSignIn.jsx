@@ -10,7 +10,7 @@ import {
   provider,
 } from "../../lib/firebase/firebase.config";
 
-import Auth from "../../pages/auth/component/Auths";
+import Auth from "./component/Auths";
 import { InputField } from "./component/InputField";
 
 const UserSignIn = () => {
