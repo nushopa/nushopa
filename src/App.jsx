@@ -15,7 +15,7 @@ import Logistics from "./pages/onboard/logistics.jsx";
 import GuestLanding from "./pages/GuestLanding.jsx";
 
 
-import TermsAndConditions from "./pages/onboard/termsAndConditions.jsx";
+import TermsAndConditions from "./pages/onboard/TermsAndConditions.jsx";
 import PrivacyPolicy from "./pages/onboard/privacyPolicy.jsx";
 import UserSignUp from "./pages/auth/userSignUp.jsx";
 import UserSignIn from "./pages/auth/userSignIn.jsx";
@@ -23,6 +23,9 @@ import OTPVerification from "./pages/auth/OtpVerification.jsx";
 import UpdatePhoneNumber from "./pages/auth/UpdatePhoneNumber.jsx";
 import ForgottenPassword from "./pages/auth/forgetPassword/ForgottenPassword.jsx";
 import OtpPassword from "./pages/auth/forgetPassword/OtpPassword.jsx";
+
+
+
 import ResetPassword from "./pages/auth/forgetPassword/ResetPassword.jsx";
 import Cart from "./components/cart/Cart.jsx";
 import Checkout from "./pages/authenticatedPages/Checkout.jsx";
