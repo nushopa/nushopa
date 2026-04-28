@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import DefaultLayout from "../../layouts/DefaultLayout";
+import DefaultLayout from "../../layouts/defaultLayout";
 import axios from "axios";
 import { Avatar, Button, Chip } from "@material-tailwind/react";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
