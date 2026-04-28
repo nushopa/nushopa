@@ -1,10 +1,10 @@
-import OnboardLayout from "../../layouts/onboardLayout";
+import OnboardLayout from "../../layouts/OnboardLayout";
 import { Helmet } from "react-helmet-async";
-import Testimonial from "../../components/testimonial/testimonial";
+import Testimonial from "../../components/testimonial/Testimonial";
 import Company from "./component/Company";
 import Story from "./component/Story";
 import Choose from "./component/Choose";
-import { FooterWithSitemap } from "../../components/common/footer/footer";
+import { FooterWithSitemap } from "../../components/common/footer/Footer";
 
 const AboutUs = () => {
   return (

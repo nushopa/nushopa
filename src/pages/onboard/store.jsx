@@ -1,19 +1,19 @@
 import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
-import Breadcrumb from "../../components/molecule/breadcrumbs/breadcrumbs";
-import ProductItem from "../../components/products/productItem";
+import Breadcrumb from "../../components/molecule/breadcrumbs/Breadcrumbs";
+import ProductItem from "../../components/products/ProductItem";
 import { STATIC_PRODUCTS } from "../../data/product/productList";
 import { setCarte } from "../../redux/cart";
 import { useDispatch } from "react-redux";
 import { Button, SpeedDial, SpeedDialHandler } from "@material-tailwind/react";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { useLocation, useNavigate } from "react-router-dom";
-import ProductItemStore from "../../components/products/productItemStore";
+import ProductItemStore from "../../components/products/ProductItemStore";
 import { Helmet } from "react-helmet-async";
 import { CircularPagination } from "../../components/pagination/pagination";
 import CategoryDrawer from "../../components/drawer/categoryDrawer";
 import { scrollToTop } from "../../lib/util/scrollUp";
-import DashboardLayout from "../../layouts/dashboardLayout";
+import DashboardLayout from "../../layouts/DashboardLayout";
 
 const Loader = () => {
   return <span className="loader"></span>;
