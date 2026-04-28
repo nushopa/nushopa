@@ -8,7 +8,7 @@ import NotFoundPage from "./pages/error/NotFoundPage.jsx";
 
 import MainLayout from "./layouts/MainLayout.jsx";
 import Abouts from "./pages/onboard/Abouts.jsx";
-import Store from "./pages/onboard/Store.jsx";
+import Store from "./pages/onboard/store.jsx";
 import Helps from "./pages/onboard/Helps.jsx";
 import Contact from "./pages/onboard/contact.jsx";
 import Logistics from "./pages/onboard/Logistics.jsx";
