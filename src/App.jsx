@@ -17,8 +17,8 @@ import GuestLanding from "./pages/GuestLanding.jsx";
 
 import TermsAndConditions from "./pages/onboard/TermsAndConditions.jsx";
 import PrivacyPolicy from "./pages/onboard/PrivacyPolicy.jsx";
-import UserSignUp from "./pages/auth/UserSignUp.jsx";
-import UserSignIn from "./pages/auth/UserSignIn.jsx";
+import UserSignUp from "./pages/auth/userSignUp.jsx";
+import UserSignIn from "./pages/auth/userSignIn.jsx";
 import OTPVerification from "./pages/auth/OTPVerification.jsx";
 import UpdatePhoneNumber from "./pages/auth/UpdatePhoneNumber.jsx";
 import ForgottenPassword from "./pages/auth/forgetPassword/ForgottenPassword.jsx";
