@@ -5,11 +5,6 @@ import "react-toastify/dist/ReactToastify.css";
 import ProtectedRoute from "./components/protectedRoute/index.jsx";
 import NotFoundPage from "./pages/error/NotFoundPage.jsx";
 
-import GuestLanding from "./pages/GuestLanding.jsx";
-
-import TermsAndConditions from "./pages/onboard/TermsAndConditions.jsx";
-import PrivacyPolicy from "./pages/onboard/PrivacyPolicy.jsx";
-
 import UserSignIn from "./pages/auth/UserSignIn.jsx";
 import UserSignUp from "./pages/auth/UserSignUp.jsx";
 import OTPVerification from "./pages/auth/OTPVerification.jsx";
@@ -29,6 +24,9 @@ import Store from "./pages/onboard/Store.jsx";
 import Helps from "./pages/onboard/Helps.jsx";
 import Contact from "./pages/onboard/Contact.jsx";
 import Logistics from "./pages/onboard/Logistics.jsx";
+import GuestLanding from "./pages/GuestLanding.jsx";
+import TermsAndConditions from "./pages/onboard/TermsAndConditions.jsx";
+import PrivacyPolicy from "./pages/onboard/PrivacyPolicy.jsx";
 
 function App() {
   return (
