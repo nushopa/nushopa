@@ -11,7 +11,7 @@ import Store from "./pages/onboard/Store.jsx";
 import Help from "./pages/onboard/Help.jsx";
 import Contact from "./pages/onboard/Contact.jsx";
 import Logistics from "./pages/onboard/Logistics.jsx";
-import TermsAndConditions from "./pages/onboard/TermAndConditions.jsx";
+import TermsAndConditions from "./pages/onboard/TermsAndConditions.jsx";
 import PrivacyPolicy from "./pages/onboard/PrivacyPolicy.jsx";
 
 import UserSignIn from "./pages/auth/UserSignIn.jsx";
