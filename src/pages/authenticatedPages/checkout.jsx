@@ -8,7 +8,7 @@ import PaystackCheckout from "./PaystackCheckout";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { Helmet } from "react-helmet-async";
-import AddCommasToNumber from "../../lib/util/AddComma";
+import AddCommasToNumber from "../../lib/util/addComma";
 import { toast } from "react-toastify";
 import { clearUser } from "../../redux/user";
 import { clearDelivery } from "../../redux/delivery";

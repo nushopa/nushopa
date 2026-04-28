@@ -13,7 +13,7 @@ import { useDispatch } from "react-redux";
 import { setCarte } from "../../redux/cart";
 import { Helmet } from "react-helmet-async";
 import { toast } from "react-toastify";
-import AddCommasToNumber from "../../lib/util/AddComma";
+import AddCommasToNumber from "../../lib/util/addComma";
 import { truncateString } from "../../lib/util/truncateString";
 
 export default function ProductDescription() {

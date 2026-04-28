@@ -19,7 +19,7 @@ import axios from "axios";
 import { truncateString } from "../../lib/util/truncateString";
 import DisplayContent from "../molecule/displayContent";
 import { Helmet } from "react-helmet-async";
-import AddCommasToNumber from "../../lib/util/AddComma";
+import AddCommasToNumber from "../../lib/util/addComma";
 import DeleteIcon from "../icons/deleteIcon";
 
 const Loader = () => {

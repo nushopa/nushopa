@@ -19,7 +19,7 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setCarte } from "../../redux/cart";
 import ProductImage from "../atoms/productImage";
-import AddCommasToNumber from "../../lib/util/AddComma";
+import AddCommasToNumber from "../../lib/util/addComma";
 import AddToCartIcon from "./AddToCartIcon";
 import useAuth from "../../lib/hooks/useAuth";
 

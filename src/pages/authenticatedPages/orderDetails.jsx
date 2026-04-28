@@ -13,7 +13,7 @@ import {
 } from "@material-tailwind/react";
 import { useAddReviewMutation } from "../../services/api";
 import { toast } from "react-toastify";
-import AddCommasToNumber from "../../lib/util/AddComma";
+import AddCommasToNumber from "../../lib/util/addComma";
 
 const Loader = () => {
   return <div>loading</div>;
