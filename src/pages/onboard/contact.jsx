@@ -1,10 +1,10 @@
 import { useState } from "react";
-import GeneralInquiries from "../../components/molecule/generalInquires/GeneralInquires";
-import OnboardLayout from "../../layouts/OnboardLayout";
+import GeneralInquiries from "../../components/molecule/generalInquires/generalInquires";
+import OnboardLayout from "../../layouts/onboardLayout";
 import { useAddContactMutation } from "../../services/api";
 import { toast } from "react-toastify";
 import { Helmet } from "react-helmet-async";
-import { FooterWithSitemap } from "../../components/common/footer/Footer";
+import { FooterWithSitemap } from "../../components/common/footer/footer";
 
 const Contact = () => {
   const [addContact] = useAddContactMutation();
