@@ -5,11 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 import ProtectedRoute from "./components/protectedRoute/index.jsx";
 import NotFoundPage from "./pages/error/NotFoundPage.jsx";
 
-import ProductDescription from "./pages/authenticatedPages/ProductDescription.jsx";
-import Cart from "./components/cart/Cart.jsx";
-import Checkout from "./pages/authenticatedPages/Checkout.jsx";
-import MyOrder from "./pages/authenticatedPages/MyOrder.jsx";
-import OrderDetails from "./pages/authenticatedPages/OrderDetails.jsx";
+
 import MainLayout from "./layouts/MainLayout.jsx";
 import Abouts from "./pages/onboard/Abouts.jsx";
 import Store from "./pages/onboard/Store.jsx";
@@ -26,6 +22,12 @@ import UpdatePhoneNumber from "./pages/auth/UpdatePhoneNumber.jsx";
 import ForgottenPassword from "./pages/auth/forgetPassword/ForgottenPassword.jsx";
 import OtpPassword from "./pages/auth/forgetPassword/OtpPassword.jsx";
 import ResetPassword from "./pages/auth/forgetPassword/ResetPassword.jsx";
+import Cart from "./components/cart/Cart.jsx";
+import Checkout from "./pages/authenticatedPages/Checkout.jsx";
+import MyOrder from "./pages/authenticatedPages/myOrder.jsx";
+import OrderDetails from "./pages/authenticatedPages/orderDetails.jsx";
+import ProductDescription from "./pages/authenticatedPages/productDescription.jsx";
+
 
 
 
@@ -68,7 +70,6 @@ function App() {
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/my-order" element={<MyOrder />} />
               <Route path="/order/:id" element={<OrderDetails />} />
-
               <Route path="/product/:id" element={<ProductDescription />} />
             </Route>
           </Route>

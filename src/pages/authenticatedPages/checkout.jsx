@@ -4,7 +4,7 @@ import DefaultLayout from "../../layouts/defaultLayout";
 import AddressBook from "../../components/molecule/addressBook/addressBook";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@material-tailwind/react";
-import PaystackCheckout from "./paystackCheckout";
+import PaystackCheckout from "./PaystackCheckout";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { Helmet } from "react-helmet-async";
