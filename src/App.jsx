@@ -15,8 +15,8 @@ import Logistics from "./pages/onboard/logistics.jsx";
 import GuestLanding from "./pages/GuestLanding.jsx";
 
 
-import TermsAndConditions from "./pages/onboard/TermsAndConditions.jsx";
-import PrivacyPolicy from "./pages/onboard/PrivacyPolicy.jsx";
+import TermsAndConditions from "./pages/onboard/termsAndConditions.jsx";
+import PrivacyPolicy from "./pages/onboard/privacyPolicy.jsx";
 import UserSignUp from "./pages/auth/userSignUp.jsx";
 import UserSignIn from "./pages/auth/userSignIn.jsx";
 import OTPVerification from "./pages/auth/OTPVerification.jsx";
