@@ -8,7 +8,6 @@ import NotFoundPage from "./pages/error/NotFoundPage.jsx";
 
 import MainLayout from "./layouts/MainLayout.jsx";
 import Abouts from "./pages/onboard/Abouts.jsx";
-import Store from "./pages/onboard/Store.jsx";
 import Helps from "./pages/onboard/Helps.jsx";
 import Contact from "./pages/onboard/Contact.jsx";
 import Logistics from "./pages/onboard/Logistics.jsx";
@@ -27,6 +26,7 @@ import Checkout from "./pages/authenticatedPages/Checkout.jsx";
 import MyOrder from "./pages/authenticatedPages/myOrder.jsx";
 import OrderDetails from "./pages/authenticatedPages/orderDetails.jsx";
 import ProductDescription from "./pages/authenticatedPages/productDescription.jsx";
+import Store from "./pages/onboard/Store.jsx";
 
 
 
