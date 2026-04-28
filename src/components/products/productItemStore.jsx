@@ -18,7 +18,7 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setCarte } from "../../redux/cart";
 import ProductImage from "../atoms/productImage";
-import AddCommasToNumber from "../../lib/util/addComma";
+import AddCommasToNumber from "../../lib/util/AddComma";
 
 export default function ProductItemStore({
   product_des,

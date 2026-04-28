@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
-import { StepperWithContent } from "../../components/atoms/stepper/stepper";
+import { StepperWithContent } from "../../components/atoms/stepper/Stepper";
 import DefaultLayout from "../../layouts/defaultLayout";
 import AddressBook from "../../components/molecule/addressBook/addressBook";
 import { useNavigate } from "react-router-dom";
@@ -8,7 +8,7 @@ import PaystackCheckout from "./paystackCheckout";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { Helmet } from "react-helmet-async";
-import AddCommasToNumber from "../../lib/util/addComma";
+import AddCommasToNumber from "../../lib/util/AddComma";
 import { toast } from "react-toastify";
 import { clearUser } from "../../redux/user";
 import { clearDelivery } from "../../redux/delivery";

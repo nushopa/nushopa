@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
-import AddCommasToNumber from "../../lib/util/addComma";
+import AddCommasToNumber from "../../lib/util/AddComma";
 import { truncateString } from "../../lib/util/truncateString";
 import DisplayContent from "../molecule/displayContent";
 import {

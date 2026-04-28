@@ -20,13 +20,13 @@ import OTPVerification from "./pages/auth/OTPVerification.jsx";
 import UpdatePhoneNumber from "./pages/auth/UpdatePhoneNumber.jsx";
 import ForgottenPassword from "./pages/auth/forgetPassword/ForgottenPassword.jsx";
 import OtpPassword from "./pages/auth/forgetPassword/OtpPassword.jsx";
-import ResetPassword from "./pages/auth/forgetPassword/resetPassword.jsx";
+import ResetPassword from "./pages/auth/forgetPassword/ResetPassword.jsx";
 
-import ProductDescription from "./pages/authenticatedPages/productDescription.jsx";
-import Cart from "./components/cart/cart.jsx";
-import Checkout from "./pages/authenticatedPages/checkout.jsx";
-import MyOrder from "./pages/authenticatedPages/myOrder.jsx";
-import OrderDetails from "./pages/authenticatedPages/orderDetails.jsx";
+import ProductDescription from "./pages/authenticatedPages/ProductDescription.jsx";
+import Cart from "./components/cart/Cart.jsx";
+import Checkout from "./pages/authenticatedPages/Checkout.jsx";
+import MyOrder from "./pages/authenticatedPages/MyOrder.jsx";
+import OrderDetails from "./pages/authenticatedPages/OrderDetails.jsx";
 import MainLayout from "./layouts/MainLayout.jsx";
 
 function App() {

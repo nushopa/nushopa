@@ -1,6 +1,6 @@
 import { Outlet, useLocation } from "react-router-dom";
 import Header from "../components/common/header/index.jsx";
-import ScrollToTop from "../lib/util/scrollToTop.jsx";
+import ScrollToTop from "../lib/util/ScrollToTop.jsx";
 import FloatingCart from "../components/cart/FloatingCart.jsx";
 
 const MainLayout = () => {

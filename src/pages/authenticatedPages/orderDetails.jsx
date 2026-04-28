@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import DefaultLayout from "../../layouts/defaultLayout";
+import DefaultLayout from "../../layouts/DefaultLayout";
 import {
   Avatar,
   Button,
@@ -13,7 +13,7 @@ import {
 } from "@material-tailwind/react";
 import { useAddReviewMutation } from "../../services/api";
 import { toast } from "react-toastify";
-import AddCommasToNumber from "../../lib/util/addComma";
+import AddCommasToNumber from "../../lib/util/AddComma";
 
 const Loader = () => {
   return <div>loading</div>;
