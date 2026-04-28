@@ -22,7 +22,7 @@ import UserSignIn from "./pages/auth/userSignIn.jsx";
 import OTPVerification from "./pages/auth/otpVerification.jsx";
 import UpdatePhoneNumber from "./pages/auth/updatePhoneNumber.jsx";
 import ForgottenPassword from "./pages/auth/forgetPassword/forgottenPassword.jsx";
-import OtpPassword from "./pages/auth/forgetPassword/OtpPassword.jsx";
+import OtpPassword from "./pages/auth/forgetPassword/otpPassword.jsx";
 
 
 
