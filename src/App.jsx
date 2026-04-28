@@ -6,7 +6,6 @@ import ProtectedRoute from "./components/protectedRoute/index.jsx";
 import NotFoundPage from "./pages/error/NotFoundPage.jsx";
 
 import GuestLanding from "./pages/GuestLanding.jsx";
-import Help from "./pages/onboard/Help.jsx";
 import Contact from "./pages/onboard/Contact.jsx";
 import Logistics from "./pages/onboard/Logistics.jsx";
 import TermsAndConditions from "./pages/onboard/TermsAndConditions.jsx";
@@ -28,6 +27,7 @@ import OrderDetails from "./pages/authenticatedPages/OrderDetails.jsx";
 import MainLayout from "./layouts/MainLayout.jsx";
 import Abouts from "./pages/onboard/Abouts.jsx";
 import Store from "./pages/onboard/Store.jsx";
+import Helps from "./pages/onboard/Helps.jsx";
 
 function App() {
   return (
@@ -39,7 +39,7 @@ function App() {
             <Route path="/" element={<GuestLanding />} />
             <Route path="/about-us" element={<Abouts/>} />
             <Route path="/cart" element={<Store />} />
-            <Route path="/help" element={<Help />} />
+            <Route path="/help" element={<Helps />} />
             <Route path="/logistics" element={<Logistics />} />
             <Route path="/contact" element={<Contact />} />
             <Route
