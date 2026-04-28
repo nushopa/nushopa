@@ -43,7 +43,7 @@ function App() {
           <Route element={<MainLayout />}>
             <Route path="/" element={<GuestLanding />} />
             <Route path="/about-us" element={<Abouts/>} />
-            <Route path="/store" element={<Store />} />
+            <Route path="/cart" element={<Store />} />
             <Route path="/help" element={<Helps />} />
             <Route path="/logistics" element={<Logistics />} />
             <Route path="/contact" element={<Contact />} />
@@ -54,7 +54,7 @@ function App() {
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
 
             {/* Auth routes (Header will be automatically hidden) */}
-            <Route path="/sign-in" element={<UserSignIn />} />
+            <Route path="/sign-in" element={<UserSignIn />} />\
             <Route path="/sign-up" element={<UserSignUp />} />
             <Route path="/verify-otp" element={<OTPVerification />} />
             <Route
