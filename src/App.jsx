@@ -6,7 +6,6 @@ import ProtectedRoute from "./components/protectedRoute/index.jsx";
 import NotFoundPage from "./pages/error/NotFoundPage.jsx";
 
 import GuestLanding from "./pages/GuestLanding.jsx";
-import Store from "./pages/onboard/Store.jsx";
 import Help from "./pages/onboard/Help.jsx";
 import Contact from "./pages/onboard/Contact.jsx";
 import Logistics from "./pages/onboard/Logistics.jsx";
@@ -28,6 +27,7 @@ import MyOrder from "./pages/authenticatedPages/MyOrder.jsx";
 import OrderDetails from "./pages/authenticatedPages/OrderDetails.jsx";
 import MainLayout from "./layouts/MainLayout.jsx";
 import Abouts from "./pages/onboard/Abouts.jsx";
+import Store from "./pages/onboard/Store.jsx";
 
 function App() {
   return (
