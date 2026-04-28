@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import { Helmet } from "react-helmet-async";
 import { FooterWithSitemap } from "../../components/common/footer/Footer";
 
-export default function Contact() {
+const Contact = () => {
   const [addContact] = useAddContactMutation();
   const [fullname, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -128,3 +128,5 @@ export default function Contact() {
     </>
   );
 }
+
+export default Contact
