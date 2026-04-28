@@ -5,8 +5,8 @@ import {
   TruckIcon,
   UserGroupIcon,
 } from "@heroicons/react/24/solid";
-import AltLayout from "../../layouts/AltLayout";
-import { FooterWithSitemap } from "../../components/common/footer/Footer";
+import AltLayout from "../../layouts/altLayout";
+import { FooterWithSitemap } from "../../components/common/footer/footer";
 
 export default function Logistics() {
   return (
