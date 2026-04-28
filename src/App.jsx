@@ -2,24 +2,24 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import ProtectedRoute from "./components/protectedRoute";
-import NotFoundPage from "./pages/error/errorPage.jsx";
+import ProtectedRoute from "./components/ProtectedRoute";
+import NotFoundPage from "./pages/error/ErrorPage.jsx";
 
 import GuestLanding from "./pages/GuestLanding.jsx";
-import AboutUs from "./pages/onboard/aboutUs.jsx";
-import Store from "./pages/onboard/store.jsx";
-import Help from "./pages/onboard/help.jsx";
+import AboutUs from "./pages/onboard/AboutUs.jsx";
+import Store from "./pages/onboard/Store.jsx";
+import Help from "./pages/onboard/Help.jsx";
 import Contact from "./pages/onboard/contact.jsx";
 import Logistics from "./pages/onboard/logistics.jsx";
 import TermsAndConditions from "./pages/onboard/termAndConditions.jsx";
-import PrivacyPolicy from "./pages/onboard/privacyPolicy.jsx";
+import PrivacyPolicy from "./pages/onboard/PrivacyPolicy.jsx";
 
-import UserSignIn from "./pages/auth/userSignIn.jsx";
-import UserSignUp from "./pages/auth/userSignUp.jsx";
-import OTPVerification from "./pages/auth/otpVerification.jsx";
-import UpdatePhoneNumber from "./pages/auth/updatePhoneNumber.jsx";
-import ForgottenPassword from "./pages/auth/forgetPassword/forgottenPassword.jsx";
-import OtpPassword from "./pages/auth/forgetPassword/otp-password.jsx";
+import UserSignIn from "./pages/auth/UserSignIn.jsx";
+import UserSignUp from "./pages/auth/UserSignUp.jsx";
+import OTPVerification from "./pages/auth/OTPVerification.jsx";
+import UpdatePhoneNumber from "./pages/auth/UpdatePhoneNumber.jsx";
+import ForgottenPassword from "./pages/auth/forgetPassword/ForgottenPassword.jsx";
+import OtpPassword from "./pages/auth/forgetPassword/OtpPassword.jsx";
 import ResetPassword from "./pages/auth/forgetPassword/resetPassword.jsx";
 
 import ProductDescription from "./pages/authenticatedPages/productDescription.jsx";

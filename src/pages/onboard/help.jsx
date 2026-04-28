@@ -1,6 +1,6 @@
 import { Helmet } from "react-helmet-async";
-import Faq from "../../components/molecule/faq/faq";
-import OnboardLayout from "../../layouts/onboardLayout";
+import Faq from "../../components/molecule/faq/Faq";
+import OnboardLayout from "../../layouts/OnboardLayout";
 
 const Help = () => {
   return (
