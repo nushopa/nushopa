@@ -4,6 +4,9 @@ import { visualizer } from "rollup-plugin-visualizer";
 
 export default defineConfig({
   plugins: [react(), visualizer()],
+  resolve: {
+    caseSensitiveMatch: true, 
+  },
   build: {
     rollupOptions: {
       output: {
@@ -14,22 +17,10 @@ export default defineConfig({
               .split("node_modules/")[1]
               .split("/")[0]
               .toString();
-          // Custom chunks based on file paths
-          if (id.includes("src/components/common")) {
-            return "common";
-          }
-          if (id.includes("src/components/pages")) {
-            return "pages";
-          }
-
-          if (id.includes("src/components/landingSection")) {
-            return "landing";
-          }
-
-          if (id.includes("src/components/testimonial")) {
-            return "testimonial";
-          }
-
+          if (id.includes("src/components/common")) return "common";
+          if (id.includes("src/components/pages")) return "pages";
+          if (id.includes("src/components/landingSection")) return "landing";
+          if (id.includes("src/components/testimonial")) return "testimonial";
           return null;
         },
       },
