@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import Store from "./onboard/Store";
+import Store from "./onboard/store";
 import Landing from "./landing";
 
 const GuestLanding = () => {
