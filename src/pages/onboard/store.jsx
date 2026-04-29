@@ -23,6 +23,7 @@ const Store = () => {
   const [selectedCategories, setSelectedCategories] = useState(["All"]);
   const [categories, setCategories] = useState(["All"]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [generalProduct, setGeneralProduct] = useState([]);
   const baseUrl = import.meta.env.VITE_BASE_URL;
   const [carter, setCarter] = useState([]);
@@ -36,22 +37,26 @@ const Store = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
+
+  
   // Fetch product data
   const fetchDataAndSetState = useCallback(
     async (page = currentPage) => {
       setLoading(true);
+      setError(false);
       const apiUrl = getApiUrl(selectedCategories, page);
       const url = `${baseUrl}${apiUrl}`;
       try {
-        const response = await axios.get(url);
+        const response = await axios.get(url, {timeout: 8000});
         const data = response.data.products;
 
         setGeneralProduct(data);
         setTotalPages(response.data.totalPages);
       } catch (error) {
+        setError(true);
         setGeneralProduct(STATIC_PRODUCTS);
       } finally {
-        setLoading(false);
+        setTimeout(() => setLoading(false), 400);
       }
     },
     [baseUrl, currentPage, selectedCategories],
@@ -68,6 +73,7 @@ const Store = () => {
         setCategories(["All", ...fetchedCategories]);
       } catch (error) {
         // Handle error
+        console.error("Error fetching categories:", error);
       }
     };
 
@@ -78,6 +84,8 @@ const Store = () => {
   useEffect(() => {
     fetchDataAndSetState();
   }, [fetchDataAndSetState, currentPage]);
+
+
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const query = params.get("q");
@@ -86,7 +94,7 @@ const Store = () => {
     if (query) {
       setSelectedCategories(["All"]);
     }
-  }, [location.search]); // <-- CHANGE 1: was [location.search, selectedCategories]
+  }, [location.search]); 
 
   // Handle category toggles
   const handleCategoryToggle = (category) => {
@@ -217,7 +225,8 @@ const Store = () => {
         </div>
 
         {loading && <Loader />}
-        {!loading && filteredProducts.length === 0 && (
+       
+        {!loading && !error && filteredProducts.length === 0 && (
           <div>No matching products found.</div>
         )}
 

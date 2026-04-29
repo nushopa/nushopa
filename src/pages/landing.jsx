@@ -31,6 +31,7 @@ const Landing = () => {
   const [searchField, setSearchField] = useState("");
   const [details, setDetails] = useState([]);
   const [filteredDetails, setFilteredDetails] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   let baseUrl = import.meta.env.VITE_BASE_URL;
 
@@ -70,11 +71,14 @@ const Landing = () => {
         }
       });
     }
+
+    //fetch products
     axios.get(`${baseUrl}product`).then((response) => {
       if (response.data) {
         setDetails(response.data.products);
-        setFilteredDetails(response.data.products); // Initialize filteredDetails with all products
+        setFilteredDetails(response.data.products);
       }
+      setLoading(false);
     });
   }, [dispatch]);
 
@@ -101,8 +105,6 @@ const Landing = () => {
       navigate(`/our-store?q=${query}`);
     }
   };
-
-  
 
   const data = categories.map((category) => ({
     label: category,
@@ -132,44 +134,51 @@ const Landing = () => {
           />
         </div>
 
-        {searchField && filteredDetails.length > 0 && (
-          <Card className="w-full mt-2 h-[20rem] overflow-y-auto absolute z-[700] top-38">
-            {filteredDetails?.map((item, index) => (
-              <List key={index}>
-                <ListItem onClick={() => navigate(`/product/${item._id}`)}>
-                  <ListItemPrefix>
-                    <Avatar
-                      variant="circular"
-                      alt="candice"
-                      src={item?.product_image}
-                    />
-                  </ListItemPrefix>
+        {/* Loader while products are loading */}
+        {loading ? (
+          <Loader />
+        ) : (
+          <>
+            {searchField && filteredDetails.length > 0 && (
+              <Card className="w-full mt-2 h-[20rem] overflow-y-auto absolute z-[700] top-38">
+                {filteredDetails?.map((item, index) => (
+                  <List key={index}>
+                    <ListItem onClick={() => navigate(`/product/${item._id}`)}>
+                      <ListItemPrefix>
+                        <Avatar
+                          variant="circular"
+                          alt="candice"
+                          src={item?.product_image}
+                        />
+                      </ListItemPrefix>
 
-                  <div>
-                    <Typography variant="h6" color="blue-gray">
-                      {truncateString(item?.product_name, 18)}
-                    </Typography>
-                    <Typography
-                      variant="small"
-                      color="gray"
-                      className="font-normal"
-                    >
-                      {item?.product_cat}
-                    </Typography>
-                  </div>
-                </ListItem>
-              </List>
-            ))}
-          </Card>
+                      <div>
+                        <Typography variant="h6" color="blue-gray">
+                          {truncateString(item?.product_name, 18)}
+                        </Typography>
+                        <Typography
+                          variant="small"
+                          color="gray"
+                          className="font-normal"
+                        >
+                          {item?.product_cat}
+                        </Typography>
+                      </div>
+                    </ListItem>
+                  </List>
+                ))}
+              </Card>
+            )}
+
+            <main className="px-2 md:px-11">
+              <TabsWithIcon
+                data={data}
+                activeTabValue={activeTabValue}
+                handleTabClick={handleTabClick}
+              />
+            </main>
+          </>
         )}
-
-        <main className="px-2 md:px-11">
-          <TabsWithIcon
-            data={data}
-            activeTabValue={activeTabValue}
-            handleTabClick={handleTabClick}
-          />
-        </main>
         {/* <DialogDefault open={openDialog} handler={handleDialogClose}/> */}
       </Suspense>
 
