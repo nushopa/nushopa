@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { HiArrowRight } from 'react-icons/hi2';
-import IMG from '@/assets/logo.png';
+import IMG from './src/assets/logo.png';
 import './Auths.css';
 
 const PARTICLES = [
