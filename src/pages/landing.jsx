@@ -44,7 +44,7 @@ const Landing = () => {
         );
         const newCategories = ["Most-Recent", ...fetchedCategories];
         setCategories(newCategories);
-        setActiveTab(newCategories[0].replace(/\s/g, "%20")); // Set the initial active tab value
+        setActiveTab(newCategories[0].replace(/\s/g, "%20")); 
       } catch (error) {
         // toast.error("Error fetching product:", error);
       }
