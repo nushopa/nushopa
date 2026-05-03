@@ -21,7 +21,7 @@ const Loader = () => {
 
 const Store = () => {
   const [selectedCategories, setSelectedCategories] = useState(["All"]);
-  const [categories, setCategories] = useState(["All"]);
+  const [categories, setCategories] = useState(["All"]);      
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [generalProduct, setGeneralProduct] = useState([]);
