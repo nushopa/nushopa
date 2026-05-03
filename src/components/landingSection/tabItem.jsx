@@ -46,7 +46,12 @@ export default function TabItem({ category, carter }) {
     const url = `${baseUrl}${apiUrl}`;
 
     try {
-      const response = await axios.get(url);
+      const response = await axios.get(url, {
+        headers: { 
+          'Cache-Control': 'no-cache', 
+          'Pragma': 'no-cache' 
+        },
+      });
       const data = response.data;
 
       setGeneralProduct(data.products);
@@ -58,7 +63,7 @@ export default function TabItem({ category, carter }) {
       setLoading(false);
       (false);
     }
-  }, [debouncedCategory]); // Removed isFetching from dependencies
+  }, [debouncedCategory]);
 
   useEffect(() => {
     setCurrentPage(1);
