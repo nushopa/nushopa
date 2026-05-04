@@ -168,6 +168,8 @@ export default function Checkout() {
             />
           </div>
         </div>
+
+        
         <div className="w-full md:w-1/2 rounded-md bg-white shadow p-4 ">
           <div className="flex border-b border-[#7E7E7E] pt-3 pb-1 justify-between items-center">
             <div className="text-black text-[22px] font-medium font-workSans">

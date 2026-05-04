@@ -14,7 +14,7 @@ const persistConfig = {
 };
 
 const rootReducer = combineReducers({
-  user: userReducer,              // ✅ already the reducer — no .reducer needed
+  user: userReducer,            
   carte: carterReducer,
   product: productSlice.reducer,
   relatedProduct: relatedProductSlice.reducer,
