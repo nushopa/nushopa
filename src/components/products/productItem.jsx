@@ -17,11 +17,17 @@ import {
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useDispatch } from "react-redux";
-import { setCarte } from "../../redux/cart";
 import ProductImage from "../atoms/productImage";
 import AddCommasToNumber from "../../lib/util/addComma";
 import AddToCartIcon from "./AddToCartIcon";
 import useAuth from "../../lib/hooks/useAuth";
+import { setCartCount, setCarte } from "../../redux/cart";
+
+// Helper: count unique products and dispatch badge update
+const syncCartCount = (cartItems, dispatch) => {
+  const uniqueIds = new Set(cartItems.map((i) => i.product_id._id));
+  dispatch(setCartCount(uniqueIds.size));
+};
 
 export default function ProductItem({
   product_des,
@@ -57,19 +63,16 @@ export default function ProductItem({
   }, [carter, _id]);
 
   const handleIncrement = async (productId) => {
-    if (!isAuthenticated) {
-      navigate("/sign-in");
-      return;
-    }
+    if (!isAuthenticated) { navigate("/sign-in"); return; }
     try {
       const userId = localStorage.getItem("userId");
       const response = await increment({ id: productId });
       if (response.data) {
         const updatedCartData = await axios.get(`${baseUrl}cart/get/${userId}`);
-        dispatch(setCarte(updatedCartData.data.cart));
-        const updatedCartItem = updatedCartData.data.cart.find(
-          (item) => item._id === productId,
-        );
+        const cart = updatedCartData.data.cart;
+        dispatch(setCarte(cart));
+        syncCartCount(cart, dispatch); // ← badge sync
+        const updatedCartItem = cart.find((item) => item._id === productId);
         setProductQuantity(updatedCartItem.product_quatity);
       }
     } catch (error) {
@@ -78,25 +81,17 @@ export default function ProductItem({
   };
 
   const handleRemoveFromCart = async (cartItemId) => {
-    if (!isAuthenticated) {
-      navigate("/sign-in");
-      return;
-    }
-
+    if (!isAuthenticated) { navigate("/sign-in"); return; }
     if (!cartItemId) return;
-
     try {
       setIsAddingToCart(true);
-
-      const response = await deleteSingleCart({ id: cartItemId }); // or just cartItemId depending on your mutation
-
+      const response = await deleteSingleCart({ id: cartItemId });
       if (response.data) {
         const userId = localStorage.getItem("userId");
         const updatedCartData = await axios.get(`${baseUrl}cart/get/${userId}`);
-
-        dispatch(setCarte(updatedCartData.data.cart));
-
-        // Reset local state
+        const cart = updatedCartData.data.cart;
+        dispatch(setCarte(cart));
+        syncCartCount(cart, dispatch); // ← badge sync
         setShowQuantityDiv(false);
         setProductQuantity(1);
         setCartId(null);
@@ -109,19 +104,16 @@ export default function ProductItem({
   };
 
   const handleDecrement = async (productId) => {
-    if (!isAuthenticated) {
-      navigate("/sign-in");
-      return;
-    }
+    if (!isAuthenticated) { navigate("/sign-in"); return; }
     try {
       const userId = localStorage.getItem("userId");
       const response = await decrement({ id: productId });
       if (response.data) {
         const updatedCartData = await axios.get(`${baseUrl}cart/get/${userId}`);
-        dispatch(setCarte(updatedCartData.data.cart));
-        const updatedCartItem = updatedCartData.data.cart.find(
-          (item) => item._id === productId,
-        );
+        const cart = updatedCartData.data.cart;
+        dispatch(setCarte(cart));
+        syncCartCount(cart, dispatch); // ← badge sync
+        const updatedCartItem = cart.find((item) => item._id === productId);
         setProductQuantity(updatedCartItem.product_quatity);
         setShowQuantityDiv(updatedCartItem.product_quatity > 0);
       } else if (response.error.status === 404) {
@@ -133,31 +125,21 @@ export default function ProductItem({
   };
 
   const handleAddToCart = async (_id) => {
-    if (!isAuthenticated) {
-      navigate("/sign-in");
-      return;
-    }
-
+    if (!isAuthenticated) { navigate("/sign-in"); return; }
     const userId = localStorage.getItem("userId");
     setIsAddingToCart(true);
-    const postDataInfo = {
-      customer_id: userId,
-      product_id: _id,
-    };
-
+    const postDataInfo = { customer_id: userId, product_id: _id };
     try {
       const res = await addToCart(postDataInfo);
       if (res.data.product) {
         const updatedCartData = await axios.get(`${baseUrl}cart/get/${userId}`);
-        dispatch(setCarte(updatedCartData.data.cart));
-        const newCartItem = updatedCartData.data.cart.find(
-          (item) => item.product_id._id === _id,
-        );
+        const cart = updatedCartData.data.cart;
+        dispatch(setCarte(cart));
+        syncCartCount(cart, dispatch); // ← badge sync
+        const newCartItem = cart.find((item) => item.product_id._id === _id);
         setProductQuantity(newCartItem.product_quatity);
         setCartId(newCartItem._id);
         setShowQuantityDiv(true);
-      } else {
-        return;
       }
     } catch (e) {
       // handle error
@@ -166,12 +148,8 @@ export default function ProductItem({
     }
   };
 
-  // Truncate product_des and product_name
   const truncatedProductDes = truncateString(product_des, productDesMaxLength);
-  const truncatedProductName = truncateString(
-    product_name,
-    productNameMaxLength,
-  );
+  const truncatedProductName = truncateString(product_name, productNameMaxLength);
 
   return (
     <Card className="w-56 md:w-72">
@@ -196,11 +174,10 @@ export default function ProductItem({
               isSelected={showQuantityDiv}
               isLoading={isAddingToCart}
               disabled={product_total <= 0}
-              onClick={
-                () =>
-                  showQuantityDiv
-                    ? handleRemoveFromCart(cartId) 
-                    : handleAddToCart(_id) 
+              onClick={() =>
+                showQuantityDiv
+                  ? handleRemoveFromCart(cartId)
+                  : handleAddToCart(_id)
               }
             />
           </div>
@@ -215,7 +192,6 @@ export default function ProductItem({
             {product_name}
           </Typography>
         </div>
-
         <Typography
           variant="small"
           color="gray"
