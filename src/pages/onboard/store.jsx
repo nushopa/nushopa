@@ -14,6 +14,7 @@ import { CircularPagination } from "../../components/pagination/pagination";
 import CategoryDrawer from "../../components/drawer/categoryDrawer";
 import { scrollToTop } from "../../lib/util/scrollUp";
 import DashboardLayout from "../../layouts/DashboardLayout";
+import LandingAds from "../../components/ads/LandingAds";
 
 const Loader = () => {
   return <span className="loader"></span>;
@@ -21,7 +22,7 @@ const Loader = () => {
 
 const Store = () => {
   const [selectedCategories, setSelectedCategories] = useState(["All"]);
-  const [categories, setCategories] = useState(["All"]);      
+  const [categories, setCategories] = useState(["All"]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [generalProduct, setGeneralProduct] = useState([]);
@@ -37,8 +38,6 @@ const Store = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-
-  
   // Fetch product data
   const fetchDataAndSetState = useCallback(
     async (page = currentPage) => {
@@ -47,7 +46,7 @@ const Store = () => {
       const apiUrl = getApiUrl(selectedCategories, page);
       const url = `${baseUrl}${apiUrl}`;
       try {
-        const response = await axios.get(url, {timeout: 8000});
+        const response = await axios.get(url, { timeout: 8000 });
         const data = response.data.products;
 
         setGeneralProduct(data);
@@ -85,7 +84,6 @@ const Store = () => {
     fetchDataAndSetState();
   }, [fetchDataAndSetState, currentPage]);
 
-
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const query = params.get("q");
@@ -94,7 +92,7 @@ const Store = () => {
     if (query) {
       setSelectedCategories(["All"]);
     }
-  }, [location.search]); 
+  }, [location.search]);
 
   // Handle category toggles
   const handleCategoryToggle = (category) => {
@@ -127,10 +125,10 @@ const Store = () => {
     }
   }, [baseUrl, dispatch]);
 
-  const normalizedSearch = searchField.toLowerCase().trim(); 
+  const normalizedSearch = searchField.toLowerCase().trim();
 
   const filteredProducts = generalProduct.filter((product) => {
-    if (!normalizedSearch) return true; 
+    if (!normalizedSearch) return true;
 
     const priceMatch = String(product.product_price).includes(normalizedSearch);
 
@@ -139,7 +137,7 @@ const Store = () => {
       product.product_cat.toLowerCase().includes(normalizedSearch) ||
       product.product_brand_name.toLowerCase().includes(normalizedSearch) ||
       product.product_sub_cat.toLowerCase().includes(normalizedSearch) ||
-      priceMatch 
+      priceMatch
     );
   });
 
@@ -173,6 +171,8 @@ const Store = () => {
         />
       </Helmet>
 
+      <LandingAds className="h-full w-full" />
+      
       <Breadcrumb categories={selectedCategories} />
 
       <div className="relative flex md:flex-row flex-col w-full gap-3 mt-7 font-workSans">
@@ -225,7 +225,7 @@ const Store = () => {
         </div>
 
         {loading && <Loader />}
-       
+
         {!loading && !error && filteredProducts.length === 0 && (
           <div>No matching products found.</div>
         )}

@@ -44,7 +44,7 @@ const Landing = () => {
         );
         const newCategories = ["Most-Recent", ...fetchedCategories];
         setCategories(newCategories);
-        setActiveTab(newCategories[0].replace(/\s/g, "%20")); 
+        setActiveTab(newCategories[0].replace(/\s/g, "%20"));
       } catch (error) {
         // toast.error("Error fetching product:", error);
       }
@@ -56,10 +56,12 @@ const Landing = () => {
   const categoryQueryParam = categories.map((category) =>
     category.replace(/\s/g, "%20"),
   );
+
   const handleTabClick = (value) => {
     setActiveTab(value);
     setActiveTabValue(value);
   };
+
   useEffect(() => {
     let userId = localStorage.getItem("userId");
     let baseUrl = import.meta.env.VITE_BASE_URL;
@@ -99,7 +101,7 @@ const Landing = () => {
     );
     setFilteredDetails(filteredProducts);
   }, [searchField, details]);
-  
+
   const handleSearch = () => {
     if (searchField.trim() !== "") {
       const query = encodeURIComponent(searchField.trim());
