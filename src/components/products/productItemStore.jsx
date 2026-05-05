@@ -168,7 +168,7 @@ export default function ProductItemStore({
   );
 
   return (
-    <Card className="w-56 md:w-72">
+    <Card className="w-full max-w-sm mx-auto md:w-90 md:mx-0">
       <CardHeader
         shadow={false}
         floated={false}
