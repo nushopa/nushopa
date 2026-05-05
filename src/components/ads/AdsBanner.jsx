@@ -26,7 +26,7 @@ const AdsBanner = ({ src, alt = "Advertisement", link, className = "" }) => {
       </a>
     );
   }
-  return <div className="w-full h-full p-12 bg-[#D9D9D9]">{image}</div>;
+  return <div className="w-full h-full">{image}</div>;
 };
 
 export default AdsBanner;

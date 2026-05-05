@@ -114,9 +114,14 @@ export const userApi = createApi({
       }),
     }),
 
+    getAdverts: builder.query({
+      query: () => "adverts",
+      providesTags: ["Advert"],
+    }),
+
     logoutUser: builder.mutation({
       query: () => ({
-        url: "logout", 
+        url: "logout",
         method: "POST",
       }),
     }),
@@ -140,4 +145,5 @@ export const {
   useVerifyRegistrationOTPMutation,
   useResendRegistrationOTPMutation,
   useLogoutUserMutation,
+  useGetAdvertsQuery,
 } = userApi;

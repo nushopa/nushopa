@@ -99,6 +99,7 @@ const Landing = () => {
     );
     setFilteredDetails(filteredProducts);
   }, [searchField, details]);
+  
   const handleSearch = () => {
     if (searchField.trim() !== "") {
       const query = encodeURIComponent(searchField.trim());
@@ -123,7 +124,7 @@ const Landing = () => {
           />
         </Helmet>
 
-        <LandingAds />
+        <LandingAds className="h-full w-full" />
         <div className="hidden flex my-3 w-[95%] mx-auto">
           <SearchBar
             placeholder="What would you like to order today?"

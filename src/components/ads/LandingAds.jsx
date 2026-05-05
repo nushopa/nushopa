@@ -1,13 +1,20 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { MdChevronLeft, MdChevronRight } from "react-icons/md";
 import AdsBanner from "./AdsBanner";
-import { ads } from "./data";
 import DotsIndicator from "./component/DotsIndicator";
 import ProgressBar from "./component/ProgressBar";
-
+import { useGetAdvertsQuery } from "../../services/api";
 
 const LandingAds = ({ autoPlayInterval = 4000, className = "" }) => {
+  const { data, isLoading, isError } = useGetAdvertsQuery();
 
+  // Normalize API data to the shape AdsBanner expects
+  const ads = (data ?? []).map((ad) => ({
+    id: ad._id,
+    src: ad.imageUrl,
+    alt: ad.title ?? "Ad",
+    link: ad.link ?? null,
+  }));
   const total = ads.length;
 
   const [current, setCurrent] = useState(0);
@@ -24,7 +31,7 @@ const LandingAds = ({ autoPlayInterval = 4000, className = "" }) => {
       setCurrent((index + total) % total);
       setTimeout(() => setAnimating(false), 400);
     },
-    [animating, current, total]
+    [animating, current, total],
   );
 
   const next = useCallback(() => goTo(current + 1), [goTo, current]);
@@ -59,8 +66,17 @@ const LandingAds = ({ autoPlayInterval = 4000, className = "" }) => {
     if (Math.abs(diff) > 40) diff > 0 ? next() : prev();
   };
 
-  if (total === 0) return null;
+  // Loading state
+  if (isLoading) {
+    return (
+      <div
+        className={`relative overflow-hidden rounded-lg bg-[#D9D9D9] animate-pulse ${className}`}
+      />
+    );
+  }
 
+  // Error or empty
+  if (isError || total === 0) return null;
   if (total === 1) {
     return (
       <div className={`relative overflow-hidden rounded-lg ${className}`}>
