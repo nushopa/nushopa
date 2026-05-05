@@ -62,7 +62,7 @@ const Auth = ({
 
             <div className="auth-card-col w-full max-w-md mx-auto">
               <div className={`auth-card ${formOnLeft ? 'card-slide-left' : 'card-slide-right'}`}>
-                <div className="logo-wrap">
+                <div className="logo-wrap" onClick={() => navigate('/')}>
                   <img src={IMG} alt="Farm2Home" />
                 </div>
                 <div className="form-fade">

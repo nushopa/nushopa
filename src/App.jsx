@@ -57,7 +57,7 @@ function App() {
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
 
             {/* Auth routes (Header will be automatically hidden) */}
-            <Route path="/sign-in" element={<UserSignIn />} />\
+            <Route path="/sign-in" element={<UserSignIn />} />
             <Route path="/sign-up" element={<UserSignUp />} />
             <Route path="/verify-otp" element={<OTPVerification />} />
             <Route
