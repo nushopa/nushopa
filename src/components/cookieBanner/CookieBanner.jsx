@@ -28,7 +28,7 @@ export default function CookieBanner() {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-center p-4">
-      <div className="w-full max-w-2xl rounded-2xl border border-gray-200 bg-white p-6 shadow-xl">
+      <div className="w-full  rounded-2xl border border-gray-200 bg-white p-6 shadow-xl">
         {!showManage ? (
           <>
             <p className="mb-3 text-base font-semibold text-gray-900">
