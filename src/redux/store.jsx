@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import userReducer from "./user"; // default export is already the reducer
+import userReducer from "./user";
 import { productSlice, relatedProductSlice } from "./productSlice";
 import { userApi } from "../services/api";
 import { cartApi } from "../services/cart";
@@ -12,6 +12,7 @@ import consentReducer from "./consentSlice";
 const persistConfig = {
   key: "root",
   storage,
+  blacklist: ["consent"],
 };
 
 const rootReducer = combineReducers({

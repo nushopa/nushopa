@@ -105,6 +105,7 @@ export const userApi = createApi({
         body: data,
       }),
     }),
+    
     // Resend OTP for registration
     resendRegistrationOTP: builder.mutation({
       query: (data) => ({
