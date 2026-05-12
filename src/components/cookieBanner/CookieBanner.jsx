@@ -28,35 +28,46 @@ export default function CookieBanner() {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-center p-4">
-      <div className="w-full max-w-lg rounded-2xl border border-gray-200 bg-white p-6 shadow-xl">
+      <div className="w-full max-w-2xl rounded-2xl border border-gray-200 bg-white p-6 shadow-xl">
         {!showManage ? (
           <>
-            <p className="mb-1 text-base font-semibold text-gray-900">
+            <p className="mb-3 text-base font-semibold text-gray-900">
               🍪 We use cookies
             </p>
-            <p className="mb-4 text-sm leading-relaxed text-gray-500">
-              We use cookies to improve your experience and analyse traffic. You
-              can choose what to allow.
-            </p>
-            <div className="flex flex-wrap items-center gap-2">
-              <button
-                onClick={() => handleSave(acceptAll())}
-                className="rounded-lg bg-[#007145] px-4 py-2 text-sm font-medium text-white transition hover:bg-gray-700"
-              >
-                Accept all
-              </button>
-              <button
-                onClick={() => handleSave(rejectAll())}
-                className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
-              >
-                Reject all
-              </button>
-              <button
-                onClick={() => setShowManage(true)}
-                className="px-2 py-2 text-sm text-gray-400 transition hover:text-gray-600"
-              >
-                Manage preferences
-              </button>
+
+            <div className="flex items-center justify-between gap-4">
+              <p className="flex-1 text-sm leading-relaxed text-gray-500">
+                Nushopa uses cookies and other tracking technologies, including
+                session replay tools (&quot;Cookies&quot;), to gather information about
+                you and your device to improve our services, conduct analytics
+                to gain insights about how you interact with our websites and
+                services, evaluate and improve advertising, and enhance
+                performance and functionality. You can opt out of all
+                non-Essential Cookies by clicking &quot;Reject Optional Cookies&quot; or
+                click &quot;Cookie Settings&quot; to customize your selections. For more
+                information, please review our Privacy Statement.
+              </p>
+
+              <div className="flex shrink-0 items-center gap-2">
+                <button
+                  onClick={() => handleSave(acceptAll())}
+                  className="rounded-lg bg-[#007145] px-4 py-2 text-sm font-medium text-white transition hover:bg-gray-700"
+                >
+                  Accept all
+                </button>
+                <button
+                  onClick={() => handleSave(rejectAll())}
+                  className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
+                >
+                  Reject all
+                </button>
+                <button
+                  onClick={() => setShowManage(true)}
+                  className="px-2 py-2 text-sm text-gray-400 transition hover:text-gray-600"
+                >
+                  Manage preferences
+                </button>
+              </div>
             </div>
           </>
         ) : (
@@ -109,7 +120,6 @@ export default function CookieBanner() {
             <div className="mt-4 flex gap-2">
               <button
                 onClick={() => {
-                  // ✅ Fix 3 applied here too — send .payload not the raw action
                   const record = dispatch(savePreferences(prefs));
                   saveConsentMutation(record.payload);
                 }}
