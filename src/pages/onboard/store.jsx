@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import Breadcrumb from "../../components/molecule/breadcrumbs/breadcrumbs";
 import ProductItem from "../../components/products/productItem";
-import { STATIC_PRODUCTS } from "../../data/product/productList";
 import { setCarte } from "../../redux/cart";
 import { useDispatch } from "react-redux";
 import { Button, SpeedDial, SpeedDialHandler } from "@material-tailwind/react";
@@ -53,7 +52,6 @@ const Store = () => {
         setTotalPages(response.data.totalPages);
       } catch (error) {
         setError(true);
-        setGeneralProduct(STATIC_PRODUCTS);
       } finally {
         setTimeout(() => setLoading(false), 400);
       }

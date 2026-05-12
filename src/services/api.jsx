@@ -114,6 +114,14 @@ export const userApi = createApi({
       }),
     }),
 
+    saveConsent: builder.mutation({
+      query: (data) => ({
+        url: "consent", 
+        method: "POST",
+        body: data,
+      }),
+    }),
+
     getAdverts: builder.query({
       query: () => "adverts",
       providesTags: ["Advert"],
@@ -146,4 +154,5 @@ export const {
   useResendRegistrationOTPMutation,
   useLogoutUserMutation,
   useGetAdvertsQuery,
+  useSaveConsentMutation,
 } = userApi;

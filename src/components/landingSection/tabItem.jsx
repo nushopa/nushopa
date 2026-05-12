@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
-import { STATIC_PRODUCTS } from "../../data/product/productList";
 import ProductItem from "../products/productItem";
 import { CircularPagination } from "../pagination/pagination";
 import { Loader } from "../molecule/loader/tabLoader";
@@ -58,7 +57,6 @@ export default function TabItem({ category, carter }) {
       setTotalPages(data.totalPages);
     } catch (error) {
       console.error("Error fetching data:", error);
-      setGeneralProduct(STATIC_PRODUCTS);
     } finally {
       setLoading(false);
       (false);

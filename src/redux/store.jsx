@@ -7,6 +7,7 @@ import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import { combineReducers } from "redux";
 import { carterReducer } from "./cart";
+import consentReducer from "./consentSlice";
 
 const persistConfig = {
   key: "root",
@@ -14,10 +15,11 @@ const persistConfig = {
 };
 
 const rootReducer = combineReducers({
-  user: userReducer,            
+  user: userReducer,
   carte: carterReducer,
   product: productSlice.reducer,
   relatedProduct: relatedProductSlice.reducer,
+  consent: consentReducer,
   [userApi.reducerPath]: userApi.reducer,
   [cartApi.reducerPath]: cartApi.reducer,
 });
