@@ -1,34 +1,58 @@
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  acceptAll,
-  rejectAll,
-  savePreferences,
-} from "../../redux/consentSlice";
-import { useSaveConsentMutation } from "../../services/api";
+import { acceptAll, rejectAll, savePreferences } from "../redux/consentSlice";
+import { useSaveConsentMutation } from "../services/consentApi";
 
-const cookieOptions = [
-  { key: "analytics", label: "Analytics", desc: "Traffic & usage statistics" },
-  { key: "marketing", label: "Marketing", desc: "Ads & personalisation" },
+const COOKIE_OPTIONS = [
+  {
+    key: "analytics",
+    label: "Analytics",
+    desc: "Traffic & usage statistics",
+  },
+  {
+    key: "marketing",
+    label: "Marketing",
+    desc: "Ads & personalisation",
+  },
 ];
 
 export default function CookieBanner() {
   const consent = useSelector((state) => state.consent);
   const dispatch = useDispatch();
-  const [saveConsentMutation] = useSaveConsentMutation();
+  const [saveConsentMutation, { isLoading }] = useSaveConsentMutation();
   const [showManage, setShowManage] = useState(false);
   const [prefs, setPrefs] = useState({ analytics: false, marketing: false });
 
+  // Banner is hidden once the user has made a choice
   if (consent !== null) return null;
 
-  const handleSave = (action) => {
-    const record = dispatch(action);
-    saveConsentMutation(record.payload);
+  /**
+   * Dispatch a consent action, then POST the resulting payload to the backend.
+   * RTK action creators return the action object synchronously, so
+   * `dispatch(action).payload` is safe here.
+   */
+  const handleSave = async (action) => {
+    const { payload } = dispatch(action);
+    try {
+      await saveConsentMutation(payload).unwrap();
+    } catch (err) {
+      // Non-blocking: the Redux state is already set even if the API call fails.
+      console.error("Failed to persist consent:", err);
+    }
+  };
+
+  const handleSavePreferences = async () => {
+    const { payload } = dispatch(savePreferences(prefs));
+    try {
+      await saveConsentMutation(payload).unwrap();
+    } catch (err) {
+      console.error("Failed to persist consent:", err);
+    }
   };
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-center p-4">
-      <div className="w-full  rounded-2xl border border-gray-200 bg-white p-6 shadow-xl">
+      <div className="w-full rounded-2xl border border-gray-200 bg-white p-6 shadow-xl">
         {!showManage ? (
           <>
             <p className="mb-3 text-base font-semibold text-gray-900">
@@ -45,19 +69,28 @@ export default function CookieBanner() {
                 performance and functionality. You can opt out of all
                 non-Essential Cookies by clicking &quot;Reject Optional Cookies&quot; or
                 click &quot;Cookie Settings&quot; to customize your selections. For more
-                information, please review our Privacy Statement.
+                information, please review our{" "}
+                <a
+                  href="/privacy"
+                  className="underline hover:text-gray-700"
+                >
+                  Privacy Statement
+                </a>
+                .
               </p>
 
               <div className="flex shrink-0 items-center gap-2">
                 <button
                   onClick={() => handleSave(acceptAll())}
-                  className="rounded-lg bg-[#007145] px-4 py-2 text-sm font-medium text-white transition hover:bg-gray-700"
+                  disabled={isLoading}
+                  className="rounded-lg bg-[#007145] px-4 py-2 text-sm font-medium text-white transition hover:bg-green-700 disabled:opacity-60"
                 >
                   Accept all
                 </button>
                 <button
                   onClick={() => handleSave(rejectAll())}
-                  className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
+                  disabled={isLoading}
+                  className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 disabled:opacity-60"
                 >
                   Reject all
                 </button>
@@ -72,6 +105,7 @@ export default function CookieBanner() {
           </>
         ) : (
           <>
+            {/* Header */}
             <div className="mb-4 flex items-center gap-2">
               <button
                 onClick={() => setShowManage(false)}
@@ -85,7 +119,7 @@ export default function CookieBanner() {
               </p>
             </div>
 
-            {/* Essential cookies — always on, not toggleable */}
+            {/* Essential — always on */}
             <div className="flex items-center justify-between border-b border-gray-100 py-3">
               <div>
                 <p className="text-sm font-medium text-gray-800">Essential</p>
@@ -96,8 +130,8 @@ export default function CookieBanner() {
               </span>
             </div>
 
-            {/* Analytics + Marketing toggles */}
-            {cookieOptions.map(({ key, label, desc }) => (
+            {/* Toggleable options */}
+            {COOKIE_OPTIONS.map(({ key, label, desc }) => (
               <div
                 key={key}
                 className="flex items-center justify-between border-b border-gray-100 py-3"
@@ -119,13 +153,11 @@ export default function CookieBanner() {
 
             <div className="mt-4 flex gap-2">
               <button
-                onClick={() => {
-                  const record = dispatch(savePreferences(prefs));
-                  saveConsentMutation(record.payload);
-                }}
-                className="flex-1 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-gray-700"
+                onClick={handleSavePreferences}
+                disabled={isLoading}
+                className="flex-1 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-gray-700 disabled:opacity-60"
               >
-                Save preferences
+                {isLoading ? "Saving…" : "Save preferences"}
               </button>
               <button
                 onClick={() => setShowManage(false)}

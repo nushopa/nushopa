@@ -2,17 +2,19 @@ import { configureStore } from "@reduxjs/toolkit";
 import userReducer from "./user";
 import { productSlice, relatedProductSlice } from "./productSlice";
 import { userApi } from "../services/api";
-import { cartApi } from "../services/cart";
+import { cartApi } from "../services/cart";       
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import { combineReducers } from "redux";
 import { carterReducer } from "./cart";
 import consentReducer from "./consentSlice";
+import { consentApi } from "../services/Consentapi";
 
 const persistConfig = {
   key: "root",
   storage,
-  blacklist: ["consent"],
+  // consent IS persisted so the banner doesn't re-appear after page refresh
+  blacklist: [userApi.reducerPath, cartApi.reducerPath, consentApi.reducerPath],
 };
 
 const rootReducer = combineReducers({
@@ -23,6 +25,7 @@ const rootReducer = combineReducers({
   consent: consentReducer,
   [userApi.reducerPath]: userApi.reducer,
   [cartApi.reducerPath]: cartApi.reducer,
+  [consentApi.reducerPath]: consentApi.reducer,       
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -41,9 +44,8 @@ const store = configureStore({
         "cartApi/pending",
         "cartApi/rejected",
       ],
-    }).concat(userApi.middleware, cartApi.middleware),
+    }).concat(userApi.middleware, cartApi.middleware, consentApi.middleware), // ← add
 });
 
 export const persistor = persistStore(store);
-
 export default store;
