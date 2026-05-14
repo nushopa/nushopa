@@ -1,6 +1,3 @@
-// Add these endpoints to your existing userApi (or cartApi) using injectEndpoints,
-// or create a dedicated consentApi as shown below.
-
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const consentApi = createApi({

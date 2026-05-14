@@ -8,7 +8,7 @@ import storage from "redux-persist/lib/storage";
 import { combineReducers } from "redux";
 import { carterReducer } from "./cart";
 import consentReducer from "./consentSlice";
-import { consentApi } from "../services/consentapi";
+import { consentApi } from "@/services/consentapi";
 
 
 const persistConfig = {

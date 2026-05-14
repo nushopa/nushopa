@@ -1,6 +1,6 @@
 import { useSelector, useDispatch } from "react-redux";
 import { acceptAll, rejectAll } from "../../redux/consentSlice";
-import { useSaveConsentMutation } from "../../services/consentApi";
+import { useSaveConsentMutation } from "../../services/api";
 
 const CONSENT_VERSION = "1.0.0";
 

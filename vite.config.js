@@ -10,6 +10,7 @@ export default defineConfig({
   plugins: [react(), visualizer()],
   resolve: {
     caseSensitiveMatch: true,
+    preserveSymlinks: true,
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
