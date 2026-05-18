@@ -44,35 +44,34 @@ export default function CookieBanner() {
           🍪 We use cookies
         </p>
 
-        <div className="flex items-center justify-between gap-4">
-          <p className="flex-1 text-sm leading-relaxed text-gray-500">
+        {/* ↓ Stack on mobile, row on sm+ */}
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm leading-relaxed text-gray-500">
             Nushopa uses cookies and other tracking technologies, including
             session replay tools (&quot;Cookies&quot;), to gather information
             about you and your device to improve our services, conduct analytics
             to gain insights about how you interact with our websites and
             services, evaluate and improve advertising, and enhance performance
-            and functionality. You can opt out of all non-Essential Cookies by
-            clicking &quot;Reject Optional Cookies&quot; or click &quot;Cookie
-            Settings&quot; to customize your selections. For more information,
-            please review our{" "}
+            and functionality.{" "}
             <a href="/privacy" className="underline hover:text-gray-700">
               Privacy Statement
             </a>
             .
           </p>
 
+          {/* ↓ Buttons fill width on mobile, shrink on sm+ */}
           <div className="flex shrink-0 items-center gap-2">
             <button
               onClick={handleAccept}
               disabled={isLoading}
-              className="rounded-lg bg-[#007145] px-4 py-2 text-sm font-medium text-white transition hover:bg-green-700 disabled:opacity-60"
+              className="flex-1 rounded-lg bg-[#007145] px-4 py-2 text-sm font-medium text-white transition hover:bg-green-700 disabled:opacity-60 sm:flex-none"
             >
               Accept all
             </button>
             <button
               onClick={handleReject}
               disabled={isLoading}
-              className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 disabled:opacity-60"
+              className="flex-1 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 disabled:opacity-60 sm:flex-none"
             >
               Reject all
             </button>
