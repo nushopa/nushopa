@@ -72,12 +72,13 @@ export default function Checkout() {
     setEstimatePrice(estimatePrice);
   }, []);
 
-  let total =
-    shop?.reduce(
-      (total, item) =>
-        total + item.product_id.product_price * item.product_quatity,
-      0
-    ) + estimatePrice;
+  const subtotal = shop?.reduce(
+    (total, item) =>
+      total + item.product_id.product_price * item.product_quatity,
+    0
+  );
+
+  let total = subtotal + estimatePrice;
   return (
     <DefaultLayout>
       <Helmet>
@@ -185,11 +186,18 @@ export default function Checkout() {
             </div>
             <div className="text-black text-xl font-medium font-workSans">
               &#8358;
-              {AddCommasToNumber(shop?.reduce(
-                (total, item) =>
-                  total + item.product_id.product_price * item.product_quatity,
-                0
-              ))}
+              {AddCommasToNumber(subtotal)}
+            </div>
+          </div>
+          <div className="mt-5 flex border-b border-[#7E7E7E] pt-3 pb-1 justify-between items-center">
+            <div className="text-[#7E7E7E] text-[20px] font-medium font-workSans">
+              Delivery Fee:
+            </div>
+            <div className="text-black text-xl font-medium font-workSans">
+              &#8358;
+              {estimatePrice === null || estimatePrice === undefined
+                ? "0"
+                : AddCommasToNumber(estimatePrice)}
             </div>
           </div>
           <div className="mt-5 flex border-b border-[#7E7E7E] pt-3 pb-1 justify-between items-center">

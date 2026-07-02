@@ -17,6 +17,9 @@ import { BsFillBasketFill } from "react-icons/bs";
 import useAuth from "../../lib/hooks/useAuth";
 import { setCartCount } from "../../redux/cart";
 
+// ← adjust or pull from config/API as needed
+const DELIVERY_FEE = 1000;
+
 const FloatingCart = () => {
   const { isAuthenticated, user } = useAuth();
   const userId = user?._id;
@@ -44,7 +47,7 @@ const FloatingCart = () => {
       const items = data?.cart ?? [];
       setCarts(items);
       const uniqueIds = new Set(items.map((i) => i.product_id._id));
-      dispatch(setCartCount(uniqueIds.size)); 
+      dispatch(setCartCount(uniqueIds.size));
     } catch (err) {
       console.error("Error refreshing cart:", err);
     }
@@ -87,6 +90,8 @@ const FloatingCart = () => {
   const subtotal = carts.reduce((total, item) => {
     return total + (item.product_id.product_price * item.product_quatity || 0);
   }, 0);
+
+  const total = subtotal + DELIVERY_FEE;
 
   const handleClose = () => setIsOpen(false);
 
@@ -138,9 +143,13 @@ const FloatingCart = () => {
             <div className="px-6 py-5 border-b flex items-center justify-between bg-white">
               <div className="flex items-center gap-3">
                 <BsFillBasketFill className="h-7 w-7 text-mainGreen" />
-                <h2 className="text-2xl font-semibold text-gray-800">My Cart</h2>
+                <h2 className="text-2xl font-semibold text-gray-800">
+                  My Cart
+                </h2>
                 {uniqueItems.length > 0 && (
-                  <span className="text-sm text-gray-500">({uniqueItems.length})</span>
+                  <span className="text-sm text-gray-500">
+                    ({uniqueItems.length})
+                  </span>
                 )}
               </div>
               <button
@@ -164,9 +173,14 @@ const FloatingCart = () => {
                     alt="Empty cart"
                     className="h-40 mb-6"
                   />
-                  <p className="text-xl font-medium text-gray-700 mb-2">Your cart is empty</p>
+                  <p className="text-xl font-medium text-gray-700 mb-2">
+                    Your cart is empty
+                  </p>
                   <button
-                    onClick={() => { handleClose(); navigate("/"); }}
+                    onClick={() => {
+                      handleClose();
+                      navigate("/");
+                    }}
                     className="mt-6 px-8 py-3 bg-mainGreen text-white rounded-xl hover:bg-green-700"
                   >
                     Start Shopping
@@ -197,9 +211,25 @@ const FloatingCart = () => {
                           title="Remove item"
                         >
                           {removingId === item._id ? (
-                            <svg className="animate-spin h-4 w-4 text-red-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                            <svg
+                              className="animate-spin h-4 w-4 text-red-400"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                              />
+                              <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8v8z"
+                              />
                             </svg>
                           ) : (
                             <DeleteIcon />
@@ -210,18 +240,39 @@ const FloatingCart = () => {
                         ₦{AddCommasToNumber(item.product_id.product_price)}
                       </p>
                       <div className="mt-2 text-xs text-gray-500 line-clamp-2">
-                        <DisplayContent htmlContent={truncateString(item.product_id.product_des, 70)} />
+                        <DisplayContent
+                          htmlContent={truncateString(
+                            item.product_id.product_des,
+                            70,
+                          )}
+                        />
                       </div>
                       <div className="mt-4 flex justify-between items-center">
                         <div className="flex justify-between w-full mt-3 md:mt-0 md:w-1/2">
                           <div className="flex">
-                            <button onClick={() => handleDecrement(item._id)} className="px-2 py-1 text-white rounded-lg bg-mainGreen">-</button>
-                            <span className="px-3 py-1 text-neutral-500 font-medium">{item.product_quatity}</span>
-                            <button onClick={() => handleIncrement(item._id)} className="px-2 py-1 text-white rounded-lg bg-mainGreen">+</button>
+                            <button
+                              onClick={() => handleDecrement(item._id)}
+                              className="px-2 py-1 text-white rounded-lg bg-mainGreen"
+                            >
+                              -
+                            </button>
+                            <span className="px-3 py-1 text-neutral-500 font-medium">
+                              {item.product_quatity}
+                            </span>
+                            <button
+                              onClick={() => handleIncrement(item._id)}
+                              className="px-2 py-1 text-white rounded-lg bg-mainGreen"
+                            >
+                              +
+                            </button>
                           </div>
                         </div>
                         <span className="font-semibold">
-                          ₦{AddCommasToNumber(item.product_id.product_price * item.product_quatity)}
+                          ₦
+                          {AddCommasToNumber(
+                            item.product_id.product_price *
+                              item.product_quatity,
+                          )}
                         </span>
                       </div>
                     </div>
@@ -233,19 +284,34 @@ const FloatingCart = () => {
             {/* Footer */}
             {uniqueItems.length > 0 && (
               <div className="border-t p-6 bg-white space-y-4">
-                <div className="flex justify-between text-lg font-medium">
-                  <span className="text-gray-700">Subtotal</span>
+                <div className="flex justify-between text-base text-gray-700">
+                  <span>Subtotal</span>
                   <span>₦{AddCommasToNumber(subtotal)}</span>
                 </div>
+                <div className="flex justify-between text-base text-gray-700">
+                  <span>Delivery Fee</span>
+                  <span>₦{AddCommasToNumber(DELIVERY_FEE)}</span>
+                </div>
+                <div className="flex justify-between text-lg font-semibold border-t pt-3">
+                  <span className="text-gray-800">Total</span>
+                  <span>₦{AddCommasToNumber(total)}</span>
+                </div>
+
                 <div className="grid grid-cols-2 gap-3 pt-2">
                   <button
-                    onClick={() => { handleClose(); navigate("/cart"); }}
+                    onClick={() => {
+                      handleClose();
+                      navigate("/cart");
+                    }}
                     className="py-3.5 border-2 border-mainGreen text-mainGreen font-medium rounded-xl hover:bg-green-50 transition"
                   >
                     View Full Cart
                   </button>
                   <button
-                    onClick={() => { handleClose(); navigate("/checkout"); }}
+                    onClick={() => {
+                      handleClose();
+                      navigate("/checkout");
+                    }}
                     className="py-3.5 bg-mainGreen hover:bg-green-700 text-white font-medium rounded-xl transition"
                   >
                     Checkout

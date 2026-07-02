@@ -40,6 +40,7 @@ export const cartApi = createApi({
       }),
       invalidatesTags: [{ type: "Cart" }],
     }),
+    
     // delete single cart
     deleteSingleCart: builder.mutation({
       query: (id) => ({

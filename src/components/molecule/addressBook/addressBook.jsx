@@ -14,11 +14,12 @@ export default function AddressBook({
 }) {
   const [showAddressBook, setShowAddressBook] = useState(true);
   const [loading, setLoading] = useState(true);
-  const [deliveryLoading, setDeliveryLoading] = useState(false);
+  const [deliveryLoading, setDeliveryLoading] = useState(true);
   const [deliveryPrices, setDeliveryPrices] = useState([]);
   let baseUrl = import.meta.env.VITE_BASE_URL;
 
   useEffect(() => {
+    setDeliveryLoading(true);
     axios
       .get(`${baseUrl}pricelist`)
       .then((response) => {
@@ -45,9 +46,17 @@ export default function AddressBook({
       });
   }, [baseUrl]);
 
+  // Auto-select the first saved address once addresses have loaded, so the
+  // delivery fee populates immediately instead of waiting for a manual click.
+  useEffect(() => {
+    if (!loading && existingArray.length > 0 && selectedAddress === null) {
+      setSelectedAddress(0);
+    }
+  }, [loading, existingArray, selectedAddress, setSelectedAddress]);
+
   useEffect(() => {
     if (!deliveryLoading && selectedAddress !== null) {
-      const city = existingArray[selectedAddress].city;
+      const city = existingArray[selectedAddress]?.city;
       const estimatePrice = deliveryPrices.find(
         (cityObj) => cityObj.city === city
       )?.estimatePrice;
@@ -74,7 +83,15 @@ export default function AddressBook({
     try {
       await axios.delete(`${baseUrl}checkout/address/${id}`);
       const updatedArray = existingArray.filter((address) => address.doc_id !== id);
-      setExistingArray(updatedArray)
+      setExistingArray(updatedArray);
+      // If the deleted address was the selected one, clear the selection
+      // so the auto-select effect can pick a new default (or clear the fee).
+      const deletedIndex = existingArray.findIndex((address) => address.doc_id === id);
+      if (deletedIndex === selectedAddress) {
+        setSelectedAddress(updatedArray.length > 0 ? 0 : null);
+      } else if (deletedIndex < selectedAddress) {
+        setSelectedAddress(selectedAddress - 1);
+      }
     } catch (error) {
       console.error("Failed to delete address:", error);
     }
