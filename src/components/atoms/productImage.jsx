@@ -8,7 +8,7 @@ const ProductImage = ({ product_image, truncatedProductName }) => (
     />
     <source srcSet={product_image} type="image/jpeg" />
     <img
-      src={product_image} // Fallback for older browsers and in case WebP fails
+      src={product_image} 
       alt={truncatedProductName}
       className="h-[150px] w-[150px] object-cover mx-auto rounded-lg"
       loading="lazy"

@@ -34,6 +34,7 @@ export default function ProductItem({
   product_price,
   product_image,
   product_total,
+  out_of_stock,
   productNameMaxLength,
   productDesMaxLength,
   product_name,
@@ -126,6 +127,7 @@ export default function ProductItem({
 
   const handleAddToCart = async (_id) => {
     if (!isAuthenticated) { navigate("/sign-in"); return; }
+    if (out_of_stock) return; // guard against stray clicks/enter key
     const userId = localStorage.getItem("userId");
     setIsAddingToCart(true);
     const postDataInfo = { customer_id: userId, product_id: _id };
@@ -156,7 +158,7 @@ export default function ProductItem({
       <CardHeader
         shadow={false}
         floated={false}
-        className="h-40 md:h-52 cursor-pointer"
+        className="h-40 md:h-52 cursor-pointer relative"
         onClick={() =>
           isAuthenticated ? navigate(`/product/${_id}`) : navigate("/sign-in")
         }
@@ -166,6 +168,7 @@ export default function ProductItem({
             product_image={product_image}
             truncatedProductName={truncatedProductName}
           />
+          
           <div
             className="absolute top-2 right-2 z-10"
             onClick={(e) => e.stopPropagation()}
@@ -173,7 +176,7 @@ export default function ProductItem({
             <AddToCartIcon
               isSelected={showQuantityDiv}
               isLoading={isAddingToCart}
-              disabled={product_total <= 0}
+              disabled={out_of_stock || product_total <= 0}
               onClick={() =>
                 showQuantityDiv
                   ? handleRemoveFromCart(cartId)
@@ -192,6 +195,11 @@ export default function ProductItem({
             {product_name}
           </Typography>
         </div>
+        {out_of_stock && (
+          <Typography variant="small" className="text-red-600 font-semibold mb-1">
+            Out of Stock
+          </Typography>
+        )}
         <Typography
           variant="small"
           color="gray"
@@ -206,7 +214,7 @@ export default function ProductItem({
           <Typography className="font-bold text-lg shrink-0">
             &#x20A6;{AddCommasToNumber(product_price)}
           </Typography>
-          {showQuantityDiv && (
+          {showQuantityDiv && !out_of_stock && (
             <div className="flex items-center justify-end flex-1">
               <div className="flex items-center gap-4">
                 <button

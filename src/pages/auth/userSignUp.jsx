@@ -14,6 +14,7 @@ import {
 import Auth from "./component/Auths";
 import { InputField } from "./component/InputField";
 
+const CUSTOMER_ROLE = 2001;
 const UserSignUp = () => {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -104,6 +105,7 @@ const UserSignUp = () => {
       email: formData.email,
       password: formData.confirmPassword,
       phone_number: formData.phoneNumber,
+      role: CUSTOMER_ROLE
     };
 
     createUser(postDataInfo)

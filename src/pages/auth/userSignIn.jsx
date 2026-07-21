@@ -12,7 +12,7 @@ import {
 
 import Auth from "./component/Auths";
 import { InputField } from "./component/InputField";
-
+const CUSTOMER_ROLE = 2001;
 const UserSignIn = () => {
   const [formData, setFormData] = useState({
     email: "",
@@ -74,6 +74,7 @@ const UserSignIn = () => {
     const postDataInfo = {
       email: formData.email,
       password: formData.password,
+      role: CUSTOMER_ROLE,
     };
 
     try {
@@ -170,7 +171,6 @@ const UserSignIn = () => {
             </a>
           </div>
         </div>
-
       </form>
     </Auth>
   );
