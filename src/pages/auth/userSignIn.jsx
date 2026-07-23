@@ -4,15 +4,17 @@ import { useLoginUserMutation } from "../../services/api";
 import { addUser } from "../../redux/user";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
-import {
-  auth,
-  signInWithPopup,
-  provider,
-} from "../../lib/firebase/firebase.config";
 
 import Auth from "./component/Auths";
 import { InputField } from "./component/InputField";
+
 const CUSTOMER_ROLE = 2001;
+
+const redirectToGoogleAuth = () => {
+  const backendUrl = import.meta.env.VITE_BASE_URL.replace(/\/$/, "");
+  window.location.href = `${backendUrl}/auth/google`;
+};
+
 const UserSignIn = () => {
   const [formData, setFormData] = useState({
     email: "",
@@ -38,33 +40,6 @@ const UserSignIn = () => {
         setPasswordError("");
       }
     }
-  };
-
-  const handleGoogleLogin = () => {
-    signInWithPopup(auth, provider).then((result) => {
-      const user = result.user;
-      if (user.email && user.uid) {
-        if (!user.phoneNumber) {
-          const postDataInfo = {
-            email: user.email,
-            password: user.uid,
-          };
-          localStorage.setItem("profile-picture", user.photoURL);
-
-          loginUser(postDataInfo)
-            .then((res) => {
-              if (res.data) {
-                localStorage.setItem("token", res.data.token);
-                localStorage.setItem("userId", res.data.user._id);
-                dispatch(addUser(res.data.user));
-                toast.success("Logged in successfully");
-                navigate("/dashboard");
-              }
-            })
-            .catch(() => toast.error("Google login failed. Please try again."));
-        }
-      }
-    });
   };
 
   const handleSubmit = async (e) => {
@@ -152,14 +127,19 @@ const UserSignIn = () => {
 
         {/* Social Login */}
         <div className="flex justify-center gap-6">
-          <div onClick={handleGoogleLogin} className="cursor-pointer">
+          <button
+            type="button"
+            onClick={redirectToGoogleAuth}
+            className="cursor-pointer"
+            aria-label="Sign in with Google"
+          >
             <img
               className="w-12"
               src="https://res.cloudinary.com/phantom1245/image/upload/v1702037705/farm2home/Frame_268_fpbpmd.png"
               alt="google icon"
               loading="lazy"
             />
-          </div>
+          </button>
           <div>
             <a href="/">
               <img

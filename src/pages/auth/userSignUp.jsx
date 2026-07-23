@@ -1,20 +1,21 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCreateUserMutation } from "../../services/api";
-import { addUser } from "../../redux/user";
-import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
-
-import {
-  auth,
-  signInWithPopup,
-  provider,
-} from "../../lib/firebase/firebase.config";
 
 import Auth from "./component/Auths";
 import { InputField } from "./component/InputField";
 
 const CUSTOMER_ROLE = 2001;
+
+// Sends the browser straight to the backend's Google OAuth entry point.
+// The backend handles the whole handshake and redirects back to
+// /auth/callback with a token, which AuthCallback.jsx picks up.
+const redirectToGoogleAuth = () => {
+  const backendUrl = import.meta.env.VITE_BASE_URL.replace(/\/$/, "");
+  window.location.href = `${backendUrl}/auth/google`;
+};
+
 const UserSignUp = () => {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -28,7 +29,6 @@ const UserSignUp = () => {
   const [passwordError, setPasswordError] = useState("");
   const [createUser, { isLoading }] = useCreateUserMutation();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -48,50 +48,6 @@ const UserSignUp = () => {
         setPasswordError("");
       }
     }
-  };
-
-  const handleGoogleLogin = () => {
-    signInWithPopup(auth, provider).then((result) => {
-      const user = result.user;
-      const displayName = user.displayName || "";
-
-      if (displayName && user.email && user.uid) {
-        const nameParts = displayName.split(" ");
-        const firstName = nameParts[0];
-        const lastName = nameParts.slice(1).join(" ") || "";
-
-        if (!user.phoneNumber) {
-          const postDataInfo = {
-            first_name: firstName,
-            last_name: lastName,
-            email: user.email,
-            password: user.uid,
-          };
-          localStorage.setItem("postData", JSON.stringify(postDataInfo));
-          localStorage.setItem("profile-picture", user.photoURL);
-          navigate("/update-phone-number");
-        } else {
-          const postDataInfo = {
-            first_name: firstName,
-            last_name: lastName,
-            email: user.email,
-            password: user.uid,
-            phone_number: user.phoneNumber,
-          };
-
-          createUser(postDataInfo)
-            .then((res) => {
-              if (res.data) {
-                localStorage.setItem("userId", res.data.data._id);
-                dispatch(addUser(res.data.data));
-                toast.success("Account created successfully");
-                navigate("/dashboard");
-              }
-            })
-            .catch(() => toast.error("Google signup failed"));
-        }
-      }
-    });
   };
 
   const handleSubmit = (e) => {
@@ -226,13 +182,18 @@ const UserSignUp = () => {
 
         {/* Social Login */}
         <div className="flex justify-center gap-6">
-          <div onClick={handleGoogleLogin} className="cursor-pointer">
+          <button
+            type="button"
+            onClick={redirectToGoogleAuth}
+            className="cursor-pointer"
+            aria-label="Sign up with Google"
+          >
             <img
               className="w-12"
               src="https://res.cloudinary.com/phantom1245/image/upload/v1702037705/farm2home/Frame_268_fpbpmd.png"
               alt="google icon"
             />
-          </div>
+          </button>
           <div>
             <a href="/">
               <img
