@@ -17,15 +17,14 @@ import { BsFillBasketFill } from "react-icons/bs";
 import useAuth from "../../lib/hooks/useAuth";
 import { setCartCount } from "../../redux/cart";
 
-// ← adjust or pull from config/API as needed
-const DELIVERY_FEE = 1000;
+const DELIVERY_FEE = 1800;
 
 const FloatingCart = () => {
   const { isAuthenticated, user } = useAuth();
   const userId = user?._id;
 
   const dispatch = useDispatch();
-  const cartCount = useSelector((state) => state.carte.cartCount); // ← live from Redux
+  const cartCount = useSelector((state) => state.carte.cartCount); 
 
   const [isOpen, setIsOpen] = useState(false);
   const [carts, setCarts] = useState([]);
@@ -91,7 +90,8 @@ const FloatingCart = () => {
     return total + (item.product_id.product_price * item.product_quatity || 0);
   }, 0);
 
-  const total = subtotal + DELIVERY_FEE;
+  const serviceCharges = subtotal * 0.15;
+  const total = subtotal + DELIVERY_FEE + serviceCharges;
 
   const handleClose = () => setIsOpen(false);
 
@@ -291,6 +291,10 @@ const FloatingCart = () => {
                 <div className="flex justify-between text-base text-gray-700">
                   <span>Delivery Fee</span>
                   <span>₦{AddCommasToNumber(DELIVERY_FEE)}</span>
+                </div>
+                <div className="flex justify-between text-base text-gray-700">
+                  <span> Service Charges</span>
+                  <span>₦{AddCommasToNumber(serviceCharges)}</span>
                 </div>
                 <div className="flex justify-between text-lg font-semibold border-t pt-3">
                   <span className="text-gray-800">Total</span>

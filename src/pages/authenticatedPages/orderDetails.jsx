@@ -59,7 +59,9 @@ export default function OrderDetails() {
   );
 
   // Calculate delivery charges
-  const deliveryCharges = orderDetails?.amount_paid - subtotal;
+  const serviceCharges = subtotal * 0.15;
+  const deliveryCharges = orderDetails?.amount_paid - subtotal - serviceCharges;
+  
   const handleReviewSubmission = () => {
     let postDataInfo = {
       rate: rated,
@@ -328,6 +330,14 @@ export default function OrderDetails() {
                 </div>
                 <div className="text-black text-xl font-medium font-workSans">
                   &#8358;{AddCommasToNumber(deliveryCharges)}
+                </div>
+              </div>
+              <div className="flex gap-9 border-b border-[#7E7E7E] pb-2">
+                <div className="text-[#7E7E7E] text-[20px] font-medium font-workSans">
+                  Service Charges:
+                </div>
+                <div className="text-black text-xl font-medium font-workSans">
+                  &#8358;{AddCommasToNumber(serviceCharges)}
                 </div>
               </div>
               <div className="flex gap-9">

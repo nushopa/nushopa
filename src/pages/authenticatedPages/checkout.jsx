@@ -61,7 +61,7 @@ export default function Checkout() {
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
-        setLoading(false); // Stop loading after both API calls
+        setLoading(false); 
       }
     };
 
@@ -78,7 +78,10 @@ export default function Checkout() {
     0
   );
 
-  let total = subtotal + estimatePrice;
+  const serviceCharge = subtotal * 0.15;
+  let total = subtotal + estimatePrice + serviceCharge;
+
+  
   return (
     <DefaultLayout>
       <Helmet>
@@ -202,6 +205,15 @@ export default function Checkout() {
           </div>
           <div className="mt-5 flex border-b border-[#7E7E7E] pt-3 pb-1 justify-between items-center">
             <div className="text-[#7E7E7E] text-[20px] font-medium font-workSans">
+              Service Fee:
+            </div>
+            <div className="text-black text-xl font-medium font-workSans">
+              &#8358;
+              { AddCommasToNumber(serviceCharge)}
+            </div>
+          </div>
+          <div className="mt-5 flex  pt-3 pb-1 justify-between items-center">
+            <div className="text-[#7E7E7E] text-[20px] font-medium font-workSans">
               Total:
             </div>
             <div className="text-black text-xl font-medium font-workSans">
@@ -209,6 +221,7 @@ export default function Checkout() {
               {!isNaN(total) ? (AddCommasToNumber(total)) : 0}
             </div>
           </div>
+
           {estimatePrice === null ||
             estimatePrice === undefined ||
             existingArray.length < 1 ||
