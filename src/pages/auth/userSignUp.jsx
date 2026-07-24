@@ -8,12 +8,9 @@ import { InputField } from "./component/InputField";
 
 const CUSTOMER_ROLE = 2001;
 
-// Sends the browser straight to the backend's Google OAuth entry point.
-// The backend handles the whole handshake and redirects back to
-// /auth/callback with a token, which AuthCallback.jsx picks up.
 const redirectToGoogleAuth = () => {
   const backendUrl = import.meta.env.VITE_BASE_URL.replace(/\/$/, "");
-  window.location.href = `${backendUrl}/auth/google`;
+  window.location.href = `${backendUrl}/auth/google?platform=web`;
 };
 
 const UserSignUp = () => {

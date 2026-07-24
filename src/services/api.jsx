@@ -18,6 +18,9 @@ export const userApi = createApi({
     singleProduct: builder.query({
       query: (id) => `product/get/${id}`,
     }),
+    getProfile: builder.query({
+      query: () => "profile",
+    }),
 
     relatedProducts: builder.query({
       query: (productCat) => `product?product_cat=${productCat}`,
@@ -105,7 +108,7 @@ export const userApi = createApi({
         body: data,
       }),
     }),
-    
+
     // Resend OTP for registration
     resendRegistrationOTP: builder.mutation({
       query: (data) => ({
@@ -117,7 +120,7 @@ export const userApi = createApi({
 
     saveConsent: builder.mutation({
       query: (data) => ({
-        url: "consent", 
+        url: "consent",
         method: "POST",
         body: data,
       }),
@@ -156,4 +159,5 @@ export const {
   useLogoutUserMutation,
   useGetAdvertsQuery,
   useSaveConsentMutation,
+  useLazyGetProfileQuery,
 } = userApi;

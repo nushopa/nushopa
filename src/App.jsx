@@ -32,6 +32,7 @@ import Checkout from "./pages/authenticatedPages/checkout.jsx";
 import MyOrder from "./pages/authenticatedPages/myOrder.jsx";
 import OrderDetails from "./pages/authenticatedPages/orderDetails.jsx";
 import ProductDescription from "./pages/authenticatedPages/productDescription.jsx";
+import AuthCallback from "./pages/auth/AuthCallback.jsx";
 
 
 
@@ -67,6 +68,7 @@ function App() {
             <Route path="/forgotten-password" element={<ForgottenPassword />} />
             <Route path="/otp-password" element={<OtpPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/auth/callback" element={<AuthCallback />} />
 
             {/* Protected routes */}
             <Route element={<ProtectedRoute />}>

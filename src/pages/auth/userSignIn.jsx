@@ -12,7 +12,7 @@ const CUSTOMER_ROLE = 2001;
 
 const redirectToGoogleAuth = () => {
   const backendUrl = import.meta.env.VITE_BASE_URL.replace(/\/$/, "");
-  window.location.href = `${backendUrl}/auth/google`;
+  window.location.href = `${backendUrl}/auth/google?platform=web`;
 };
 
 const UserSignIn = () => {
