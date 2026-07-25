@@ -35,7 +35,6 @@ export default function ForgottenPassword() {
           toast.success("Email sent successfully");
           navigate("/otp-password");
         } else {
-          // toast.error("Invalid Email");
           return;
         }
       });

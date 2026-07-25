@@ -1,13 +1,13 @@
 import { Button } from "@material-tailwind/react";
 import OTPInput from "../../../components/atoms/otpInput/otpInput";
-import AuthLayout from "../../../layouts/authLayout";
 import { useState } from "react";
 import { useVerifyOTPMutation } from "../../../services/api";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import Auth from "../component/Auths";
 
 export default function OtpPassword() {
-  const [otpCode, setOtpCode] = useState(""); // State to store the OTP code
+  const [otpCode, setOtpCode] = useState("");
   const [verifyOTP, { isLoading }] = useVerifyOTPMutation();
   let email = localStorage.getItem("forgot-email");
   const navigate = useNavigate();
@@ -18,26 +18,31 @@ export default function OtpPassword() {
     };
 
     try {
-      verifyOTP(postDataInfo)
-        .then((res) => {
-          if (res.data) {
-            toast.success("successful");
-            navigate("/reset-password");
-          } else {
-            toast.error(res.error.data.message)
-            // toast.error("Invalid OTP code ");
-            return;
-          }
-        })
+      verifyOTP(postDataInfo).then((res) => {
+        if (res.data) {
+          toast.success("successful");
+          navigate("/reset-password");
+        } else {
+          toast.error(res.error.data.message);
+          // toast.error("Invalid OTP code ");
+          return;
+        }
+      });
     } catch (e) {
       // toast.error(e);
     }
   };
 
   return (
-    <AuthLayout>
-      <div className="w-full md:w-[80%] mx-auto bg-white rounded-lg p-4 md:p-14">
-        <div className="text-md md:text-xl mx-auto text-center text-[#212323] flex justify-center items-center font-workSans font-semibold">
+    <Auth
+      title=""
+      subtitle=""
+      buttonText=""
+      buttonPath=""
+      formSide="center"
+    >
+      <div className="w-full md:w-[100%] mx-auto bg-white rounded-lg p-4 md:p-14">
+        <div className="text-md md:text-lg mx-auto text-center text-[#212323] flex justify-center items-center font-workSans font-semibold">
           Enter the 6 digits code sent to your email address ({email})
         </div>
         <OTPInput setOtpCode={setOtpCode} />
@@ -52,6 +57,6 @@ export default function OtpPassword() {
           </Button>
         </div>
       </div>
-    </AuthLayout>
+    </Auth>
   );
 }

@@ -44,7 +44,7 @@ const OTPInput = ({ setOtpCode }) => {
           key={index}
           type="text"
           maxLength={1}
-          className="border border-[#212323] rounded-lg w-10 h-10 md:w-14 md:h-14 mx-1 md:mx-2 text-center text-xl focus:outline-none"
+          className="border border-[#212323] rounded-lg w-10 h-10 md:w-12 md:h-12 mx-1 md:mx-2 text-center text-xl focus:outline-none"
           value={digit}
           onChange={(e) => handleChange(index, e)}
           onKeyDown={(e) => handleKeyDown(index, e)}
