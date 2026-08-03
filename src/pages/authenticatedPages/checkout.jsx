@@ -13,6 +13,9 @@ import { toast } from "react-toastify";
 import { clearUser } from "../../redux/user";
 import { clearDelivery } from "../../redux/delivery";
 
+const DELIVERY_FEE = 1800;
+const SERVICE_CHARGE_RATE = 0.15;
+
 export default function Checkout() {
   const dispatch = useDispatch();
   const [status, setStatus] = useState("delivery");
@@ -78,12 +81,14 @@ export default function Checkout() {
     0
   );
 
-  const delivery = 1800;
+  const delivery = DELIVERY_FEE;
 
-  const serviceCharge = subtotal * 0.15;
-  let total = subtotal + estimatePrice + serviceCharge;
+  const serviceCharge = subtotal * SERVICE_CHARGE_RATE;
+  const total = subtotal + delivery + serviceCharge;
 
-  
+  // Debug log — remove once the mismatch is found
+  console.log({ subtotal, delivery, serviceCharge, total });
+
   return (
     <DefaultLayout>
       <Helmet>
@@ -229,9 +234,7 @@ export default function Checkout() {
             loading === true ||
             isNaN(total) ? (
               <>
-                <div className="text-mainGreen flex justify-end items-center mt-10 text-xl font-medium font-workSans">
-                No Delivery Charges
-                </div>{" "}
+          
                 <Button
                   className="mt-4 w-full "
                   onClick={() => navigate("/checkout")}
