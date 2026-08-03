@@ -31,7 +31,6 @@ const OTPInput = ({ setOtpCode }) => {
       if (!otp[index]) {
         event.preventDefault();
       } else if (index < otp.length - 1) {
-        // Move to the next input box
         inputRefs.current[index + 1].focus();
       }
     }

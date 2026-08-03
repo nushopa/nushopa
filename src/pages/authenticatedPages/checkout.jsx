@@ -78,6 +78,8 @@ export default function Checkout() {
     0
   );
 
+  const delivery = 1800;
+
   const serviceCharge = subtotal * 0.15;
   let total = subtotal + estimatePrice + serviceCharge;
 
@@ -198,9 +200,7 @@ export default function Checkout() {
             </div>
             <div className="text-black text-xl font-medium font-workSans">
               &#8358;
-              {estimatePrice === null || estimatePrice === undefined
-                ? "0"
-                : AddCommasToNumber(estimatePrice)}
+              { AddCommasToNumber(delivery)}
             </div>
           </div>
           <div className="mt-5 flex border-b border-[#7E7E7E] pt-3 pb-1 justify-between items-center">
