@@ -14,6 +14,7 @@ import CategoryDrawer from "../../components/drawer/categoryDrawer";
 import { scrollToTop } from "../../lib/util/scrollUp";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import LandingAds from "../../components/ads/LandingAds";
+import CategoryMenu from "../../components/drawer/categoryMenu";
 
 const Loader = () => {
   return <span className="loader"></span>;
@@ -59,7 +60,6 @@ const Store = () => {
     [baseUrl, currentPage, selectedCategories],
   );
 
-  // Fetch product categories
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -195,32 +195,12 @@ const Store = () => {
           handleCategoryToggle={handleCategoryToggle}
         />
 
-        <div className="hidden md:block mr-4 bg-white w-full md:w-[25%] sticky top-28 h-full overflow-x-auto p-4 rounded-lg">
-          <h3 className="mb-4 font-bold">Categories</h3>
-          <ul>
-            {categories.map((category, index) => (
-              <li key={index} className="mb-2">
-                <label className="flex items-center cursor-pointer ">
-                  <input
-                    type="checkbox"
-                    checked={selectedCategories.includes(category)}
-                    onChange={() => handleCategoryToggle(category)}
-                    className="accent-mainGreen w-5 h-5 mr-2"
-                  />
-                  <span
-                    className={
-                      selectedCategories.includes(category)
-                        ? "text-mainGreen font-bold"
-                        : ""
-                    }
-                  >
-                    {category}
-                  </span>
-                </label>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <CategoryMenu 
+          baseUrl={baseUrl}
+          selectedCategories={selectedCategories}
+          handleCategoryToggle={handleCategoryToggle}
+          onCategoriesLoaded={setCategories}
+        />
 
         {loading && <Loader />}
 

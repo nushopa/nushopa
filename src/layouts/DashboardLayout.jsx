@@ -23,7 +23,6 @@ export default function DashboardLayout({ children }) {
 
   const baseUrl = import.meta.env.VITE_BASE_URL;
 
-  // Fetch all products once for the autocomplete dropdown
   useEffect(() => {
     axios.get(`${baseUrl}product`).then((response) => {
       if (response.data) {
