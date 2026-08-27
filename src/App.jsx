@@ -33,6 +33,7 @@ import MyOrder from "./pages/authenticatedPages/myOrder.jsx";
 import OrderDetails from "./pages/authenticatedPages/orderDetails.jsx";
 import ProductDescription from "./pages/authenticatedPages/productDescription.jsx";
 import AuthCallback from "./pages/auth/AuthCallback.jsx";
+import OrderStatus from './pages/authenticatedPages/orderStatus';
 
 
 
@@ -77,7 +78,7 @@ function App() {
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/my-order" element={<MyOrder />} />
               <Route path="/order/:id" element={<OrderDetails />} />
-
+              <Route path="/order-status/:reference" element={<OrderStatus/>} />
               <Route path="/product/:id" element={<ProductDescription />} />
             </Route>
           </Route>

@@ -22,7 +22,7 @@ export default function Checkout() {
   const [estimatePrice, setEstimatePrice] = useState(null);
   const [existingArray, setExistingArray] = useState([]);
   const [selectedAddress, setSelectedAddress] = useState(null);
-  const [shop, setShop] = useState([])
+  const [shop, setShop] = useState([]);
   let navigate = useNavigate();
   const { user } = useSelector((state) => state.user);
   const [activeStep, setActiveStep] = useState(1);
@@ -34,13 +34,12 @@ export default function Checkout() {
       toast.info("Please relogin");
       localStorage.clear();
 
-      // Clear Redux store using userSlice action
       dispatch(clearUser());
       dispatch(clearDelivery());
       navigate("/");
       navigate("/sign-in");
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, userId, navigate]);
 
   useEffect(() => {
@@ -49,14 +48,14 @@ export default function Checkout() {
     const fetchData = async () => {
       try {
         const addressResponse = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}checkout/address/${userId}`
+          `${import.meta.env.VITE_BASE_URL}checkout/address/${userId}`,
         );
         if (addressResponse.data.checkout) {
           setExistingArray(addressResponse.data.checkout);
         }
 
         const cartResponse = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}cart/get/${userId}`
+          `${import.meta.env.VITE_BASE_URL}cart/get/${userId}`,
         );
         if (cartResponse.data) {
           setShop(cartResponse.data.cart);
@@ -64,7 +63,7 @@ export default function Checkout() {
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
-        setLoading(false); 
+        setLoading(false);
       }
     };
 
@@ -78,16 +77,18 @@ export default function Checkout() {
   const subtotal = shop?.reduce(
     (total, item) =>
       total + item.product_id.product_price * item.product_quatity,
-    0
+    0,
   );
 
   const delivery = DELIVERY_FEE;
-
-  const serviceCharge = subtotal * SERVICE_CHARGE_RATE;
+  const serviceCharge = Math.round(subtotal * SERVICE_CHARGE_RATE);
   const total = subtotal + delivery + serviceCharge;
 
-  // Debug log — remove once the mismatch is found
-  console.log({ subtotal, delivery, serviceCharge, total });
+  // selectedAddress from AddressBook is a numeric INDEX into existingArray,
+  // not the address object itself (see addressBook.jsx: setSelectedAddress(index)).
+  // Resolve it here, once, so every consumer downstream gets the real object.
+  const resolvedAddress =
+    selectedAddress !== null ? existingArray[selectedAddress] : null;
 
   return (
     <DefaultLayout>
@@ -180,7 +181,6 @@ export default function Checkout() {
           </div>
         </div>
 
-        
         <div className="w-full md:w-1/2 rounded-md bg-white shadow p-4 ">
           <div className="flex border-b border-[#7E7E7E] pt-3 pb-1 justify-between items-center">
             <div className="text-black text-[22px] font-medium font-workSans">
@@ -205,7 +205,7 @@ export default function Checkout() {
             </div>
             <div className="text-black text-xl font-medium font-workSans">
               &#8358;
-              { AddCommasToNumber(delivery)}
+              {AddCommasToNumber(delivery)}
             </div>
           </div>
           <div className="mt-5 flex border-b border-[#7E7E7E] pt-3 pb-1 justify-between items-center">
@@ -214,7 +214,7 @@ export default function Checkout() {
             </div>
             <div className="text-black text-xl font-medium font-workSans">
               &#8358;
-              { AddCommasToNumber(serviceCharge)}
+              {AddCommasToNumber(serviceCharge)}
             </div>
           </div>
           <div className="mt-5 flex  pt-3 pb-1 justify-between items-center">
@@ -223,7 +223,7 @@ export default function Checkout() {
             </div>
             <div className="text-black text-xl font-medium font-workSans">
               &#8358;
-              {!isNaN(total) ? (AddCommasToNumber(total)) : 0}
+              {!isNaN(total) ? AddCommasToNumber(total) : 0}
             </div>
           </div>
 
@@ -233,23 +233,17 @@ export default function Checkout() {
             shop.length == 0 ||
             loading === true ||
             isNaN(total) ? (
-              <>
-          
-                <Button
-                  className="mt-4 w-full "
-                  onClick={() => navigate("/checkout")}
-                  disabled
-                >
+              <Button
+                className="mt-4 w-full "
+                onClick={() => navigate("/checkout")}
+                disabled
+              >
                 Checkout
-                </Button>{" "}
-              </>
+              </Button>
             ) : (
-              <PaystackCheckout
-                total={total}
-                email={user?.email}
-                selectedAddress={selectedAddress}
-              />
-            )}
+              <PaystackCheckout email={user?.email} address={resolvedAddress} />
+            )
+          }
         </div>
       </div>
     </DefaultLayout>

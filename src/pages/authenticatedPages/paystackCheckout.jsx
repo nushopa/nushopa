@@ -1,123 +1,97 @@
-import { PaystackButton } from 'react-paystack';
-import { toast } from 'react-toastify';
-import { useAddOrderMutation } from '../../services/api';
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { clearCart } from '../../redux/cart';
+import { PaystackButton } from "react-paystack";
+import { toast } from "react-toastify";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useInitializePaymentMutation } from "../../services/api";
 
-const PaystackCheckout = ({ total, email, selectedAddress }) => {
+const PaystackCheckout = ({ email, address }) => {
   const publicKey = import.meta.env.VITE_PUBLIC_KEY;
-  let amount = total * 100;
-  let userId = localStorage.getItem("userId");
-  const [docId, setDocId] = useState([]);
-  const [addOderID] = useAddOrderMutation();
-  let navigate = useNavigate();
-  const [cart, setCart] = useState([]);
-  const dispatch = useDispatch();
+  const userId = localStorage.getItem("userId");
+  const navigate = useNavigate();
+
+  const [initializePayment] = useInitializePaymentMutation();
+  const [txn, setTxn] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isProcessing, setIsProcessing] = useState(false);
-  let baseUrl = import.meta.env.VITE_BASE_URL;
+  const [error, setError] = useState(null);
+
+  const startTransaction = () => {
+    setLoading(true);
+    setError(null);
+    initializePayment({
+      customer_id: userId,
+      address,
+      email,
+    })
+      .unwrap()
+      .then((data) => setTxn(data))
+      .catch((err) => {
+        console.error("initializePayment error:", err);
+        setError("Could not start checkout. Please try again.");
+      })
+      .finally(() => setLoading(false));
+  };
 
   useEffect(() => {
-    let userId = localStorage.getItem("userId");
-
-    axios
-      .get(`${baseUrl}cart/get/${userId}`)
-      .then((response) => {
-        if (response.data) {
-          setCart(response.data.cart);
-        }
-      })
-      .finally(() => {
-        setLoading(false); 
-      });
-
-    axios
-      .get(`${baseUrl}checkout/address/${userId}`)
-      .then((response) => {
-        if (response.data.checkout) {
-          setDocId(response.data.checkout);
-        }
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-      
-    const pendingOrder = JSON.parse(localStorage.getItem("pendingOrder"));
-    if (pendingOrder) {
-      processOrder(pendingOrder);
-    }
-  }, [baseUrl]);
-
-  const selected = docId[selectedAddress];
-
-  const processOrder = async (postData) => {
-    try {
-      setIsProcessing(true);
-      const response = await addOderID({ data: postData });
-      if (response.data) {
-        localStorage.removeItem("pendingOrder");
-        dispatch(clearCart());
-        toast.success("Payment was successfully approved!");
-        navigate("/my-order");
-      }
-    } catch (error) {
-      toast.error("Error processing order. Please try again.");
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  const handlePaystackSuccessAction = (reference) => {
-    if (!cart || cart.length < 1) {
-      alert("Add some items");
-      return;
-    }
-
-    let postData = {
-      orderID: reference.reference,
-      products: cart,
-      address: selected,
-      customer_id: userId,
-      amount_paid: total,
-    };
-
-    if (reference.message === "Approved") {
-      localStorage.setItem("pendingOrder", JSON.stringify(postData));
-      processOrder(postData);
+    if (userId && address && email) {
+      startTransaction();
     } else {
-      toast.error("Payment was not approved.");
+      setLoading(false);
+      setError("Missing checkout details. Please select an address.");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId, address, email]);
+
+  const goToStatus = () => {
+    if (txn?.reference) {
+      navigate(`/order-status/${txn.reference}`);
+    } else {
+      toast.error("Something went wrong starting your payment.");
     }
   };
+
+  if (error) {
+    return (
+      <button
+        onClick={startTransaction}
+        className="mt-4 w-full h-11 rounded-md text-sm font-semibold bg-red-600 text-white"
+      >
+        {error} — Tap to retry
+      </button>
+    );
+  }
+
+  if (loading || !txn) {
+    return (
+      <button
+        disabled
+        className="mt-4 w-full h-11 rounded-md text-sm font-semibold bg-black text-white opacity-60 cursor-not-allowed"
+      >
+        Preparing checkout…
+      </button>
+    );
+  }
 
   const nairaSymbol = String.fromCharCode(8358);
 
   const componentProps = {
     email,
-    amount,
+    amount: txn.amount * 100,
+    reference: txn.reference,
     publicKey,
-    text: <span dangerouslySetInnerHTML={{ __html: `Proceed To Pay ${nairaSymbol}${total}` }} />,
-    className: "bg-black text-white h-11 rounded-md text-sm font-semibold mt-4 w-full",
-    onSuccess: (reference) => handlePaystackSuccessAction(reference),
-    onClose: () => alert('Payment canceled by user.'),
-    disabled: loading || isProcessing,
+    text: (
+      <span
+        dangerouslySetInnerHTML={{
+          __html: `Proceed To Pay ${nairaSymbol}${txn.amount.toLocaleString()}`,
+        }}
+      />
+    ),
+    className:
+      "bg-black text-white h-11 rounded-md text-sm font-semibold mt-4 w-full",
+    onSuccess: goToStatus,
+    onClose: goToStatus,
   };
 
-  return (
-    <>
-      <PaystackButton {...componentProps} />
-      {(loading || isProcessing) && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <p>Processing your order, please wait...</p>
-            <div className="spinner"></div>
-          </div>
-        </div>
-      )}
-    </>
-  );
+  return <PaystackButton {...componentProps} />;
 };
 
 export default PaystackCheckout;

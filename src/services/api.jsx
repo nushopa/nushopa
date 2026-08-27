@@ -85,6 +85,26 @@ export const userApi = createApi({
         body: data,
       }),
     }),
+
+    // ── Payment / Paystack flow ─────────────────────────────────────────
+    // Starts a Paystack transaction. The backend computes the total from
+    // the customer's cart server-side and returns a reference + amount to
+    // pass into the PaystackButton — never trust a client-computed total.
+    initializePayment: builder.mutation({
+      query: (data) => ({
+        url: "payment/initialize",
+        method: "POST",
+        body: data,
+      }),
+    }),
+    // Polled by the order-status page after the Paystack popup closes.
+    // The Order itself is only created once the backend's webhook confirms
+    // payment, so this is what tells the frontend when that has happened —
+    // works the same way for card, bank transfer, and USSD.
+    getOrderStatus: builder.query({
+      query: (reference) => `payment/status/${reference}`,
+    }),
+
     addContact: builder.mutation({
       query: ({ data }) => ({
         url: "/contact/contact",
@@ -148,6 +168,8 @@ export const {
   useSingleProductQuery,
   useRelatedProductsQuery,
   useAddOrderMutation,
+  useInitializePaymentMutation,
+  useGetOrderStatusQuery,
   useAddContactMutation,
   useSubscribeNewsletterMutation,
   useForgottenPasswordMutation,
