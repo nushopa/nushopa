@@ -13,7 +13,7 @@ import { toast } from "react-toastify";
 import { clearUser } from "../../redux/user";
 import { clearDelivery } from "../../redux/delivery";
 
-const DELIVERY_FEE = 1800;
+const DELIVERY_FEE = 700;
 const SERVICE_CHARGE_RATE = 0.15;
 
 export default function Checkout() {

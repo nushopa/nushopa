@@ -17,14 +17,14 @@ import { BsFillBasketFill } from "react-icons/bs";
 import useAuth from "../../lib/hooks/useAuth";
 import { setCartCount } from "../../redux/cart";
 
-const DELIVERY_FEE = 1800;
+const DELIVERY_FEE = 700;
 
 const FloatingCart = () => {
   const { isAuthenticated, user } = useAuth();
   const userId = user?._id;
 
   const dispatch = useDispatch();
-  const cartCount = useSelector((state) => state.carte.cartCount); 
+  const cartCount = useSelector((state) => state.carte.cartCount);
 
   const [isOpen, setIsOpen] = useState(false);
   const [carts, setCarts] = useState([]);
