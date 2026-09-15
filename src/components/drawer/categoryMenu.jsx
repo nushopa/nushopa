@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import axiosClient from "../../lib/axiosClient";
 import { FiCheck } from "react-icons/fi";
 
 export default function CategoryMenu({
-  baseUrl,
   selectedCategories,
   handleCategoryToggle,
   onCategoriesLoaded,
@@ -13,7 +12,7 @@ export default function CategoryMenu({
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get(`${baseUrl}category/get`);
+        const response = await axiosClient.get("category/get");
         const fetchedCategories = response.data.agriculturalCategories.map(
           (category) => category.category,
         );
@@ -26,7 +25,8 @@ export default function CategoryMenu({
     };
 
     fetchCategories();
-  }, [baseUrl, onCategoriesLoaded]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="hidden md:block mr-4 bg-white w-full md:w-[25%] sticky top-28 h-full overflow-x-auto p-4 rounded-lg">

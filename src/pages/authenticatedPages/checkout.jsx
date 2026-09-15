@@ -5,19 +5,15 @@ import AddressBook from "../../components/molecule/addressBook/addressBook";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@material-tailwind/react";
 import PaystackCheckout from "./paystackCheckout";
-import { useDispatch, useSelector } from "react-redux";
-import axios from "axios";
+import { useSelector } from "react-redux";
+import axiosClient from "../../lib/axiosClient";
 import { Helmet } from "react-helmet-async";
 import AddCommasToNumber from "../../lib/util/addComma";
-import { toast } from "react-toastify";
-import { clearUser } from "../../redux/user";
-import { clearDelivery } from "../../redux/delivery";
 
 const DELIVERY_FEE = 700;
 const SERVICE_CHARGE_RATE = 0.15;
 
 export default function Checkout() {
-  const dispatch = useDispatch();
   const [status, setStatus] = useState("delivery");
   const [estimatePrice, setEstimatePrice] = useState(null);
   const [existingArray, setExistingArray] = useState([]);
@@ -27,36 +23,27 @@ export default function Checkout() {
   const { user } = useSelector((state) => state.user);
   const [activeStep, setActiveStep] = useState(1);
   const [loading, setLoading] = useState(true);
-  let userId = localStorage.getItem("userId");
+  const userId = user?._id;
+
+  // ProtectedRoute already guarantees a valid session (cookie-verified) by
+  // the time this renders, so there's no separate userId to reconcile
+  // against — user._id from Redux is the single source of truth.
 
   useEffect(() => {
-    if (user?._id !== userId) {
-      toast.info("Please relogin");
-      localStorage.clear();
+    if (!userId) return;
 
-      dispatch(clearUser());
-      dispatch(clearDelivery());
-      navigate("/");
-      navigate("/sign-in");
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, userId, navigate]);
-
-  useEffect(() => {
     setLoading(true);
 
     const fetchData = async () => {
       try {
-        const addressResponse = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}checkout/address/${userId}`,
+        const addressResponse = await axiosClient.get(
+          `checkout/address/${userId}`,
         );
         if (addressResponse.data.checkout) {
           setExistingArray(addressResponse.data.checkout);
         }
 
-        const cartResponse = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}cart/get/${userId}`,
-        );
+        const cartResponse = await axiosClient.get(`cart/get/${userId}`);
         if (cartResponse.data) {
           setShop(cartResponse.data.cart);
         }
@@ -84,9 +71,6 @@ export default function Checkout() {
   const serviceCharge = Math.round(subtotal * SERVICE_CHARGE_RATE);
   const total = subtotal + delivery + serviceCharge;
 
-  // selectedAddress from AddressBook is a numeric INDEX into existingArray,
-  // not the address object itself (see addressBook.jsx: setSelectedAddress(index)).
-  // Resolve it here, once, so every consumer downstream gets the real object.
   const resolvedAddress =
     selectedAddress !== null ? existingArray[selectedAddress] : null;
 
@@ -241,7 +225,11 @@ export default function Checkout() {
                 Checkout
               </Button>
             ) : (
-              <PaystackCheckout email={user?.email} address={resolvedAddress} />
+              <PaystackCheckout
+                email={user?.email}
+                address={resolvedAddress}
+                userId={userId}
+              />
             )
           }
         </div>

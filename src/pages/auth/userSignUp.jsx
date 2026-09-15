@@ -35,7 +35,6 @@ const UserSignUp = () => {
       [name]: value.trim() || "",
     }));
 
-    // Password validation
     if (name === "password" || name === "confirmPassword") {
       if (name === "password" && value.length < 6) {
         setPasswordError("Password must be at least 6 characters");
@@ -58,17 +57,18 @@ const UserSignUp = () => {
       email: formData.email,
       password: formData.confirmPassword,
       phone_number: formData.phoneNumber,
-      role: CUSTOMER_ROLE
+      role: CUSTOMER_ROLE,
     };
 
     createUser(postDataInfo)
       .then((res) => {
         if (res.data) {
-          localStorage.setItem("pendingVerificationEmail", formData.email);
           toast.success(
             "OTP sent to your email. Please verify to complete registration.",
           );
-          navigate("/verify-otp");
+          // Email is carried via router state, not localStorage — it only
+          // needs to survive the single navigation to the OTP screen.
+          navigate("/verify-otp", { state: { email: formData.email } });
         } else {
           toast.error(res.error?.data?.message || "Registration failed");
         }
@@ -123,7 +123,7 @@ const UserSignUp = () => {
           <InputField
             label="Phone Number"
             name="phoneNumber"
-            type="tel" // Better than type="number"
+            type="tel"
             value={formData.phoneNumber}
             onChange={handleChange}
             placeholder="Enter your Phone Number"
@@ -170,14 +170,12 @@ const UserSignUp = () => {
           {isLoading ? "Sending OTP..." : "Create an Account"}
         </button>
 
-        {/* Divider */}
         <div className="relative flex w-[90%] mx-auto flex-row py-6">
           <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700 my-auto" />
           <span className="px-3 text-sm text-gray-500">or</span>
           <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700 my-auto" />
         </div>
 
-        {/* Social Login */}
         <div className="flex justify-center gap-6">
           <button
             type="button"

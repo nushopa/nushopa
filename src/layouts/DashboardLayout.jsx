@@ -1,6 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
-import axios from "axios";
+import axiosClient from "../lib/axiosClient";
 import {
   Avatar,
   Card,
@@ -21,15 +21,13 @@ export default function DashboardLayout({ children }) {
   const [showDropdown, setShowDropdown] = useState(false);
   const debounceTimer = useRef(null);
 
-  const baseUrl = import.meta.env.VITE_BASE_URL;
-
   useEffect(() => {
-    axios.get(`${baseUrl}product`).then((response) => {
+    axiosClient.get("product").then((response) => {
       if (response.data) {
         setDetails(response.data.products);
       }
     });
-  }, [baseUrl]);
+  }, []);
 
   // Sync search input with URL query param so it clears when navigating away
   useEffect(() => {
@@ -43,13 +41,13 @@ export default function DashboardLayout({ children }) {
     if (trimmed) {
       navigate(`/?q=${encodeURIComponent(trimmed)}`, { replace: true });
     } else {
-      // Clear the query param when search is emptied
       const params = new URLSearchParams(location.search);
       if (params.get("q")) {
         navigate("/", { replace: true });
       }
     }
-  }, [searchField]); // eslint-disable-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchField]);
 
   useEffect(() => {
     clearTimeout(debounceTimer.current);
@@ -71,7 +69,7 @@ export default function DashboardLayout({ children }) {
       );
       setFilteredDetails(filtered);
       setShowDropdown(filtered.length > 0);
-    }, 300); 
+    }, 300);
 
     return () => clearTimeout(debounceTimer.current);
   }, [searchField, details]);
@@ -92,7 +90,6 @@ export default function DashboardLayout({ children }) {
 
   return (
     <div>
-      {/* Mobile search bar — hidden on md+ (desktop uses the header's SearchBar) */}
       <div className="flex md:hidden my-3 w-[95%] mx-auto relative">
         <SearchBar
           placeholder="What would you like to order today?"
@@ -102,7 +99,6 @@ export default function DashboardLayout({ children }) {
           className="w-full [&_input]:text-black [&_input]:bg-white [&_input]:border-green-900 [&_input]:border [&_input]:rounded-none [&_input]:rounded-l-lg [&_button]:bg-mainGreen [&_button]:hover:bg-green-700 [&_button]:rounded-none [&_button]:rounded-r-lg [&_button]:border-0"
         />
 
-        {/* Autocomplete dropdown — mobile */}
         {showDropdown && (
           <Card className="absolute top-full left-0 right-0 mt-1 max-h-[20rem] overflow-y-auto z-[700] shadow-lg">
             {filteredDetails.map((item, index) => (

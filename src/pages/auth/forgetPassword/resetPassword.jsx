@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useResetPasswordMutation } from "../../../services/api";
 import { toast } from "react-toastify";
 import Auth from "../component/Auths";
@@ -13,7 +13,14 @@ export default function ResetPassword() {
   const [showPassword, setShowPassword] = useState(false);
   const [resetPassword, { isLoading }] = useResetPasswordMutation();
   const navigate = useNavigate();
-  let email = localStorage.getItem("forgot-email");
+  const location = useLocation();
+  const email = location.state?.email;
+
+  useEffect(() => {
+    if (!email) {
+      navigate("/forgotten-password", { replace: true });
+    }
+  }, [email, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -39,25 +46,20 @@ export default function ResetPassword() {
   };
 
   const handleSubmit = async (e) => {
-    if (e) {
-      e.preventDefault();
-    }
+    if (e) e.preventDefault();
 
     const postDataInfo = {
-      email: email,
+      email,
       password: formData.confirmPassword,
     };
 
-    if (passwordError) {
-      return;
-    }
+    if (passwordError) return;
+
     try {
       resetPassword(postDataInfo).then((res) => {
         if (res.data) {
           toast.success("Password reset successfully");
           navigate("/sign-in");
-        } else {
-          return;
         }
       });
     } catch (e) {
@@ -65,9 +67,9 @@ export default function ResetPassword() {
     }
   };
 
-  const toggleShowPassword = () => {
-    setShowPassword(!showPassword);
-  };
+  const toggleShowPassword = () => setShowPassword(!showPassword);
+
+  if (!email) return null;
 
   return (
     <Auth title="" subtitle="" buttonText="" buttonPath="" formSide="center">
@@ -201,7 +203,7 @@ export default function ResetPassword() {
         <button
           type="submit"
           className="bg-mainGreen w-full text-center text-white py-3 px-5 rounded-md hover:bg-green-600 mt-4"
-          disabled={isLoading ? true : false} // Disable the button while isLoading
+          disabled={isLoading}
         >
           {isLoading ? "Proceeding..." : "Proceed"}
         </button>

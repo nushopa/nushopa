@@ -55,14 +55,10 @@ const UserSignIn = () => {
     try {
       const res = await loginUser(postDataInfo).unwrap();
 
-      localStorage.setItem("token", res.token);
-      localStorage.setItem("userId", res.user._id);
-
-      if (res.user?.profile_picture) {
-        localStorage.setItem("profile-picture", res.user.profile_picture);
-      }
-
+      // Web: backend already set the httpOnly access-token cookie via
+      // Set-Cookie. We only keep the user object, and only in Redux.
       dispatch(addUser(res.user));
+
       toast.success("Logged in successfully");
       navigate("/dashboard");
     } catch (err) {
@@ -118,14 +114,12 @@ const UserSignIn = () => {
           {isLoading ? "Signing in..." : "Sign In"}
         </button>
 
-        {/* Divider */}
         <div className="relative flex w-[90%] mx-auto flex-row py-6">
           <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700 my-auto" />
           <span className="px-3 text-sm text-gray-500">or</span>
           <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700 my-auto" />
         </div>
 
-        {/* Social Login */}
         <div className="flex justify-center gap-6">
           <button
             type="button"

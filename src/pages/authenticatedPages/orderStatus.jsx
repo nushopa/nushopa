@@ -26,7 +26,8 @@ export default function OrderStatus() {
       navigate(`/order/${data.order.orderID}`);
     } else if (data.status === "pending") {
       setAttempts((a) => a + 1);
-    }}, [data, dispatch, navigate]);
+    }
+  }, [data, dispatch, navigate]);
 
   const hasFailed =
     !!error ||

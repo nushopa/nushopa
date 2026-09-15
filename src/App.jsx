@@ -4,28 +4,22 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ProtectedRoute from "./components/protectedRoute/index.jsx";
 import NotFoundPage from "./pages/error/NotFoundPage.jsx";
-
+import SessionBootstrap from "./components/auth/SessionBootstrap.jsx";
 
 import MainLayout from "./layouts/MainLayout.jsx";
 import Abouts from "./pages/onboard/Abouts.jsx";
-import Store from "./pages/onboard/store.jsx";
 import Helps from "./pages/onboard/Helps.jsx";
 import Contact from "./pages/onboard/contact.jsx";
 import Logistics from "./pages/onboard/logistics.jsx";
 import GuestLanding from "./pages/GuestLanding.jsx";
-
 
 import TermsAndConditions from "./pages/onboard/TermsAndConditions.jsx";
 import PrivacyPolicy from "./pages/onboard/privacyPolicy.jsx";
 import UserSignUp from "./pages/auth/userSignUp.jsx";
 import UserSignIn from "./pages/auth/userSignIn.jsx";
 import OTPVerification from "./pages/auth/otpVerification.jsx";
-import UpdatePhoneNumber from "./pages/auth/updatePhoneNumber.jsx";
 import ForgottenPassword from "./pages/auth/forgetPassword/forgottenPassword.jsx";
 import OtpPassword from "./pages/auth/forgetPassword/otpPassword.jsx";
-
-
-
 import ResetPassword from "./pages/auth/forgetPassword/resetPassword.jsx";
 import Cart from "./components/cart/cart.jsx";
 import Checkout from "./pages/authenticatedPages/checkout.jsx";
@@ -33,22 +27,19 @@ import MyOrder from "./pages/authenticatedPages/myOrder.jsx";
 import OrderDetails from "./pages/authenticatedPages/orderDetails.jsx";
 import ProductDescription from "./pages/authenticatedPages/productDescription.jsx";
 import AuthCallback from "./pages/auth/AuthCallback.jsx";
-import OrderStatus from './pages/authenticatedPages/orderStatus';
-
-
-
-
+import OrderStatus from "./pages/authenticatedPages/orderStatus";
 
 function App() {
   return (
     <HelmetProvider>
+      {/* Rehydrates the logged-in user from the httpOnly cookie on load */}
+      <SessionBootstrap />
+
       <Router>
         <Routes>
-          {/* Public routes with Layout (Header will be hidden on specific pages) */}
           <Route element={<MainLayout />}>
             <Route path="/" element={<GuestLanding />} />
-            <Route path="/about-us" element={<Abouts/>} />
-            <Route path="/cart" element={<Store />} />
+            <Route path="/about-us" element={<Abouts />} />
             <Route path="/help" element={<Helps />} />
             <Route path="/logistics" element={<Logistics />} />
             <Route path="/contact" element={<Contact />} />
@@ -58,14 +49,10 @@ function App() {
             />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
 
-            {/* Auth routes (Header will be automatically hidden) */}
+            {/* Auth routes (Header hidden on these) */}
             <Route path="/sign-in" element={<UserSignIn />} />
             <Route path="/sign-up" element={<UserSignUp />} />
             <Route path="/verify-otp" element={<OTPVerification />} />
-            <Route
-              path="/update-phone-number"
-              element={<UpdatePhoneNumber />}
-            />
             <Route path="/forgotten-password" element={<ForgottenPassword />} />
             <Route path="/otp-password" element={<OtpPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
@@ -78,12 +65,11 @@ function App() {
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/my-order" element={<MyOrder />} />
               <Route path="/order/:id" element={<OrderDetails />} />
-              <Route path="/order-status/:reference" element={<OrderStatus/>} />
+              <Route path="/order-status/:reference" element={<OrderStatus />} />
               <Route path="/product/:id" element={<ProductDescription />} />
             </Route>
           </Route>
 
-          {/* Catch-all route for 404 */}
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Router>

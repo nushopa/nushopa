@@ -7,7 +7,6 @@ import Auth from "../component/Auths";
 export default function ForgottenPassword() {
   const [formData, setFormData] = useState({
     email: "",
-    password: "",
   });
   const [forgottenPassword, { isLoading }] = useForgottenPasswordMutation();
   const navigate = useNavigate();
@@ -19,29 +18,26 @@ export default function ForgottenPassword() {
       [name]: value,
     }));
   };
-  const handleSubmit = async (e) => {
-    if (e) {
-      e.preventDefault();
-    }
 
-    const postDataInfo = {
-      email: formData.email,
-    };
+  const handleSubmit = async (e) => {
+    if (e) e.preventDefault();
+
+    const postDataInfo = { email: formData.email };
 
     try {
       forgottenPassword(postDataInfo).then((res) => {
         if (res.data) {
-          localStorage.setItem("forgot-email", postDataInfo.email);
           toast.success("Email sent successfully");
-          navigate("/otp-password");
-        } else {
-          return;
+          // Email carried via router state through the reset chain,
+          // not localStorage.
+          navigate("/otp-password", { state: { email: postDataInfo.email } });
         }
       });
     } catch (e) {
       // toast.error(e);
     }
   };
+
   return (
     <Auth
       title=""
@@ -81,7 +77,7 @@ export default function ForgottenPassword() {
         <button
           type="submit"
           className="bg-mainGreen w-full text-center text-white py-3 px-5 rounded-md hover:bg-green-600 mt-4"
-          disabled={isLoading ? true : false} // Disable the button while isLoading
+          disabled={isLoading}
         >
           {isLoading ? "Proceeding..." : "Proceed"}
         </button>

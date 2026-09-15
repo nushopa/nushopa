@@ -5,22 +5,24 @@ const userSlice = createSlice({
   initialState: {
     isLoggedIn: false,
     user: null,
+    sessionChecked: false,
   },
   reducers: {
     addUser: (state, { payload }) => {
-      return { ...state, isLoggedIn: true, user: payload };
+      state.isLoggedIn = true;
+      state.user = payload;
+      state.sessionChecked = true;
     },
-
-    // New action for creating a user
     createUser: (state, { payload }) => {
-      // Add logic to handle creating a new user in the state
-      return { ...state, isLoggedIn: true, user: payload };
+      state.isLoggedIn = true;
+      state.user = payload;
+      state.sessionChecked = true;
     },
     clearUser: (state) => {
       state.isLoggedIn = false;
       state.user = null;
+      state.sessionChecked = true;
     },
-
   },
 });
 

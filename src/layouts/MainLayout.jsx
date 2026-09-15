@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import axios from "axios";
+import axiosClient from "../lib/axiosClient";
 import Header from "../components/common/header/index.jsx";
 import ScrollToTop from "../lib/util/scrollToTop.jsx";
 import FloatingCart from "../components/cart/FloatingCart.jsx";
@@ -13,14 +13,13 @@ const MainLayout = () => {
   const dispatch = useDispatch();
   const { isAuthenticated, user } = useAuth();
   const userId = user?._id;
-  const baseUrl = import.meta.env.VITE_BASE_URL;
 
   useEffect(() => {
     if (!isAuthenticated || !userId) return;
 
     const syncCartCount = async () => {
       try {
-        const { data } = await axios.get(`${baseUrl}cart/get/${userId}`);
+        const { data } = await axiosClient.get(`cart/get/${userId}`);
         const items = data?.cart ?? [];
         const uniqueIds = new Set(items.map((i) => i.product_id._id));
         dispatch(setCartCount(uniqueIds.size));
@@ -30,14 +29,13 @@ const MainLayout = () => {
     };
 
     syncCartCount();
-  }, [isAuthenticated, userId, baseUrl, dispatch]);
+  }, [isAuthenticated, userId, dispatch]);
 
   const noHeaderRoutes = [
     "/privacy-policy",
     "/sign-in",
     "/sign-up",
     "/verify-otp",
-    "/update-phone-number",
     "/forgotten-password",
     "/otp-password",
     "/reset-password",

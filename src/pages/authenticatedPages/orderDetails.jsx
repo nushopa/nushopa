@@ -1,7 +1,7 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import DefaultLayout from "../../layouts/defaultLayout";
+import axiosClient from "../../lib/axiosClient";
 import {
   Avatar,
   Button,
@@ -28,11 +28,10 @@ export default function OrderDetails() {
   const [rated, setRated] = useState(4);
   const [review, setReview] = useState("");
   const [userReview, { isLoading }] = useAddReviewMutation();
-  let baseUrl = import.meta.env.VITE_BASE_URL;
 
   useEffect(() => {
-    axios
-      .get(`${baseUrl}order/${id}`)
+    axiosClient
+      .get(`order/${id}`)
       .then((response) => {
         if (response.data) {
           setOrderDetails(response?.data?.orders[0]);
@@ -41,27 +40,25 @@ export default function OrderDetails() {
       .finally(() => {
         setLoading(false);
       });
-  }, [baseUrl, id]);
+  }, [id]);
+
   const dateObject = new Date(orderDetails?.createdAt);
 
-  // Format the date as YYYY-MM-DD
   const formattedDate = dateObject.toLocaleDateString("en-US", {
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
   });
 
-  // Calculate subtotal
   const subtotal = orderDetails?.products?.reduce(
     (total, item) =>
       total + item.product_id.product_price * item.product_quatity,
     0
   );
 
-  // Calculate delivery charges
   const serviceCharges = subtotal * 0.15;
   const deliveryCharges = orderDetails?.amount_paid - subtotal - serviceCharges;
-  
+
   const handleReviewSubmission = () => {
     let postDataInfo = {
       rate: rated,
@@ -225,7 +222,6 @@ export default function OrderDetails() {
                         : "p-4 border-b border-blue-gray-50";
                       const dateObject = new Date(createdAt);
 
-                      // Format the date as YYYY-MM-DD
                       const formattedDate = dateObject.toLocaleDateString(
                         "en-US",
                         {
@@ -367,7 +363,6 @@ export default function OrderDetails() {
         <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
           <div className="bg-white w-[90%] p-8 rounded-md shadow-md max-w-full">
             <h2 className="text-sm font-semibold mb-4">Leave a Review</h2>
-            {/* Rating Bar */}
             <div className="flex flex-col gap-2 font-bold text-black">
               <Rating value={4} onChange={(value) => setRated(value)} />
               <Typography
@@ -377,7 +372,6 @@ export default function OrderDetails() {
                 Based on 134 Reviews
               </Typography>
             </div>
-            {/* Review Textarea */}
             <div className="mb-4">
               <label className="block text-gray-700 font-semibold mb-2">
                 Review:
@@ -390,7 +384,6 @@ export default function OrderDetails() {
                 onChange={(e) => setReview(e.target.value)}
               ></textarea>
             </div>
-            {/* Submit Button */}
             <div className="flex justify-end">
               <Button
                 onClick={handleReviewSubmission}

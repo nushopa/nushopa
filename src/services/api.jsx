@@ -5,13 +5,9 @@ export const userApi = createApi({
   tagTypes: ["User"],
   baseQuery: fetchBaseQuery({
     baseUrl: import.meta.env.VITE_BASE_URL,
-    prepareHeaders: (headers) => {
-      const token = localStorage.getItem("token");
-      if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
-      }
-      return headers;
-    },
+    // Send the httpOnly access-token cookie on every request. This is the
+    // ONLY mechanism used for auth — no tokens are ever read from JS.
+    credentials: "include",
   }),
 
   endpoints: (builder) => ({
@@ -21,7 +17,6 @@ export const userApi = createApi({
     getProfile: builder.query({
       query: () => "profile",
     }),
-
     relatedProducts: builder.query({
       query: (productCat) => `product?product_cat=${productCat}`,
     }),
@@ -70,7 +65,6 @@ export const userApi = createApi({
         body: data,
       }),
     }),
-
     checkout: builder.mutation({
       query: (data) => ({
         url: "checkout/price",
@@ -87,9 +81,6 @@ export const userApi = createApi({
     }),
 
     // ── Payment / Paystack flow ─────────────────────────────────────────
-    // Starts a Paystack transaction. The backend computes the total from
-    // the customer's cart server-side and returns a reference + amount to
-    // pass into the PaystackButton — never trust a client-computed total.
     initializePayment: builder.mutation({
       query: (data) => ({
         url: "payment/initialize",
@@ -97,10 +88,6 @@ export const userApi = createApi({
         body: data,
       }),
     }),
-    // Polled by the order-status page after the Paystack popup closes.
-    // The Order itself is only created once the backend's webhook confirms
-    // payment, so this is what tells the frontend when that has happened —
-    // works the same way for card, bank transfer, and USSD.
     getOrderStatus: builder.query({
       query: (reference) => `payment/status/${reference}`,
     }),
@@ -112,7 +99,8 @@ export const userApi = createApi({
         body: data,
       }),
     }),
-    // create user - now sends OTP
+
+    // create user - sends OTP, no session yet
     createUser: builder.mutation({
       query: (data) => ({
         url: "create",
@@ -120,7 +108,8 @@ export const userApi = createApi({
         body: data,
       }),
     }),
-    // OTP verification endpoint for registration
+    // OTP verification endpoint for registration — backend sets the
+    // httpOnly cookie on success and returns the created customer.
     verifyRegistrationOTP: builder.mutation({
       query: (data) => ({
         url: "verify-otp",
@@ -128,8 +117,6 @@ export const userApi = createApi({
         body: data,
       }),
     }),
-
-    // Resend OTP for registration
     resendRegistrationOTP: builder.mutation({
       query: (data) => ({
         url: "resend-otp",
@@ -151,6 +138,8 @@ export const userApi = createApi({
       providesTags: ["Advert"],
     }),
 
+    // Blacklists the current access token server-side and clears the
+    // httpOnly cookie via Set-Cookie on the response.
     logoutUser: builder.mutation({
       query: () => ({
         url: "logout",
@@ -182,4 +171,5 @@ export const {
   useGetAdvertsQuery,
   useSaveConsentMutation,
   useLazyGetProfileQuery,
+  useGetProfileQuery,
 } = userApi;

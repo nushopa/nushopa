@@ -8,6 +8,7 @@ import {
 } from "@material-tailwind/react";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import DefaultLayout from "../../layouts/defaultLayout";
 import {
   useIncrementMutation,
@@ -15,7 +16,7 @@ import {
   useDeleteSingleCartMutation,
 } from "../../services/cart";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axiosClient from "../../lib/axiosClient";
 import { truncateString } from "../../lib/util/truncateString";
 import DisplayContent from "../molecule/displayContent";
 import { Helmet } from "react-helmet-async";
@@ -37,12 +38,19 @@ const Cart = () => {
   const [deleteCart] = useDeleteSingleCartMutation();
   const [carts, setCarts] = useState([]);
   const [loading, setLoading] = useState(true);
-  let baseUrl = import.meta.env.VITE_BASE_URL;
 
-  let userId = localStorage.getItem("userId");
+  // Auth is cookie-based; the customer id comes from Redux (rehydrated
+  // via SessionBootstrap), never from localStorage.
+  const user = useSelector((state) => state.user.user);
+  const userId = user?._id;
+
   useEffect(() => {
-    axios
-      .get(`${baseUrl}cart/get/${userId}`)
+    if (!userId) {
+      setLoading(false);
+      return;
+    }
+    axiosClient
+      .get(`cart/get/${userId}`)
       .then((response) => {
         if (response.data) {
           setCarts(response.data.cart);
@@ -51,17 +59,17 @@ const Cart = () => {
       .finally(() => {
         setLoading(false);
       });
-  }, [baseUrl, userId]);
+  }, [userId]);
 
   const handleIncrement = async (productId) => {
     try {
       const response = await increment({ id: productId });
       if (response.data) {
-        const updatedCartData = await axios.get(`${baseUrl}cart/get/${userId}`);
+        const updatedCartData = await axiosClient.get(`cart/get/${userId}`);
         setCarts(updatedCartData.data.cart);
       }
     } catch (error) {
-      //handle error 
+      //handle error
     }
   };
 
@@ -69,11 +77,11 @@ const Cart = () => {
     try {
       const response = await decrement({ id: productId });
       if (response.data) {
-        const updatedCartData = await axios.get(`${baseUrl}cart/get/${userId}`);
+        const updatedCartData = await axiosClient.get(`cart/get/${userId}`);
         setCarts(updatedCartData.data.cart);
       }
     } catch (error) {
-      // // toast.error("Error decrementing quantity");
+      // toast.error("Error decrementing quantity");
     }
   };
 
@@ -81,7 +89,7 @@ const Cart = () => {
     try {
       const response = await deleteCart({ id: productId });
       if (response.data) {
-        const updatedCartData = await axios.get(`${baseUrl}cart/get/${userId}`);
+        const updatedCartData = await axiosClient.get(`cart/get/${userId}`);
         setCarts(updatedCartData.data.cart);
       }
     } catch (error) {
@@ -89,7 +97,6 @@ const Cart = () => {
     }
   };
 
-  // Function to get unique products based on product_id
   const getUniqueProducts = (cart) => {
     const uniqueProducts = [];
     const productIds = new Set();

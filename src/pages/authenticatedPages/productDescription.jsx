@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 import DefaultLayout from "../../layouts/defaultLayout";
 import { ImagePlacehoderSkeleton } from "../../components/skeleton/imagePlacehoderSkeleton";
 import {
@@ -7,7 +8,7 @@ import {
   useDecrementMutation,
   useIncrementMutation,
 } from "../../services/cart";
-import axios from "axios";
+import axiosClient from "../../lib/axiosClient";
 import DisplayContent from "../../components/molecule/displayContent";
 import { useDispatch } from "react-redux";
 import { setCarte } from "../../redux/cart";
@@ -31,23 +32,25 @@ export default function ProductDescription() {
   const [cartId, setCartId] = useState(null);
   const [products, setProducts] = useState({});
 
-  const userId = localStorage.getItem("userId");
-  const baseUrl = import.meta.env.VITE_BASE_URL;
+  // Product pages are accessible to guests too (route isn't wrapped in
+  // ProtectedRoute), so userId may legitimately be undefined here.
+  const user = useSelector((state) => state.user.user);
+  const userId = user?._id;
   const dispatch = useDispatch();
 
   useEffect(() => {
     if (userId) {
-      axios.get(`${baseUrl}cart/get/${userId}`).then((r) => {
+      axiosClient.get(`cart/get/${userId}`).then((r) => {
         if (r.data) setCarts(r.data.cart);
       });
     }
-    axios
-      .get(`${baseUrl}product/get/${id}`)
+    axiosClient
+      .get(`product/get/${id}`)
       .then((r) => {
         if (r.data) setProducts(r.data);
       })
       .finally(() => setIsLoading(false));
-  }, [baseUrl, id, userId]);
+  }, [id, userId]);
 
   useEffect(() => {
     carts.some((item) => {
@@ -62,12 +65,13 @@ export default function ProductDescription() {
   const product = products?.product;
 
   useEffect(() => {
-    axios
-      .get(`${baseUrl}product?product_cat=${product?.product_cat}`)
+    if (!product?.product_cat) return;
+    axiosClient
+      .get(`product?product_cat=${product.product_cat}`)
       .then((r) => {
         if (r.data) setRelatedProduct(r.data.products);
       });
-  }, [baseUrl, product]);
+  }, [product?.product_cat]);
 
   const [addToCart] = useAddToCartMutation();
   const [increment] = useIncrementMutation();
@@ -94,7 +98,7 @@ export default function ProductDescription() {
     try {
       const r = await increment({ id: pid });
       if (r.data) {
-        const u = await axios.get(`${baseUrl}cart/get/${userId}`);
+        const u = await axiosClient.get(`cart/get/${userId}`);
         setCarts(u.data.cart);
       }
     } catch {
@@ -106,7 +110,7 @@ export default function ProductDescription() {
     try {
       const r = await decrement({ id: pid });
       if (r.data) {
-        const u = await axios.get(`${baseUrl}cart/get/${userId}`);
+        const u = await axiosClient.get(`cart/get/${userId}`);
         setCarts(u.data.cart);
       } else if (r.error?.status === 404) setShowQuantityDiv(false);
     } catch {
@@ -115,6 +119,12 @@ export default function ProductDescription() {
   };
 
   const handleAddToCart = async () => {
+    if (!userId) {
+      toast.info("Please sign in to add items to your cart");
+      navigate("/sign-in");
+      return;
+    }
+
     setIsAddingToCart(true);
     try {
       const r = await addToCart({
@@ -122,7 +132,7 @@ export default function ProductDescription() {
         product_id: product._id,
       });
       if (r.data.product) {
-        const u = await axios.get(`${baseUrl}cart/get/${userId}`);
+        const u = await axiosClient.get(`cart/get/${userId}`);
         dispatch(setCarte(u.data.cart));
         setCarts(u.data.cart);
         setProductQuantity(r.data.product.product_quatity);
@@ -137,7 +147,6 @@ export default function ProductDescription() {
 
   const isOutOfStock = product?.product_total <= 0;
 
-  // Design tokens
   const green = "#2d7a4f";
   const greenLight = "#f0faf4";
   const border = "#e8e8e8";
@@ -163,7 +172,6 @@ export default function ProductDescription() {
       >
         {product && !isLoading && Object.keys(product).length ? (
           <div style={{ maxWidth: 1080, margin: "0 auto" }}>
-            {/* Breadcrumb */}
             <p
               style={{
                 fontSize: 13,
@@ -189,7 +197,6 @@ export default function ProductDescription() {
               <span>{product.product_name}</span>
             </p>
 
-            {/* Main Card */}
             <div
               style={{
                 background: "#fff",
@@ -201,7 +208,6 @@ export default function ProductDescription() {
                 boxShadow: "0 1px 6px rgba(0,0,0,0.06)",
               }}
             >
-              {/* ── Left: Images ── */}
               <div
                 style={{
                   flex: "1 1 400px",
@@ -210,7 +216,6 @@ export default function ProductDescription() {
                   borderRight: `1px solid ${border}`,
                 }}
               >
-                {/* Main image */}
                 <img
                   src={active || product.product_image}
                   alt={product.product_name}
@@ -226,7 +231,6 @@ export default function ProductDescription() {
                   }}
                 />
 
-                {/* Thumbnails */}
                 {product.alt_image?.length > 0 && (
                   <div style={{ display: "flex", gap: 8 }}>
                     <img
@@ -264,7 +268,6 @@ export default function ProductDescription() {
                 )}
               </div>
 
-              {/* ── Right: Info ── */}
               <div
                 style={{
                   flex: "1 1 340px",
@@ -273,7 +276,6 @@ export default function ProductDescription() {
                   flexDirection: "column",
                 }}
               >
-                {/* Product name */}
                 <h1
                   style={{
                     fontSize: 22,
@@ -286,7 +288,6 @@ export default function ProductDescription() {
                   {product.product_name}
                 </h1>
 
-                {/* Brand */}
                 {product?.product_brand && (
                   <p
                     style={{
@@ -302,7 +303,6 @@ export default function ProductDescription() {
                   </p>
                 )}
 
-                {/* Price */}
                 <p
                   style={{
                     fontSize: 30,
@@ -319,7 +319,6 @@ export default function ProductDescription() {
                   style={{ height: 1, background: border, marginBottom: 18 }}
                 />
 
-                {/* Meta details */}
                 <div
                   style={{
                     display: "flex",
@@ -371,7 +370,6 @@ export default function ProductDescription() {
                   style={{ height: 1, background: border, marginBottom: 20 }}
                 />
 
-                {/* Description */}
                 <div
                   style={{
                     background: greenLight,
@@ -400,7 +398,6 @@ export default function ProductDescription() {
                     />
                   </div>
                 </div>
-                {/* Cart controls */}
                 <div style={{ marginTop: 22 }}>
                   {showQuantityDiv ? (
                     <div
@@ -497,7 +494,6 @@ export default function ProductDescription() {
               </div>
             </div>
 
-            {/* Related Products */}
             {relatedProducts.length > 0 && (
               <div style={{ marginTop: 44 }}>
                 <h3

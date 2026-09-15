@@ -4,9 +4,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useInitializePaymentMutation } from "../../services/api";
 
-const PaystackCheckout = ({ email, address }) => {
+const PaystackCheckout = ({ email, address, userId }) => {
   const publicKey = import.meta.env.VITE_PUBLIC_KEY;
-  const userId = localStorage.getItem("userId");
   const navigate = useNavigate();
 
   const [initializePayment] = useInitializePaymentMutation();

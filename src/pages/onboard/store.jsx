@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
-import axios from "axios";
+import axiosClient from "../../lib/axiosClient";
+import { useSelector, useDispatch } from "react-redux";
 import Breadcrumb from "../../components/molecule/breadcrumbs/breadcrumbs";
 import ProductItem from "../../components/products/productItem";
 import { setCarte } from "../../redux/cart";
-import { useDispatch } from "react-redux";
 import { Button, SpeedDial, SpeedDialHandler } from "@material-tailwind/react";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -26,7 +26,6 @@ const Store = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [generalProduct, setGeneralProduct] = useState([]);
-  const baseUrl = import.meta.env.VITE_BASE_URL;
   const [carter, setCarter] = useState([]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -38,15 +37,28 @@ const Store = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  // Fetch product data
+  // Pull the logged-in user from Redux (rehydrated via cookie on load),
+  // never from localStorage.
+  const user = useSelector((state) => state.user.user);
+
+  const getApiUrl = (selectedCategories, page) => {
+    if (selectedCategories.includes("All")) {
+      return `product?page=${page}&limit=20`;
+    } else {
+      const categoryQueryParam = selectedCategories
+        .map((category) => `q=${category.replace(/\s/g, "%20")}`)
+        .join("&");
+      return `product?${categoryQueryParam}&page=${page}&limit=20`;
+    }
+  };
+
   const fetchDataAndSetState = useCallback(
     async (page = currentPage) => {
       setLoading(true);
       setError(false);
       const apiUrl = getApiUrl(selectedCategories, page);
-      const url = `${baseUrl}${apiUrl}`;
       try {
-        const response = await axios.get(url, { timeout: 8000 });
+        const response = await axiosClient.get(apiUrl, { timeout: 8000 });
         const data = response.data.products;
 
         setGeneralProduct(data);
@@ -57,27 +69,25 @@ const Store = () => {
         setTimeout(() => setLoading(false), 400);
       }
     },
-    [baseUrl, currentPage, selectedCategories],
+    [currentPage, selectedCategories],
   );
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get(`${baseUrl}category/get`);
+        const response = await axiosClient.get("category/get");
         const fetchedCategories = response.data.agriculturalCategories.map(
           (category) => category.category,
         );
         setCategories(["All", ...fetchedCategories]);
       } catch (error) {
-        // Handle error
         console.error("Error fetching categories:", error);
       }
     };
 
     fetchCategories();
-  }, [baseUrl]);
+  }, []);
 
-  // Get products based on selected categories and current page
   useEffect(() => {
     fetchDataAndSetState();
   }, [fetchDataAndSetState, currentPage]);
@@ -92,7 +102,6 @@ const Store = () => {
     }
   }, [location.search]);
 
-  // Handle category toggles
   const handleCategoryToggle = (category) => {
     setSelectedCategories(() => {
       if (category === "All") {
@@ -110,18 +119,16 @@ const Store = () => {
     });
   };
 
-  // Handle user cart fetching
+  // Cart fetch keyed off Redux user, not localStorage.
   useEffect(() => {
-    const userId = localStorage.getItem("userId");
-    if (userId) {
-      axios.get(`${baseUrl}cart/get/${userId}`).then((response) => {
-        if (response.data) {
-          setCarter(response.data.cart);
-          dispatch(setCarte(response.data.cart));
-        }
-      });
-    }
-  }, [baseUrl, dispatch]);
+    if (!user?._id) return;
+    axiosClient.get(`cart/get/${user._id}`).then((response) => {
+      if (response.data) {
+        setCarter(response.data.cart);
+        dispatch(setCarte(response.data.cart));
+      }
+    });
+  }, [user?._id, dispatch]);
 
   const normalizedSearch = searchField.toLowerCase().trim();
 
@@ -139,18 +146,6 @@ const Store = () => {
     );
   });
 
-  const getApiUrl = (selectedCategories, page) => {
-    if (selectedCategories.includes("All")) {
-      return `product?page=${page}&limit=20`;
-    } else {
-      const categoryQueryParam = selectedCategories
-        .map((category) => `q=${category.replace(/\s/g, "%20")}`)
-        .join("&");
-      return `product?${categoryQueryParam}&page=${page}&limit=20`;
-    }
-  };
-
-  // Handle page change
   const handlePageChange = (newPage) => {
     if (newPage !== currentPage) {
       setCurrentPage(newPage);
@@ -170,7 +165,7 @@ const Store = () => {
       </Helmet>
 
       <LandingAds className="h-full w-full" />
-      
+
       <Breadcrumb categories={selectedCategories} />
 
       <div className="relative flex md:flex-row flex-col w-full gap-3 mt-7 font-workSans">
@@ -195,8 +190,7 @@ const Store = () => {
           handleCategoryToggle={handleCategoryToggle}
         />
 
-        <CategoryMenu 
-          baseUrl={baseUrl}
+        <CategoryMenu
           selectedCategories={selectedCategories}
           handleCategoryToggle={handleCategoryToggle}
           onCategoriesLoaded={setCategories}

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import DefaultLayout from "../../layouts/defaultLayout";
-import axios from "axios";
+import axiosClient from "../../lib/axiosClient";
 import { Avatar, Button, Chip } from "@material-tailwind/react";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
@@ -16,16 +17,20 @@ const Loader = () => {
 };
 
 export default function MyOrder() {
-  let userId = localStorage.getItem("userId");
+  const user = useSelector((state) => state.user.user);
+  const userId = user?._id;
   const [activeStep, setActiveStep] = useState(2);
   let navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [order, setOrder] = useState([]);
-  let baseUrl = import.meta.env.VITE_BASE_URL;
 
   useEffect(() => {
-    axios
-      .get(`${baseUrl}order/customer/${userId}`)
+    if (!userId) {
+      setLoading(false);
+      return;
+    }
+    axiosClient
+      .get(`order/customer/${userId}`)
       .then((response) => {
         if (response.data) {
           setOrder(response.data);
@@ -34,7 +39,8 @@ export default function MyOrder() {
       .finally(() => {
         setLoading(false);
       });
-  }, [baseUrl, userId]);
+  }, [userId]);
+
   function getStatusColor(status) {
     switch (status) {
     case "Delivered":
@@ -45,6 +51,7 @@ export default function MyOrder() {
       return "shipped";
     }
   }
+
   return (
     <DefaultLayout>
       <Helmet>

@@ -1,54 +1,37 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { toast } from "react-toastify";
-import { addUser } from "../../redux/user";
 import { useLazyGetProfileQuery } from "../../services/api";
+import { addUser } from "../../redux/user";
 
 const AuthCallback = () => {
-  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [getProfile] = useLazyGetProfileQuery();
-  const hasRun = useRef(false);
+  const [params] = useSearchParams();
+  const error = params.get("error");
 
   useEffect(() => {
-    if (hasRun.current) return;
-    hasRun.current = true;
-
-    const token = searchParams.get("token");
-    const error = searchParams.get("error");
-
-    if (error || !token) {
-      toast.error("Google sign-in failed. Please try again.");
-      navigate("/sign-in");
+    if (error) {
+      navigate("/sign-in", { replace: true, state: { error } });
       return;
     }
 
-    localStorage.setItem("token", token);
-
+    // The httpOnly cookie was already set by the backend redirect —
+    // just confirm the session and pull the profile into Redux.
     getProfile()
       .unwrap()
       .then((res) => {
-        const user = res.customer ?? res;
-        localStorage.setItem("userId", user._id);
-        if (user.profile_picture) {
-          localStorage.setItem("profile-picture", user.profile_picture);
-        }
-        dispatch(addUser(user));
-        toast.success("Logged in successfully");
-        navigate("/dashboard");
+        dispatch(addUser(res.customer));
+        navigate("/dashboard", { replace: true });
       })
-      .catch(() => {
-        localStorage.removeItem("token");
-        toast.error("Could not complete sign-in. Please try again.");
-        navigate("/sign-in");
-      });
-  }, [searchParams, navigate, dispatch, getProfile]);
+      .catch(() => navigate("/sign-in", { replace: true }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [error]);
 
   return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh" }}>
-      <p>Signing you in…</p>
+    <div className="w-full h-[60vh] flex items-center justify-center">
+      <p className="text-lg font-workSans">Signing you in…</p>
     </div>
   );
 };

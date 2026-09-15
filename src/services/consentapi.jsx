@@ -4,14 +4,7 @@ export const consentApi = createApi({
   reducerPath: "consentApi",
   baseQuery: fetchBaseQuery({
     baseUrl: import.meta.env.VITE_BASE_URL,
-    prepareHeaders: (headers, { getState }) => {
-      // Attach JWT if present so the backend can tie consent to the user
-      const token = getState().user?.token;
-      if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
-      }
-      return headers;
-    },
+    credentials: "include",
   }),
   endpoints: (builder) => ({
     saveConsent: builder.mutation({

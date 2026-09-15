@@ -1,12 +1,18 @@
 import { Outlet, Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-function ProtectedRoute() {
-  const userId = localStorage.getItem("userId");
-  const user = useSelector((state) => state.user);
+const FullScreenLoader = () => (
+  <div className="w-full h-screen flex items-center justify-center">
+    <span className="cartLoader" />
+  </div>
+);
 
-  // Check if the user is logged in and the authentication token and userId exist
-  const isLoggedIn = user.isLoggedIn && userId && userId !== "" && userId !== undefined && userId !== null;
+function ProtectedRoute() {
+  const { isLoggedIn, sessionChecked } = useSelector((state) => state.user);
+
+  if (!sessionChecked) {
+    return <FullScreenLoader />;
+  }
 
   return isLoggedIn ? <Outlet /> : <Navigate to="/sign-in" replace />;
 }
