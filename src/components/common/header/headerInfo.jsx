@@ -93,13 +93,22 @@ const HeaderInfo = () => {
 
                 {!isLoggedIn && (
                   <div className="flex items-center gap-10 font-medium">
-                    <Link to="/about-us" className="hover:text-green-200 transition-colors">
+                    <Link
+                      to="/about-us"
+                      className="hover:text-green-200 transition-colors"
+                    >
                       Company
                     </Link>
-                    <Link to="/logistics" className="hover:text-green-200 transition-colors">
+                    <Link
+                      to="/logistics"
+                      className="hover:text-green-200 transition-colors"
+                    >
                       Logistics
                     </Link>
-                    <Link to="/contact" className="hover:text-green-200 transition-colors">
+                    <Link
+                      to="/contact"
+                      className="hover:text-green-200 transition-colors"
+                    >
                       Contact
                     </Link>
                   </div>
@@ -170,7 +179,9 @@ const HeaderInfo = () => {
                           <p className="font-semibold text-white truncate">
                             {user?.first_name} {user?.last_name}
                           </p>
-                          <p className="text-xs text-green-200 truncate">{user?.email}</p>
+                          <p className="text-xs text-green-200 truncate">
+                            {user?.email}
+                          </p>
                         </div>
                       </div>
 
