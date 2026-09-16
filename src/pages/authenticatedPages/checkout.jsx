@@ -10,7 +10,7 @@ import axiosClient from "../../lib/axiosClient";
 import { Helmet } from "react-helmet-async";
 import AddCommasToNumber from "../../lib/util/addComma";
 
-const DELIVERY_FEE = 700;
+const DELIVERY_FEE = 1800;
 const SERVICE_CHARGE_RATE = 0.15;
 
 export default function Checkout() {
@@ -24,10 +24,6 @@ export default function Checkout() {
   const [activeStep, setActiveStep] = useState(1);
   const [loading, setLoading] = useState(true);
   const userId = user?._id;
-
-  // ProtectedRoute already guarantees a valid session (cookie-verified) by
-  // the time this renders, so there's no separate userId to reconcile
-  // against — user._id from Redux is the single source of truth.
 
   useEffect(() => {
     if (!userId) return;

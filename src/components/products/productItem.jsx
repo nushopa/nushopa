@@ -47,7 +47,8 @@ export default function ProductItem({
   const [cartId, setCartId] = useState(null);
   let baseUrl = import.meta.env.VITE_BASE_URL;
   const dispatch = useDispatch();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
+  const userId = user?._id;
   const [addToCart] = useAddToCartMutation();
   const [increment] = useIncrementMutation();
   const [decrement] = useDecrementMutation();
@@ -66,7 +67,6 @@ export default function ProductItem({
   const handleIncrement = async (productId) => {
     if (!isAuthenticated) { navigate("/sign-in"); return; }
     try {
-      const userId = localStorage.getItem("userId");
       const response = await increment({ id: productId });
       if (response.data) {
         const updatedCartData = await axios.get(`${baseUrl}cart/get/${userId}`);
@@ -88,7 +88,6 @@ export default function ProductItem({
       setIsAddingToCart(true);
       const response = await deleteSingleCart({ id: cartItemId });
       if (response.data) {
-        const userId = localStorage.getItem("userId");
         const updatedCartData = await axios.get(`${baseUrl}cart/get/${userId}`);
         const cart = updatedCartData.data.cart;
         dispatch(setCarte(cart));
@@ -107,7 +106,6 @@ export default function ProductItem({
   const handleDecrement = async (productId) => {
     if (!isAuthenticated) { navigate("/sign-in"); return; }
     try {
-      const userId = localStorage.getItem("userId");
       const response = await decrement({ id: productId });
       if (response.data) {
         const updatedCartData = await axios.get(`${baseUrl}cart/get/${userId}`);
@@ -128,7 +126,6 @@ export default function ProductItem({
   const handleAddToCart = async (_id) => {
     if (!isAuthenticated) { navigate("/sign-in"); return; }
     if (out_of_stock) return; // guard against stray clicks/enter key
-    const userId = localStorage.getItem("userId");
     setIsAddingToCart(true);
     const postDataInfo = { customer_id: userId, product_id: _id };
     try {

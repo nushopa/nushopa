@@ -32,8 +32,6 @@ export default function ProductDescription() {
   const [cartId, setCartId] = useState(null);
   const [products, setProducts] = useState({});
 
-  // Product pages are accessible to guests too (route isn't wrapped in
-  // ProtectedRoute), so userId may legitimately be undefined here.
   const user = useSelector((state) => state.user.user);
   const userId = user?._id;
   const dispatch = useDispatch();

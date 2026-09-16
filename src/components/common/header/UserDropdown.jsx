@@ -4,7 +4,7 @@ import { BiSupport } from "react-icons/bi";
 import { TbShoppingBagCheck } from "react-icons/tb";
 import { useLogoutUserMutation } from "../../../services/api";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { clearUser } from "../../../redux/user";
 
 const UserDropdown = ({ user, profileImg }) => {
@@ -99,9 +99,6 @@ const UserDropdown = ({ user, profileImg }) => {
         <span className="font-medium  lg:inline">
           Hi, {user?.first_name || "User"}
         </span>
-
-
-       
       </button>
 
       {/* Dropdown Menu */}
@@ -136,31 +133,31 @@ const UserDropdown = ({ user, profileImg }) => {
 
           {/* Menu Items */}
           <div className="py-1">
-            <a
-              href="/my-order"
+            <Link
+              to="/my-order"
               role="menuitem"
               onClick={closeDropdown}
               className="flex items-center justify-between gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors w-full text-left"
             >
-              <div className="flex  items-center gap-2">
+              <div className="flex items-center gap-2">
                 <TbShoppingBagCheck className="text-lg" />
                 <span>My order</span>
               </div>
               <FaLongArrowAltRight />
-            </a>
+            </Link>
 
-            <a
-              href="/contact"
+            <Link
+              to="/contact"
               role="menuitem"
               onClick={closeDropdown}
               className="flex items-center justify-between gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors w-full text-left"
             >
-              <div className="flex  items-center gap-2">
+              <div className="flex items-center gap-2">
                 <BiSupport className="text-lg" />
                 <span>Support</span>
               </div>
               <FaLongArrowAltRight />
-            </a>
+            </Link>
           </div>
 
           {/* Logout Section */}
