@@ -1,11 +1,12 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import AddCommasToNumber from "../../lib/util/addComma";
 import { truncateString } from "../../lib/util/truncateString";
 import DisplayContent from "../molecule/displayContent";
 import {
+  useGetCartsQuery,
   useIncrementMutation,
   useDecrementMutation,
   useDeleteSingleCartMutation,
@@ -14,8 +15,6 @@ import DeleteIcon from "../icons/deleteIcon";
 import FloatingButton from "./FloatingButton";
 import { BsFillBasketFill } from "react-icons/bs";
 import useAuth from "../../lib/hooks/useAuth";
-import { setCartCount } from "../../redux/cart";
-import axiosClient from "../../lib/axiosClient";
 
 const DELIVERY_FEE = 1800;
 
@@ -23,51 +22,30 @@ const FloatingCart = () => {
   const { isAuthenticated, user } = useAuth();
   const userId = user?._id;
 
-  const dispatch = useDispatch();
-  const cartCount = useSelector((state) => state.carte.cartCount);
-
   const [isOpen, setIsOpen] = useState(false);
-  const [carts, setCarts] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [removingId, setRemovingId] = useState(null);
 
   const navigate = useNavigate();
-  
+
+  // Single source of truth: RTK Query's cache. This is subscribed here,
+  // in MainLayout (for the badge), and in the full cart page — all three
+  // share the same "Cart" tag, so any add/increment/decrement/delete
+  // anywhere in the app refetches all of them automatically. No more
+  // manual axiosClient calls or dispatch(setCarte) needed.
+  const { data, isFetching } = useGetCartsQuery(userId, {
+    skip: !isAuthenticated || !userId,
+  });
+  const carts = data?.cart ?? [];
+
   const [increment] = useIncrementMutation();
   const [decrement] = useDecrementMutation();
   const [deleteCart] = useDeleteSingleCartMutation();
 
-  // Single source of truth: fetch cart → update local list + Redux badge
-  const refreshCart = useCallback(async () => {
-    if (!userId) return;
-    try {
-      const { data } = await axiosClient.get(`cart/get/${userId}`);
-      const items = data?.cart ?? [];
-      setCarts(items);
-      const uniqueIds = new Set(items.map((i) => i.product_id._id));
-      dispatch(setCartCount(uniqueIds.size));
-    } catch (err) {
-      console.error("Error refreshing cart:", err);
-    }
-  }, [userId, dispatch]);
-
-  // On mount: populate badge immediately (not just when drawer opens)
-  useEffect(() => {
-    if (isAuthenticated && userId) {
-      refreshCart();
-    }
-  }, [isAuthenticated, userId, refreshCart]);
-
-  // When drawer opens: reload full cart details
-  useEffect(() => {
-    if (!isOpen || !userId) return;
-    const fetch = async () => {
-      setLoading(true);
-      await refreshCart();
-      setLoading(false);
-    };
-    fetch();
-  }, [isOpen, userId, refreshCart]);
+  // Badge count is owned by MainLayout (which subscribes to the same
+  // "Cart" tag and keeps redux/cart.cartCount in sync). Read it here
+  // rather than recomputing it, and read it BEFORE any early return so
+  // hook order stays stable across renders.
+  const cartCount = useSelector((state) => state.carte.cartCount);
 
   if (!isAuthenticated) return null;
 
@@ -97,8 +75,8 @@ const FloatingCart = () => {
   const handleRemoveItem = async (cartItemId) => {
     setRemovingId(cartItemId);
     try {
-      const response = await deleteCart({ id: cartItemId });
-      if (response.data) await refreshCart();
+      await deleteCart({ id: cartItemId });
+      // No manual refetch needed — invalidatesTags handles it.
     } catch (error) {
       console.error("Error removing item:", error);
     } finally {
@@ -108,8 +86,7 @@ const FloatingCart = () => {
 
   const handleIncrement = async (productId) => {
     try {
-      const response = await increment({ id: productId });
-      if (response.data) await refreshCart();
+      await increment({ id: productId });
     } catch (error) {
       console.error("Error incrementing:", error);
     }
@@ -117,8 +94,7 @@ const FloatingCart = () => {
 
   const handleDecrement = async (productId) => {
     try {
-      const response = await decrement({ id: productId });
-      if (response.data) await refreshCart();
+      await decrement({ id: productId });
     } catch (error) {
       console.error("Error decrementing:", error);
     }
@@ -128,7 +104,7 @@ const FloatingCart = () => {
     <>
       <FloatingButton
         onClick={() => setIsOpen(true)}
-        badgeCount={cartCount} // ← always live from Redux
+        badgeCount={cartCount}
         icon={<BsFillBasketFill className="h-8 w-8" />}
         ariaLabel="Open cart"
       />
@@ -161,7 +137,7 @@ const FloatingCart = () => {
 
             {/* Body */}
             <div className="flex-1 overflow-y-auto p-6 space-y-6">
-              {loading ? (
+              {isFetching && uniqueItems.length === 0 ? (
                 <div className="h-full flex items-center justify-center">
                   <span className="cartLoader"></span>
                 </div>

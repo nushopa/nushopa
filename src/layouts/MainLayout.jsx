@@ -1,12 +1,12 @@
 import { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import axiosClient from "../lib/axiosClient";
 import Header from "../components/common/header/index.jsx";
 import ScrollToTop from "../lib/util/scrollToTop.jsx";
 import FloatingCart from "../components/cart/FloatingCart.jsx";
 import useAuth from "../lib/hooks/useAuth.js";
 import { setCartCount } from "../redux/cart.jsx";
+import { useGetCartsQuery } from "../services/cart.jsx";
 
 const MainLayout = () => {
   const location = useLocation();
@@ -14,22 +14,15 @@ const MainLayout = () => {
   const { isAuthenticated, user } = useAuth();
   const userId = user?._id;
 
+  const { data } = useGetCartsQuery(userId, {
+    skip: !isAuthenticated || !userId,
+  });
+
   useEffect(() => {
-    if (!isAuthenticated || !userId) return;
-
-    const syncCartCount = async () => {
-      try {
-        const { data } = await axiosClient.get(`cart/get/${userId}`);
-        const items = data?.cart ?? [];
-        const uniqueIds = new Set(items.map((i) => i.product_id._id));
-        dispatch(setCartCount(uniqueIds.size));
-      } catch (err) {
-        console.error("Failed to sync cart count:", err);
-      }
-    };
-
-    syncCartCount();
-  }, [isAuthenticated, userId, dispatch]);
+    if (!data?.cart) return;
+    const uniqueIds = new Set(data.cart.map((i) => i.product_id._id));
+    dispatch(setCartCount(uniqueIds.size));
+  }, [data, dispatch]);
 
   const noHeaderRoutes = [
     "/privacy-policy",

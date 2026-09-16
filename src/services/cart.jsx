@@ -22,6 +22,7 @@ export const cartApi = createApi({
         method: "POST",
         body: data,
       }),
+      invalidatesTags: ["Cart"],
     }),
 
     increment: builder.mutation({
@@ -30,7 +31,7 @@ export const cartApi = createApi({
         method: "PUT",
         body: id,
       }),
-      invalidatesTags: [{ type: "Cart" }],
+      invalidatesTags: ["Cart"],
     }),
 
     decrement: builder.mutation({
@@ -39,7 +40,7 @@ export const cartApi = createApi({
         method: "PUT",
         body: id,
       }),
-      invalidatesTags: [{ type: "Cart" }],
+      invalidatesTags: ["Cart"],
     }),
     
     // delete single cart
@@ -49,6 +50,7 @@ export const cartApi = createApi({
         method: "DELETE",
         body: id,
       }),
+      invalidatesTags: ["Cart"],
     }),
   }),
 });
