@@ -132,26 +132,6 @@ export default function MyOrder() {
                   </div>
                 )}
                 <div className="hidden md:flex">
-                  {/*
-                    Was <a href=""> — an empty href forces a hard,
-                    full-page navigation to the current URL. On a
-                    protected route that reloads Redux from scratch
-                    (the user slice is deliberately excluded from
-                    redux-persist), so isLoggedIn/user briefly reset
-                    to false until SessionBootstrap's /profile call
-                    resolves. ProtectedRoute does guard on
-                    `sessionChecked`, so this shouldn't by itself log
-                    you out permanently — but it's still a real bug:
-                    it discards client-side routing, refetches
-                    everything on this page from zero, and is a
-                    plausible contributor to the flash-to-login you're
-                    seeing. Using Link keeps navigation client-side and
-                    removes that reload entirely. `stopPropagation` is
-                    needed because the parent row already navigates
-                    on click, to `/order/:orderID` — same destination
-                    here, so this is mostly redundant with the row
-                    click, but kept as an explicit affordance.
-                  */}
                   <Link
                     to={`/order/${item.orderID}`}
                     onClick={(e) => e.stopPropagation()}

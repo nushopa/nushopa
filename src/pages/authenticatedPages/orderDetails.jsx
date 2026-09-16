@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import DefaultLayout from "../../layouts/defaultLayout";
 import axiosClient from "../../lib/axiosClient";
 import {
@@ -21,26 +22,46 @@ const Loader = () => {
 
 const TABLE_HEAD = ["Name", "Total Quantity", "Price", "Date", "category", ""];
 export default function OrderDetails() {
-  let { id } = useParams();
-  const [orderDetails, setOrderDetails] = useState({});
+  let { id } = useParams(); 
+  const navigate = useNavigate();
+
+  const user = useSelector((state) => state.user.user);
+  const userId = user?._id;
+
+  const [orderDetails, setOrderDetails] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [fetchFailed, setFetchFailed] = useState(false);
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [rated, setRated] = useState(4);
   const [review, setReview] = useState("");
   const [userReview, { isLoading }] = useAddReviewMutation();
 
   useEffect(() => {
+    if (!userId) {
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    setFetchFailed(false);
+
     axiosClient
-      .get(`order/${id}`)
+      .get(`order/customer/${userId}`)
       .then((response) => {
-        if (response.data) {
-          setOrderDetails(response?.data?.orders[0]);
+        const orders = Array.isArray(response?.data) ? response.data : [];
+        const match = orders.find((o) => o.orderID === id);
+        if (match) {
+          setOrderDetails(match);
+        } else {
+          setFetchFailed(true);
         }
+      })
+      .catch(() => {
+        setFetchFailed(true);
       })
       .finally(() => {
         setLoading(false);
       });
-  }, [id]);
+  }, [id, userId]);
 
   const dateObject = new Date(orderDetails?.createdAt);
 
@@ -76,6 +97,27 @@ export default function OrderDetails() {
     setShowReviewForm(false);
     setRated(0);
   };
+
+  // Order wasn't found in the customer's order list, or we're not logged in
+  if (!loading && (fetchFailed || !orderDetails)) {
+    return (
+      <DefaultLayout>
+        <div className="md:px-14 my-4 flex flex-col items-center justify-center py-24 text-center">
+          <Typography variant="h5" className="mb-2">
+            We couldn&apos;t find this order.
+          </Typography>
+          <Typography color="gray" className="mb-6 max-w-sm">
+            It may have been removed, or there was a problem loading it.
+            Please check your orders list and try again.
+          </Typography>
+          <Button className="bg-mainGreen" onClick={() => navigate("/my-order")}>
+            Back to My Orders
+          </Button>
+        </div>
+      </DefaultLayout>
+    );
+  }
+
   return (
     <DefaultLayout>
       <div className="md:px-14 my-4">
@@ -99,9 +141,7 @@ export default function OrderDetails() {
               <div className="text-black font-medium text-sm ">
                 Full name:{" "}
                 <span className="inline-flex flex-wrap truncate text-gray-600">
-                  {orderDetails?.customer_id.first_name +
-                    " " +
-                    orderDetails?.customer_id.last_name}
+                  {user?.first_name} {user?.last_name}
                 </span>
               </div>
               <div className="text-black font-medium text-sm ">
@@ -113,13 +153,13 @@ export default function OrderDetails() {
               <div className="text-black font-medium text-sm ">
                 phone No:{" "}
                 <span className="inline-flex flex-wrap text-gray-600">
-                  {orderDetails?.customer_id.phone_number}
+                  {user?.phone_number}
                 </span>
               </div>
               <div className="text-black font-medium text-sm ">
                 email:{" "}
                 <span className="inline-flex truncate flex-wrap lowercase text-gray-600">
-                  {orderDetails?.customer_id.email}
+                  {user?.email}
                 </span>
               </div>
               <div className="text-black font-medium text-sm ">
@@ -142,9 +182,8 @@ export default function OrderDetails() {
               <div className="text-black font-medium text-sm ">
                 Full name:{" "}
                 <span className="inline-flex flex-wrap truncate text-gray-600">
-                  {orderDetails?.address.first_name +
-                    " " +
-                    orderDetails?.address.last_name}
+                  {orderDetails?.address?.first_name}{" "}
+                  {orderDetails?.address?.last_name}
                 </span>
               </div>
 
@@ -175,7 +214,7 @@ export default function OrderDetails() {
               <div className="text-black font-medium text-sm ">
                 state/city:{" "}
                 <span className="inline-flex flex-wrap text-gray-600">
-                  {orderDetails?.address.state} state,{" "}
+                  {orderDetails?.address?.state} state,{" "}
                   {orderDetails?.address?.city}
                 </span>
               </div>
@@ -310,14 +349,7 @@ export default function OrderDetails() {
                 </div>
                 <div className="text-black text-xl font-medium font-workSans">
                   &#8358;
-                  {AddCommasToNumber(
-                    orderDetails?.products?.reduce(
-                      (total, item) =>
-                        total +
-                        item.product_id.product_price * item.product_quatity,
-                      0
-                    )
-                  )}
+                  {AddCommasToNumber(subtotal)}
                 </div>
               </div>
               <div className="flex gap-9 border-b border-[#7E7E7E] pb-2">
