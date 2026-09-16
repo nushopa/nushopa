@@ -4,6 +4,7 @@ export const cartApi = createApi({
   reducerPath: "cartApi",
   baseQuery: fetchBaseQuery({
     baseUrl: import.meta.env.VITE_BASE_URL,
+    credentials: "include", // ← NEW: include credentials for cook
   }),
   tagTypes: ["Cart"],
   endpoints: (builder) => ({

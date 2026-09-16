@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import axios from "axios";
 import AddCommasToNumber from "../../lib/util/addComma";
 import { truncateString } from "../../lib/util/truncateString";
 import DisplayContent from "../molecule/displayContent";
@@ -16,8 +15,9 @@ import FloatingButton from "./FloatingButton";
 import { BsFillBasketFill } from "react-icons/bs";
 import useAuth from "../../lib/hooks/useAuth";
 import { setCartCount } from "../../redux/cart";
+import axiosClient from "../../lib/axiosClient";
 
-const DELIVERY_FEE = 700;
+const DELIVERY_FEE = 1800;
 
 const FloatingCart = () => {
   const { isAuthenticated, user } = useAuth();
@@ -32,8 +32,7 @@ const FloatingCart = () => {
   const [removingId, setRemovingId] = useState(null);
 
   const navigate = useNavigate();
-  const baseUrl = import.meta.env.VITE_BASE_URL;
-
+  
   const [increment] = useIncrementMutation();
   const [decrement] = useDecrementMutation();
   const [deleteCart] = useDeleteSingleCartMutation();
@@ -42,7 +41,7 @@ const FloatingCart = () => {
   const refreshCart = useCallback(async () => {
     if (!userId) return;
     try {
-      const { data } = await axios.get(`${baseUrl}cart/get/${userId}`);
+      const { data } = await axiosClient.get(`cart/get/${userId}`);
       const items = data?.cart ?? [];
       setCarts(items);
       const uniqueIds = new Set(items.map((i) => i.product_id._id));
@@ -50,7 +49,7 @@ const FloatingCart = () => {
     } catch (err) {
       console.error("Error refreshing cart:", err);
     }
-  }, [baseUrl, userId, dispatch]);
+  }, [userId, dispatch]);
 
   // On mount: populate badge immediately (not just when drawer opens)
   useEffect(() => {
