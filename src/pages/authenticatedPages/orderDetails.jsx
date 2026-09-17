@@ -22,7 +22,7 @@ const Loader = () => {
 
 const TABLE_HEAD = ["Name", "Total Quantity", "Price", "Date", "category", ""];
 export default function OrderDetails() {
-  let { id } = useParams(); 
+  let { id } = useParams();
   const navigate = useNavigate();
 
   const user = useSelector((state) => state.user.user);
@@ -80,7 +80,7 @@ export default function OrderDetails() {
     (total, item) =>
       total +
       (item?.product_id?.product_price ?? 0) * (item?.product_quatity ?? 0),
-    0
+    0,
   );
 
   const serviceCharges = (subtotal ?? 0) * 0.15;
@@ -119,10 +119,13 @@ export default function OrderDetails() {
             We couldn&apos;t find this order.
           </Typography>
           <Typography color="gray" className="mb-6 max-w-sm">
-            It may have been removed, or there was a problem loading it.
-            Please check your orders list and try again.
+            It may have been removed, or there was a problem loading it. Please
+            check your orders list and try again.
           </Typography>
-          <Button className="bg-mainGreen" onClick={() => navigate("/my-order")}>
+          <Button
+            className="bg-mainGreen"
+            onClick={() => navigate("/my-order")}
+          >
             Back to My Orders
           </Button>
         </div>
@@ -140,7 +143,7 @@ export default function OrderDetails() {
             <Typography className="text-center text-xl py-4 md:text-2xl font-workSans font-medium text-[#212323]">
               Order Details (
               {["Processing", "Delivered", "Shipped"].includes(
-                orderDetails?.status
+                orderDetails?.status,
               )
                 ? orderDetails?.status
                 : "Processing"}
@@ -208,7 +211,7 @@ export default function OrderDetails() {
               <div className="text-black font-medium text-sm ">
                 email:{" "}
                 <span className="inline-flex flex-wrap lowercase truncate text-gray-600">
-                  { orderDetails?.address?.email}
+                  {orderDetails?.address?.email}
                 </span>
               </div>
               <div className="text-black font-medium text-sm ">
@@ -279,7 +282,7 @@ export default function OrderDetails() {
                           year: "numeric",
                           month: "2-digit",
                           day: "2-digit",
-                        }
+                        },
                       );
 
                       return (
@@ -295,13 +298,19 @@ export default function OrderDetails() {
                                 size="md"
                                 className="border border-blue-gray-50 bg-blue-gray-50/50"
                               />
-                              <Tooltip content={product_id?.product_name ?? "Product unavailable"}>
+                              <Tooltip
+                                content={
+                                  product_id?.product_name ??
+                                  "Product unavailable"
+                                }
+                              >
                                 <Typography
                                   variant="small"
                                   color="blue-gray"
                                   className="font-bold truncate"
                                 >
-                                  {product_id?.product_name ?? "Product unavailable"}
+                                  {product_id?.product_name ??
+                                    "Product unavailable"}
                                 </Typography>
                               </Tooltip>
                             </div>
@@ -323,7 +332,9 @@ export default function OrderDetails() {
                               className="font-normal"
                             >
                               &#8358;
-                              {AddCommasToNumber(product_id?.product_price ?? 0)}
+                              {AddCommasToNumber(
+                                product_id?.product_price ?? 0,
+                              )}
                             </Typography>
                           </td>
 
@@ -348,48 +359,52 @@ export default function OrderDetails() {
                           </td>
                         </tr>
                       );
-                    }
+                    },
                   )}
                 </tbody>
               </table>
             </CardBody>
 
-            <div className="flex flex-col justify-end items-end pr-10 my-5">
-              <div className="flex gap-9">
-                <div className="flex justify-start items-start text-[#7E7E7E] text-[20px] font-medium font-workSans">
-                  Sub-Total:
+            <div className="flex justify-end pr-10 my-5">
+              <div className="w-full max-w-sm flex flex-col gap-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-[#7E7E7E] text-[20px] font-medium font-workSans">
+                    Sub-Total:
+                  </span>
+                  <span className="text-black text-xl font-medium font-workSans">
+                    &#8358;{AddCommasToNumber(subtotal ?? 0)}
+                  </span>
                 </div>
-                <div className="text-black text-xl font-medium font-workSans">
-                  &#8358;
-                  {AddCommasToNumber(subtotal ?? 0)}
+
+                <div className="flex justify-between items-center border-b border-[#7E7E7E] pb-2">
+                  <span className="text-[#7E7E7E] text-[20px] font-medium font-workSans">
+                    Delivery Charges:
+                  </span>
+                  <span className="text-black text-xl font-medium font-workSans">
+                    &#8358;{AddCommasToNumber(deliveryCharges)}
+                  </span>
                 </div>
-              </div>
-              <div className="flex gap-9 border-b border-[#7E7E7E] pb-2">
-                <div className="text-[#7E7E7E] text-[20px] font-medium font-workSans">
-                  Delivery Charges:
+
+                <div className="flex justify-between items-center border-b border-[#7E7E7E] pb-2">
+                  <span className="text-[#7E7E7E] text-[20px] font-medium font-workSans">
+                    Service Charges:
+                  </span>
+                  <span className="text-black text-xl font-medium font-workSans">
+                    &#8358;{AddCommasToNumber(serviceCharges)}
+                  </span>
                 </div>
-                <div className="text-black text-xl font-medium font-workSans">
-                  &#8358;{AddCommasToNumber(deliveryCharges)}
-                </div>
-              </div>
-              <div className="flex gap-9 border-b border-[#7E7E7E] pb-2">
-                <div className="text-[#7E7E7E] text-[20px] font-medium font-workSans">
-                  Service Charges:
-                </div>
-                <div className="text-black text-xl font-medium font-workSans">
-                  &#8358;{AddCommasToNumber(serviceCharges)}
-                </div>
-              </div>
-              <div className="flex gap-9">
-                <div className="text-[#7E7E7E] text-[20px] font-medium font-workSans">
-                  Total:
-                </div>
-                <div className="text-black text-xl font-medium font-workSans">
-                  &#8358;
-                  {AddCommasToNumber(orderDetails?.amount_paid)}
+
+                <div className="flex justify-between items-center pt-1">
+                  <span className="text-[#7E7E7E] text-[20px] font-medium font-workSans">
+                    Total:
+                  </span>
+                  <span className="text-black text-xl font-bold font-workSans">
+                    &#8358;{AddCommasToNumber(orderDetails?.amount_paid)}
+                  </span>
                 </div>
               </div>
             </div>
+
             <div className="flex w-full gap-3 my-5">
               <Button className="bg-mainGreen w-1/2">reorder</Button>
               <Button
