@@ -368,7 +368,7 @@ export default function OrderDetails() {
             <div className="flex justify-end pr-10 my-5">
               <div className="w-full max-w-sm flex flex-col gap-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-[#7E7E7E] text-[20px] font-medium font-workSans">
+                  <span className="text-[#7E7E7E] text-xl font-medium font-workSans">
                     Sub-Total:
                   </span>
                   <span className="text-black text-xl font-medium font-workSans">
@@ -377,7 +377,7 @@ export default function OrderDetails() {
                 </div>
 
                 <div className="flex justify-between items-center border-b border-[#7E7E7E] pb-2">
-                  <span className="text-[#7E7E7E] text-[20px] font-medium font-workSans">
+                  <span className="text-[#7E7E7E] text-xl font-medium font-workSans">
                     Delivery Charges:
                   </span>
                   <span className="text-black text-xl font-medium font-workSans">
@@ -386,7 +386,7 @@ export default function OrderDetails() {
                 </div>
 
                 <div className="flex justify-between items-center border-b border-[#7E7E7E] pb-2">
-                  <span className="text-[#7E7E7E] text-[20px] font-medium font-workSans">
+                  <span className="text-[#7E7E7E] text-xl font-medium font-workSans">
                     Service Charges:
                   </span>
                   <span className="text-black text-xl font-medium font-workSans">
@@ -395,7 +395,7 @@ export default function OrderDetails() {
                 </div>
 
                 <div className="flex justify-between items-center pt-1">
-                  <span className="text-[#7E7E7E] text-[20px] font-medium font-workSans">
+                  <span className="text-[#7E7E7E] text-xl font-medium font-workSans">
                     Total:
                   </span>
                   <span className="text-black text-xl font-bold font-workSans">
