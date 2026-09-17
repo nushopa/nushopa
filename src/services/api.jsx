@@ -5,8 +5,6 @@ export const userApi = createApi({
   tagTypes: ["User"],
   baseQuery: fetchBaseQuery({
     baseUrl: import.meta.env.VITE_BASE_URL,
-    // Send the httpOnly access-token cookie on every request. This is the
-    // ONLY mechanism used for auth — no tokens are ever read from JS.
     credentials: "include",
   }),
 

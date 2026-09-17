@@ -4,11 +4,11 @@ import DefaultLayout from "../../layouts/defaultLayout";
 import AddressBook from "../../components/molecule/addressBook/addressBook";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@material-tailwind/react";
-import PaystackCheckout from "./paystackCheckout";
 import { useSelector } from "react-redux";
 import axiosClient from "../../lib/axiosClient";
 import { Helmet } from "react-helmet-async";
 import AddCommasToNumber from "../../lib/util/addComma";
+import SquadCheckout from "./SquadCheckout";
 
 const DELIVERY_FEE = 1800;
 const SERVICE_CHARGE_RATE = 0.15;
@@ -221,7 +221,7 @@ export default function Checkout() {
                 Checkout
               </Button>
             ) : (
-              <PaystackCheckout
+              <SquadCheckout
                 email={user?.email}
                 address={resolvedAddress}
                 userId={userId}
