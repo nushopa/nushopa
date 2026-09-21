@@ -16,7 +16,7 @@ import FloatingButton from "./FloatingButton";
 import { BsFillBasketFill } from "react-icons/bs";
 import useAuth from "../../lib/hooks/useAuth";
 
-const DELIVERY_FEE = 1800;
+const DELIVERY_FEE = 500;
 
 const FloatingCart = () => {
   const { isAuthenticated, user } = useAuth();
@@ -27,11 +27,6 @@ const FloatingCart = () => {
 
   const navigate = useNavigate();
 
-  // Single source of truth: RTK Query's cache. This is subscribed here,
-  // in MainLayout (for the badge), and in the full cart page — all three
-  // share the same "Cart" tag, so any add/increment/decrement/delete
-  // anywhere in the app refetches all of them automatically. No more
-  // manual axiosClient calls or dispatch(setCarte) needed.
   const { data, isFetching } = useGetCartsQuery(userId, {
     skip: !isAuthenticated || !userId,
   });
@@ -41,10 +36,6 @@ const FloatingCart = () => {
   const [decrement] = useDecrementMutation();
   const [deleteCart] = useDeleteSingleCartMutation();
 
-  // Badge count is owned by MainLayout (which subscribes to the same
-  // "Cart" tag and keeps redux/cart.cartCount in sync). Read it here
-  // rather than recomputing it, and read it BEFORE any early return so
-  // hook order stays stable across renders.
   const cartCount = useSelector((state) => state.carte.cartCount);
 
   if (!isAuthenticated) return null;
