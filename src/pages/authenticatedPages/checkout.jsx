@@ -10,7 +10,7 @@ import { Helmet } from "react-helmet-async";
 import AddCommasToNumber from "../../lib/util/addComma";
 import SquadCheckout from "./SquadCheckout";
 
-const DELIVERY_FEE = 1800;
+const DELIVERY_FEE = 500;
 const SERVICE_CHARGE_RATE = 0.15;
 
 export default function Checkout() {
