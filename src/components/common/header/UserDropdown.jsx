@@ -6,6 +6,7 @@ import { useLogoutUserMutation } from "../../../services/api";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { clearUser } from "../../../redux/user";
+import NotificationBell from "../../notification/NotificationBell";
 
 const UserDropdown = ({ user, profileImg }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -159,6 +160,11 @@ const UserDropdown = ({ user, profileImg }) => {
               <FaLongArrowAltRight />
             </Link>
           </div>
+
+          <NotificationBell
+            variant="dropdown-item"
+            onNavigate={closeDropdown}
+          />
 
           {/* Logout Section */}
           <div className="border-t border-gray-100 pt-1">

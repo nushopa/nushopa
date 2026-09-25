@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { getToken, onMessage } from "firebase/messaging";
-import { getMessagingIfSupported, VAPID_KEY } from "../lib/firebase";
+import { getMessagingIfSupported, VAPID_KEY } from "../firebase";
 
 const DEVICE_ID_KEY = "nushopa_device_id";
 const API_BASE = import.meta.env.VITE_API_BASE_URL; // e.g. https://api.yourapp.com

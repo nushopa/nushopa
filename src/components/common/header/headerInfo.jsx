@@ -15,6 +15,7 @@ import UserDropdown from "./UserDropdown";
 import SearchBar from "../search/SearchBar";
 import { useLogoutUserMutation } from "../../../services/api";
 import { clearUser } from "../../../redux/user";
+import NotificationBell from "../../notification/NotificationBell";
 
 const HeaderInfo = () => {
   const navigate = useNavigate();
@@ -208,6 +209,11 @@ const HeaderInfo = () => {
                         </div>
                         <FaLongArrowAltRight className="text-green-300" />
                       </Link>
+
+                      <NotificationBell
+                        variant="menu-item"
+                        onNavigate={() => setIsMenuOpen(false)}
+                      />
 
                       <Link
                         to="/contact"
