@@ -112,6 +112,12 @@ const HeaderInfo = () => {
                     >
                       Contact
                     </Link>
+                    <Link
+                      to="/privacy-policy"
+                      className="hover:text-green-200 transition-colors"
+                    >
+                      Privacy Policy
+                    </Link>
                   </div>
                 )}
               </div>
