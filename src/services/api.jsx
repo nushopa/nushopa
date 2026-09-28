@@ -10,7 +10,7 @@ export const userApi = createApi({
 
   endpoints: (builder) => ({
     singleProduct: builder.query({
-      query: (id) => `product/get/${id}`,
+      query: (id) => `product/${id}`,
     }),
     getProfile: builder.query({
       query: () => "profile",
