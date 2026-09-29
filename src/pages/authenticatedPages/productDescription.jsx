@@ -1,578 +1,482 @@
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
-import DefaultLayout from "../../layouts/defaultLayout";
-import { ImagePlacehoderSkeleton } from "../../components/skeleton/imagePlacehoderSkeleton";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate, useParams, Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { Helmet } from "react-helmet-async";
+import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
+
+import axiosClient from "../../lib/axiosClient";
+import useAuth from "../../lib/hooks/useAuth";
+import AddCommasToNumber from "../../lib/util/addComma";
+import ProductImage from "../../components/atoms/productImage";
+import DashboardLayout from "../../layouts/DashboardLayout";
+import { setCartCount, setCarte } from "../../redux/cart";
 import {
   useAddToCartMutation,
   useDecrementMutation,
+  useDeleteSingleCartMutation,
   useIncrementMutation,
 } from "../../services/cart";
-import axiosClient from "../../lib/axiosClient";
-import DisplayContent from "../../components/molecule/displayContent";
-import { useDispatch } from "react-redux";
-import { setCarte } from "../../redux/cart";
-import { Helmet } from "react-helmet-async";
-import { toast } from "react-toastify";
-import AddCommasToNumber from "../../lib/util/addComma";
-import { truncateString } from "../../lib/util/truncateString";
+import {
+  useSingleProductQuery,
+  useRelatedProductsQuery,
+} from "../../services/api";
+
+/* Palette (from the reference design) */
+const C = {
+  page: "bg-[#F3F6F1]",
+  panel: "bg-[#E6EDE3]",
+  ink: "text-[#1F3A26]",
+  muted: "text-[#6B7F70]",
+  line: "border-[#C9D5C7]",
+  dark: "bg-[#007145]",
+};
+
+/* ------------------------------------------------------------------ */
+/* Small pieces                                                        */
+/* ------------------------------------------------------------------ */
+
+const ProductSkeleton = () => (
+  <div className="grid gap-10 md:grid-cols-2 animate-pulse">
+    <div>
+      <div className="aspect-square w-full bg-[#E6EDE3]" />
+      <div className="mt-4 flex gap-3">
+        {[0, 1, 2].map((i) => (
+          <div key={i} className="h-20 w-20 bg-[#E6EDE3]" />
+        ))}
+      </div>
+    </div>
+    <div className="space-y-4 pt-2">
+      <div className="h-10 w-28 bg-[#E6EDE3]" />
+      <div className="h-4 w-1/2 bg-[#E6EDE3]" />
+      <div className="h-12 w-full bg-[#E6EDE3]" />
+      <div className="h-12 w-full bg-[#E6EDE3]" />
+    </div>
+  </div>
+);
+
+const ErrorState = ({ message, onRetry, onBack }) => (
+  <div className="w-full py-16 text-center">
+    <p className="font-semibold text-red-600">{message}</p>
+    <div className="mt-4 flex justify-center gap-3">
+      {onRetry && (
+        <button onClick={onRetry} className={`px-5 py-2 text-white ${C.dark}`}>
+          Try again
+        </button>
+      )}
+      <button
+        onClick={onBack}
+        className={`border px-5 py-2 ${C.line} ${C.ink}`}
+      >
+        Back to store
+      </button>
+    </div>
+  </div>
+);
+
+const syncCartCount = (cartItems, dispatch) => {
+  const uniqueIds = new Set(cartItems.map((i) => i.product_id?._id));
+  dispatch(setCartCount(uniqueIds.size));
+};
+
+/* Turns stored HTML (even double-escaped HTML) into clean paragraphs. */
+const toParagraphs = (html) => {
+  if (!html) return [];
+  let text = String(html);
+  for (let i = 0; i < 2; i += 1) {
+    const withBreaks = text.replace(
+      /<\/(p|div|li|h[1-6])>|<br\s*\/?>/gi,
+      "$&\n",
+    );
+    const doc = new DOMParser().parseFromString(withBreaks, "text/html");
+    text = doc.body.textContent || "";
+  }
+  return text
+    .replace(/\u00a0/g, " ")
+    .replace(/^[\s:]+/, "")
+    .split(/\n+/)
+    .map((t) => t.trim())
+    .filter(Boolean);
+};
+
+/* Fills its frame. Falls back to ProductImage for non-URL values. */
+const GalleryImage = ({ src, name, className = "" }) => {
+  const isUrl = typeof src === "string" && /^(https?:|data:|blob:)/.test(src);
+  if (!isUrl) {
+    return <ProductImage product_image={src} truncatedProductName={name} />;
+  }
+  return (
+    <img
+      src={src}
+      alt={name}
+      className={`h-full w-full object-contain ${className}`}
+    />
+  );
+};
 
 export default function ProductDescription() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [carts, setCarts] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isAddingToCart, setIsAddingToCart] = useState(false);
-  const [relatedProduct, setRelatedProduct] = useState([]);
-  const [relatedProducts, setRelatedProducts] = useState([]);
-  const [formattedDateWithSuffix, setFormattedDateWithSuffix] = useState("");
-  const [active, setActive] = useState("");
-  const [showQuantityDiv, setShowQuantityDiv] = useState(false);
-  const [productQuantity, setProductQuantity] = useState(1);
-  const [cartId, setCartId] = useState(null);
-  const [products, setProducts] = useState({});
-
-  const user = useSelector((state) => state.user.user);
-  const userId = user?._id;
   const dispatch = useDispatch();
+  const { isAuthenticated, user } = useAuth();
+  const userId = user?._id;
 
-  useEffect(() => {
-    if (userId) {
-      axiosClient.get(`cart/get/${userId}`).then((r) => {
-        if (r.data) setCarts(r.data.cart);
-      });
-    }
-    axiosClient
-      .get(`product/get/${id}`)
-      .then((r) => {
-        if (r.data) setProducts(r.data);
-      })
-      .finally(() => setIsLoading(false));
-  }, [id, userId]);
+  const { data, isLoading, isError, refetch } = useSingleProductQuery(id);
+  const product = data?.product;
 
-  useEffect(() => {
-    carts.some((item) => {
-      if (item.product_id._id === id) {
-        setCartId(item._id);
-        setProductQuantity(item.product_quatity);
-        setShowQuantityDiv(true);
-      }
-    });
-  }, [carts, id]);
-
-  const product = products?.product;
-
-  useEffect(() => {
-    if (!product?.product_cat) return;
-    axiosClient
-      .get(`product?product_cat=${product.product_cat}`)
-      .then((r) => {
-        if (r.data) setRelatedProduct(r.data.products);
-      });
-  }, [product?.product_cat]);
+  const { data: relatedData } = useRelatedProductsQuery(product?.product_cat, {
+    skip: !product?.product_cat,
+  });
+  const relatedProducts = useMemo(
+    () => (relatedData?.products || []).filter((p) => p._id !== id).slice(0, 4),
+    [relatedData, id],
+  );
 
   const [addToCart] = useAddToCartMutation();
   const [increment] = useIncrementMutation();
   const [decrement] = useDecrementMutation();
+  const [deleteSingleCart] = useDeleteSingleCartMutation();
+
+  const [cartItem, setCartItem] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const [qty, setQty] = useState(1); // quantity chosen before adding
+  const [activeImage, setActiveImage] = useState(0);
+  const [tab, setTab] = useState("description");
+
+  // Reset per-product UI state when navigating between products
+  useEffect(() => {
+    setQty(1);
+    setActiveImage(0);
+    setTab("description");
+  }, [id]);
+
+  const stock = Number(product?.product_total) || 0;
+  const outOfStock = Boolean(product && (product.out_of_stock || stock <= 0));
+
+  const images = useMemo(() => {
+    const raw = product?.product_image;
+    if (!raw) return [];
+    return Array.isArray(raw) ? raw.filter(Boolean) : [raw];
+  }, [product]);
+
+  const paragraphs = useMemo(
+    () => toParagraphs(product?.product_des),
+    [product],
+  );
+
+  const refreshCart = useCallback(async () => {
+    if (!userId) return [];
+    const res = await axiosClient.get(`cart/get/${userId}`);
+    const cart = res.data?.cart || [];
+    dispatch(setCarte(cart));
+    syncCartCount(cart, dispatch);
+    return cart;
+  }, [userId, dispatch]);
 
   useEffect(() => {
-    if (product && !isLoading) {
-      setFormattedDateWithSuffix(
-        new Intl.DateTimeFormat("en-US", {
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-        }).format(new Date(product.createdAt)),
-      );
-      if (relatedProduct?.length) {
-        setRelatedProducts(
-          relatedProduct.filter((p) => p.product_cat === product.product_cat),
-        );
-      }
-    }
-  }, [product, isLoading, relatedProduct]);
+    if (!userId || !id) return;
+    let cancelled = false;
+    refreshCart()
+      .then((cart) => {
+        if (!cancelled)
+          setCartItem(cart.find((i) => i.product_id?._id === id) || null);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [userId, id, refreshCart]);
 
-  const handleIncrement = async (pid) => {
-    try {
-      const r = await increment({ id: pid });
-      if (r.data) {
-        const u = await axiosClient.get(`cart/get/${userId}`);
-        setCarts(u.data.cart);
-      }
-    } catch {
-      console.log("error", "item is not define");
-    }
+  const requireAuth = () => {
+    if (isAuthenticated) return true;
+    navigate("/sign-in");
+    return false;
   };
 
-  const handleDecrement = async (pid) => {
-    try {
-      const r = await decrement({ id: pid });
-      if (r.data) {
-        const u = await axiosClient.get(`cart/get/${userId}`);
-        setCarts(u.data.cart);
-      } else if (r.error?.status === 404) setShowQuantityDiv(false);
-    } catch {
-      setShowQuantityDiv(false);
-    }
+  const syncFromServer = async () => {
+    const cart = await refreshCart();
+    const item = cart.find((i) => i.product_id?._id === id) || null;
+    setCartItem(item);
+    return item;
   };
 
-  const handleAddToCart = async () => {
-    if (!userId) {
-      toast.info("Please sign in to add items to your cart");
-      navigate("/sign-in");
-      return;
-    }
-
-    setIsAddingToCart(true);
+  // Adds the product, then bumps it up to the quantity picked in the stepper.
+  const handleAdd = async () => {
+    if (!requireAuth() || outOfStock || busy) return;
+    setBusy(true);
     try {
-      const r = await addToCart({
-        customer_id: userId,
-        product_id: product._id,
-      });
-      if (r.data.product) {
-        const u = await axiosClient.get(`cart/get/${userId}`);
-        dispatch(setCarte(u.data.cart));
-        setCarts(u.data.cart);
-        setProductQuantity(r.data.product.product_quatity);
-        setShowQuantityDiv(true);
+      await addToCart({ customer_id: userId, product_id: id });
+      const item = await syncFromServer();
+      if (item) {
+        for (let i = 1; i < qty; i += 1) {
+          await increment({ id: item._id });
+        }
+        if (qty > 1) await syncFromServer();
       }
-    } catch {
-      toast.error("Could not add to cart.");
+    } catch (e) {
+      console.error("Failed to add to cart:", e);
     } finally {
-      setIsAddingToCart(false);
+      setBusy(false);
     }
   };
 
-  const isOutOfStock = product?.product_total <= 0;
+  const changeCartQty = async (fn) => {
+    if (!requireAuth() || !cartItem || busy) return;
+    setBusy(true);
+    try {
+      await fn({ id: cartItem._id });
+    } catch (e) {
+      // a 404 means the line is already gone; the sync below corrects state
+    }
+    try {
+      await syncFromServer();
+    } catch (e) {
+      setCartItem(null);
+    } finally {
+      setBusy(false);
+    }
+  };
 
-  const green = "#2d7a4f";
-  const greenLight = "#f0faf4";
-  const border = "#e8e8e8";
-  const textDark = "#111827";
-  const textGray = "#6b7280";
+  const shownQty = cartItem ? cartItem.product_quatity : qty;
+  const canDecrease = shownQty > 1 && !busy;
+  const canIncrease = !outOfStock && shownQty < stock && !busy;
 
-  return (
-    <DefaultLayout>
-      <Helmet>
-        <title>{product?.product_name ?? "Nushopa | Product"}</title>
-        <meta
-          name="description"
-          content="Nushopa – Fresh farm produce delivered to your doorstep."
-        />
-      </Helmet>
+  const onMinus = () =>
+    cartItem ? changeCartQty(decrement) : setQty((q) => Math.max(1, q - 1));
+  const onPlus = () =>
+    cartItem
+      ? changeCartQty(increment)
+      : setQty((q) => Math.min(q + 1, Math.max(stock, 1)));
 
-      <div
-        style={{
-          background: "#f9fafb",
-          minHeight: "100vh",
-          padding: "28px 16px 64px",
-        }}
-      >
-        {product && !isLoading && Object.keys(product).length ? (
-          <div style={{ maxWidth: 1080, margin: "0 auto" }}>
-            <p
-              style={{
-                fontSize: 13,
-                color: textGray,
-                marginBottom: 20,
-                margin: "0 0 20px",
-              }}
-            >
-              <span
-                onClick={() => navigate("/")}
-                style={{ cursor: "pointer", color: green }}
-              >
-                Home
-              </span>
-              <span style={{ margin: "0 6px" }}>/</span>
-              <span
-                onClick={() => navigate("/")}
-                style={{ cursor: "pointer", color: green }}
-              >
-                Products
-              </span>
-              <span style={{ margin: "0 6px" }}>/</span>
-              <span>{product.product_name}</span>
-            </p>
+  /* ---- render ------------------------------------------------------ */
 
-            <div
-              style={{
-                background: "#fff",
-                borderRadius: 12,
-                border: `1px solid ${border}`,
-                display: "flex",
-                flexWrap: "wrap",
-                overflow: "hidden",
-                boxShadow: "0 1px 6px rgba(0,0,0,0.06)",
-              }}
-            >
+  const goHome = () => navigate("/");
+  let content;
+
+  if (isLoading) {
+    content = <ProductSkeleton />;
+  } else if (isError || !product) {
+    content = (
+      <ErrorState
+        message="Couldn't load this product."
+        onRetry={refetch}
+        onBack={goHome}
+      />
+    );
+  } else {
+    const details = [
+      ["Brand", product.product_brand_name],
+      ["Category", product.product_cat],
+      ["Sub-category", product.product_sub_cat],
+      ["Type", product.product_sub_sub_cat],
+    ].filter(([, v]) => v);
+
+    content = (
+      <>
+        <Helmet>
+          <title>{`Nushopa | ${product.product_name}`}</title>
+        </Helmet>
+
+        <div className="grid gap-10 md:grid-cols-2">
+          {/* ---------- Gallery ---------- */}
+          <div>
+            <div className={`border p-3 ${C.line} ${C.page}`}>
               <div
-                style={{
-                  flex: "1 1 400px",
-                  padding: 24,
-                  background: "#fafafa",
-                  borderRight: `1px solid ${border}`,
-                }}
+                className={`flex aspect-square w-full items-center justify-center overflow-hidden p-6 ${C.panel}`}
               >
-                <img
-                  src={active || product.product_image}
-                  alt={product.product_name}
-                  loading="lazy"
-                  style={{
-                    width: "100%",
-                    aspectRatio: "4/3",
-                    objectFit: "cover",
-                    borderRadius: 8,
-                    display: "block",
-                    marginBottom: 12,
-                    border: `1px solid ${border}`,
-                  }}
+                <GalleryImage
+                  src={images[activeImage] ?? product.product_image}
+                  name={product.product_name}
                 />
-
-                {product.alt_image?.length > 0 && (
-                  <div style={{ display: "flex", gap: 8 }}>
-                    <img
-                      src={product.product_image}
-                      alt="main"
-                      onClick={() => setActive("")}
-                      loading="lazy"
-                      style={{
-                        width: 68,
-                        height: 68,
-                        objectFit: "cover",
-                        borderRadius: 6,
-                        cursor: "pointer",
-                        border: `2px solid ${active === "" ? green : border}`,
-                      }}
-                    />
-                    {product.alt_image.slice(0, 2).map((img, i) => (
-                      <img
-                        key={i}
-                        src={img}
-                        alt={`alt-${i}`}
-                        onClick={() => setActive(img)}
-                        loading="lazy"
-                        style={{
-                          width: 68,
-                          height: 68,
-                          objectFit: "cover",
-                          borderRadius: 6,
-                          cursor: "pointer",
-                          border: `2px solid ${active === img ? green : border}`,
-                        }}
-                      />
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <div
-                style={{
-                  flex: "1 1 340px",
-                  padding: "32px 28px",
-                  display: "flex",
-                  flexDirection: "column",
-                }}
-              >
-                <h1
-                  style={{
-                    fontSize: 22,
-                    fontWeight: 700,
-                    color: textDark,
-                    margin: "0 0 4px",
-                    lineHeight: 1.35,
-                  }}
-                >
-                  {product.product_name}
-                </h1>
-
-                {product?.product_brand && (
-                  <p
-                    style={{
-                      fontSize: 13,
-                      color: textGray,
-                      margin: "0 0 14px",
-                    }}
-                  >
-                    Brand:{" "}
-                    <span style={{ color: green, fontWeight: 600 }}>
-                      {product.product_brand}
-                    </span>
-                  </p>
-                )}
-
-                <p
-                  style={{
-                    fontSize: 30,
-                    fontWeight: 800,
-                    color: green,
-                    margin: "0 0 20px",
-                    letterSpacing: "-0.5px",
-                  }}
-                >
-                  ₦{AddCommasToNumber(product.product_price)}
-                </p>
-
-                <div
-                  style={{ height: 1, background: border, marginBottom: 18 }}
-                />
-
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 12,
-                    marginBottom: 22,
-                  }}
-                >
-                  {[
-                    ["Seller", "Nushopa", false],
-                    ["Location", "Lagos State", false],
-                    ["Listed", formattedDateWithSuffix, false],
-                    [
-                      "Quantity",
-                      isOutOfStock
-                        ? "Out of stock"
-                        : `${product.product_total} units available`,
-                      isOutOfStock,
-                    ],
-                  ].map(([label, value, isRed]) => (
-                    <div
-                      key={label}
-                      style={{ display: "flex", alignItems: "center", gap: 0 }}
-                    >
-                      <span
-                        style={{
-                          fontSize: 13,
-                          color: textGray,
-                          width: 80,
-                          flexShrink: 0,
-                        }}
-                      >
-                        {label}
-                      </span>
-                      <span
-                        style={{
-                          fontSize: 13,
-                          fontWeight: 600,
-                          color: isRed ? "#dc2626" : textDark,
-                        }}
-                      >
-                        {value}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-
-                <div
-                  style={{ height: 1, background: border, marginBottom: 20 }}
-                />
-
-                <div
-                  style={{
-                    background: greenLight,
-                    borderRadius: 8,
-                    padding: "14px 16px",
-                    border: `1px solid #c6e8d4`,
-                  }}
-                >
-                  <p
-                    style={{
-                      fontSize: 11,
-                      fontWeight: 700,
-                      color: green,
-                      textTransform: "uppercase",
-                      letterSpacing: "0.07em",
-                      margin: "0 0 8px",
-                    }}
-                  >
-                    Description
-                  </p>
-                  <div
-                    style={{ fontSize: 13, color: "#374151", lineHeight: 1.75 }}
-                  >
-                    <DisplayContent
-                      htmlContent={truncateString(product?.product_des, 500)}
-                    />
-                  </div>
-                </div>
-                <div style={{ marginTop: 22 }}>
-                  {showQuantityDiv ? (
-                    <div
-                      style={{ display: "flex", alignItems: "center", gap: 14 }}
-                    >
-                      <span style={{ fontSize: 13, color: textGray }}>
-                        Quantity
-                      </span>
-                      <div
-                        style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          border: `1.5px solid ${green}`,
-                          borderRadius: 8,
-                          overflow: "hidden",
-                        }}
-                      >
-                        <button
-                          onClick={() => handleDecrement(cartId)}
-                          style={{
-                            width: 38,
-                            height: 38,
-                            background: "none",
-                            border: "none",
-                            fontSize: 18,
-                            fontWeight: 700,
-                            color: green,
-                            cursor: "pointer",
-                            borderRight: `1px solid ${border}`,
-                          }}
-                        >
-                          −
-                        </button>
-                        <span
-                          style={{
-                            width: 44,
-                            textAlign: "center",
-                            fontSize: 15,
-                            fontWeight: 600,
-                            color: textDark,
-                          }}
-                        >
-                          {productQuantity}
-                        </span>
-                        <button
-                          onClick={() => handleIncrement(cartId)}
-                          style={{
-                            width: 38,
-                            height: 38,
-                            background: "none",
-                            border: "none",
-                            fontSize: 18,
-                            fontWeight: 700,
-                            color: green,
-                            cursor: "pointer",
-                            borderLeft: `1px solid ${border}`,
-                          }}
-                        >
-                          +
-                        </button>
-                      </div>
-                      <span style={{ fontSize: 13, color: textGray }}>
-                        units
-                      </span>
-                    </div>
-                  ) : (
-                    <button
-                      onClick={handleAddToCart}
-                      disabled={isAddingToCart || isOutOfStock}
-                      style={{
-                        width: "100%",
-                        padding: "13px 0",
-                        background: isOutOfStock ? "#d1d5db" : green,
-                        color: "#fff",
-                        border: "none",
-                        borderRadius: 8,
-                        fontSize: 15,
-                        fontWeight: 700,
-                        cursor:
-                          isOutOfStock || isAddingToCart
-                            ? "not-allowed"
-                            : "pointer",
-                        letterSpacing: "0.01em",
-                      }}
-                    >
-                      {isOutOfStock
-                        ? "Out of Stock"
-                        : isAddingToCart
-                          ? "Adding to cart…"
-                          : "Add to Cart"}
-                    </button>
-                  )}
-                </div>
               </div>
             </div>
 
-            {relatedProducts.length > 0 && (
-              <div style={{ marginTop: 44 }}>
-                <h3
-                  style={{
-                    fontSize: 17,
-                    fontWeight: 700,
-                    color: textDark,
-                    margin: "0 0 16px",
-                  }}
-                >
-                  Related Products
-                </h3>
-                <div
-                  style={{
-                    display: "flex",
-                    gap: 14,
-                    overflowX: "auto",
-                    paddingBottom: 8,
-                  }}
-                >
-                  {relatedProducts.map((data, i) => (
-                    <div
-                      key={i}
-                      onClick={() => navigate(`/product/${data._id}`)}
-                      style={{
-                        minWidth: 172,
-                        flexShrink: 0,
-                        background: "#fff",
-                        border: `1px solid ${border}`,
-                        borderRadius: 10,
-                        overflow: "hidden",
-                        cursor: "pointer",
-                        boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
-                      }}
-                    >
-                      <img
-                        src={data.product_image}
-                        alt={data.product_name}
-                        loading="lazy"
-                        style={{
-                          width: "100%",
-                          height: 130,
-                          objectFit: "cover",
-                          display: "block",
-                        }}
-                      />
-                      <div style={{ padding: "10px 12px" }}>
-                        <p
-                          style={{
-                            fontSize: 13,
-                            fontWeight: 600,
-                            color: textDark,
-                            margin: "0 0 4px",
-                            whiteSpace: "nowrap",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                          }}
-                        >
-                          {data.product_name}
-                        </p>
-                        <p
-                          style={{
-                            fontSize: 13,
-                            fontWeight: 700,
-                            color: green,
-                            margin: 0,
-                          }}
-                        >
-                          ₦{AddCommasToNumber(data.product_price)}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+            {images.length > 1 && (
+              <div className="mt-4 flex gap-3 overflow-x-auto">
+                {images.map((img, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setActiveImage(i)}
+                    aria-label={`Show image ${i + 1}`}
+                    aria-current={i === activeImage}
+                    className={`h-20 w-20 shrink-0 p-2 ${C.panel} ${
+                      i === activeImage
+                        ? "outline outline-1 outline-[#1F3A26]"
+                        : ""
+                    }`}
+                  >
+                    <GalleryImage src={img} name={product.product_name} />
+                  </button>
+                ))}
               </div>
             )}
           </div>
-        ) : (
-          <ImagePlacehoderSkeleton />
+
+          {/* ---------- Buy box ---------- */}
+          <div className={`min-w-0 ${C.ink}`}>
+           
+            <h1 className="mt-1 break-words text-2xl font-medium md:text-3xl">
+              {product.product_name}
+            </h1>
+
+            <p className="mt-4 text-3xl font-semibold md:text-4xl">
+              &#x20A6;{AddCommasToNumber(product.product_price)}
+            </p>
+
+            {outOfStock && (
+              <p className="mt-3 inline-block bg-red-50 px-3 py-1 text-sm font-semibold text-red-600">
+                Out of Stock
+              </p>
+            )}
+
+            <p className="mt-8 text-base">Amount</p>
+
+            <div className="mt-2 flex items-center gap-4">
+              <div
+                className={`flex items-center gap-2 rounded-full px-2 py-1 ${C.panel}`}
+              >
+                <button
+                  onClick={onMinus}
+                  disabled={!canDecrease}
+                  aria-label="Decrease quantity"
+                  className="flex h-10 w-10 items-center justify-center rounded-full disabled:opacity-30"
+                >
+                  <MinusIcon className="h-5 w-5" />
+                </button>
+                <span className="min-w-[3ch] text-center text-base">
+                  {shownQty}
+                </span>
+                <button
+                  onClick={onPlus}
+                  disabled={!canIncrease}
+                  aria-label="Increase quantity"
+                  className="flex h-10 w-10 items-center justify-center rounded-full disabled:opacity-30"
+                >
+                  <PlusIcon className="h-5 w-5" />
+                </button>
+              </div>
+              {!outOfStock && (
+                <span className={`text-sm ${C.muted}`}>
+                  Current stock: {stock}
+                </span>
+              )}
+            </div>
+
+            <div className="my-14">
+              {/* ---------- Tabs ---------- */}
+              <div className={`mt-10 flex border-b ${C.line}`} role="tablist">
+                {[
+                  ["description", "Description"],
+                  ["details", "Details"],
+                ].map(([key, label]) => (
+                  <button
+                    key={key}
+                    role="tab"
+                    aria-selected={tab === key}
+                    onClick={() => setTab(key)}
+                    className={`-mb-px flex-1 border-b-2 py-3 text-base ${
+                      tab === key
+                        ? "border-[#1F3A26] text-[#1F3A26]"
+                        : `border-transparent ${C.muted}`
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+
+              <div className="pt-5 leading-relaxed" role="tabpanel">
+                {tab === "description" ? (
+                  paragraphs.length ? (
+                    <div className="max-w-prose space-y-4 text-[15px] leading-7 text-[#2F4A36]">
+                      {paragraphs.map((t, i) => (
+                        <p key={i}>{t}</p>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className={C.muted}>No description available.</p>
+                  )
+                ) : details.length ? (
+                  <dl className="grid grid-cols-[auto_1fr] gap-x-8 gap-y-2">
+                    {details.map(([k, v]) => (
+                      <div key={k} className="contents">
+                        <dt className={C.muted}>{k}</dt>
+                        <dd>{v}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                ) : (
+                  <p className={C.muted}>No details available.</p>
+                )}
+              </div>
+            </div>
+            {/* Primary action */}
+            {cartItem ? (
+              <>
+                <Link
+                  to="/cart"
+                  className={`mt-6 flex h-14 w-full items-center justify-center text-white ${C.dark}`}
+                >
+                  View cart
+                </Link>
+                <button
+                  onClick={() => changeCartQty(deleteSingleCart)}
+                  disabled={busy}
+                  className={`mt-3 flex h-14 w-full items-center justify-center border disabled:opacity-50 ${C.line} ${C.ink}`}
+                >
+                  Remove from cart
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={handleAdd}
+                disabled={outOfStock || busy}
+                className={`mt-6 flex h-14 w-full items-center justify-center text-white disabled:cursor-not-allowed disabled:opacity-50 ${C.dark}`}
+              >
+                {busy
+                  ? "Adding..."
+                  : outOfStock
+                    ? "Out of stock"
+                    : "Add to cart"}
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* ---------- Related ---------- */}
+        {relatedProducts.length > 0 && (
+          <section className="mt-16">
+            <h2 className={`mb-4 text-xl font-medium ${C.ink}`}>
+              You may also like
+            </h2>
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+              {relatedProducts.map((p) => (
+                <Link key={p._id} to={`/product/${p._id}`} className="block">
+                  <div
+                    className={`flex aspect-square items-center justify-center p-4 ${C.panel}`}
+                  >
+                    <ProductImage
+                      product_image={p.product_image}
+                      truncatedProductName={p.product_name}
+                    />
+                  </div>
+                  <p className={`mt-2 truncate font-medium ${C.ink}`}>
+                    {p.product_name}
+                  </p>
+                  <p className={C.muted}>
+                    &#x20A6;{AddCommasToNumber(p.product_price)}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          </section>
         )}
-      </div>
-    </DefaultLayout>
+      </>
+    );
+  }
+
+  return (
+    <DashboardLayout>
+      <div className="mt-7 w-full font-workSans">{content}</div>
+    </DashboardLayout>
   );
 }

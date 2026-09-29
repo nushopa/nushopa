@@ -2,133 +2,79 @@ import { fetchBaseQuery, createApi } from "@reduxjs/toolkit/query/react";
 
 export const userApi = createApi({
   reducerPath: "userApi",
-  tagTypes: ["User"],
+  tagTypes: ["User", "Advert"],
   baseQuery: fetchBaseQuery({
     baseUrl: import.meta.env.VITE_BASE_URL,
     credentials: "include",
   }),
 
   endpoints: (builder) => ({
+    // CHANGED: was `product/get/${id}`. The backend route is GET /product/:id
+    // and responds with `{ product }`.
     singleProduct: builder.query({
       query: (id) => `product/${id}`,
     }),
     getProfile: builder.query({
       query: () => "profile",
     }),
+    // CHANGED: backend filters on `q`, not `product_cat`.
     relatedProducts: builder.query({
-      query: (productCat) => `product?product_cat=${productCat}`,
+      query: (productCat) => `product?q=${encodeURIComponent(productCat)}`,
     }),
     addressBook: builder.query({
       query: (customer_id) => `checkout/price/${customer_id}`,
     }),
     loginUser: builder.mutation({
-      query: (data) => ({
-        url: "login",
-        method: "POST",
-        body: data,
-      }),
+      query: (data) => ({ url: "login", method: "POST", body: data }),
     }),
     forgottenPassword: builder.mutation({
-      query: (data) => ({
-        url: "customers/forget",
-        method: "POST",
-        body: data,
-      }),
+      query: (data) => ({ url: "customers/forget", method: "POST", body: data }),
     }),
     verifyOTP: builder.mutation({
-      query: (data) => ({
-        url: "customers/verify",
-        method: "POST",
-        body: data,
-      }),
+      query: (data) => ({ url: "customers/verify", method: "POST", body: data }),
     }),
     resetPassword: builder.mutation({
-      query: (data) => ({
-        url: "customers/update",
-        method: "POST",
-        body: data,
-      }),
+      query: (data) => ({ url: "customers/update", method: "POST", body: data }),
     }),
     addReview: builder.mutation({
-      query: (data) => ({
-        url: "review/review",
-        method: "POST",
-        body: data,
-      }),
+      query: (data) => ({ url: "review/review", method: "POST", body: data }),
     }),
     subscribeNewsletter: builder.mutation({
-      query: (data) => ({
-        url: "news/subscribe",
-        method: "POST",
-        body: data,
-      }),
+      query: (data) => ({ url: "news/subscribe", method: "POST", body: data }),
     }),
     checkout: builder.mutation({
-      query: (data) => ({
-        url: "checkout/price",
-        method: "POST",
-        body: data,
-      }),
+      query: (data) => ({ url: "checkout/price", method: "POST", body: data }),
     }),
     addOrder: builder.mutation({
-      query: ({ data }) => ({
-        url: `order`,
-        method: "POST",
-        body: data,
-      }),
+      query: ({ data }) => ({ url: `order`, method: "POST", body: data }),
     }),
 
     // ── Payment / Paystack flow ─────────────────────────────────────────
     initializePayment: builder.mutation({
-      query: (data) => ({
-        url: "payment/initialize",
-        method: "POST",
-        body: data,
-      }),
+      query: (data) => ({ url: "payment/initialize", method: "POST", body: data }),
     }),
     getOrderStatus: builder.query({
       query: (reference) => `payment/status/${reference}`,
     }),
 
     addContact: builder.mutation({
-      query: ({ data }) => ({
-        url: "/contact/contact",
-        method: "POST",
-        body: data,
-      }),
+      query: ({ data }) => ({ url: "/contact/contact", method: "POST", body: data }),
     }),
 
     // create user - sends OTP, no session yet
     createUser: builder.mutation({
-      query: (data) => ({
-        url: "create",
-        method: "POST",
-        body: data,
-      }),
+      query: (data) => ({ url: "create", method: "POST", body: data }),
     }),
-    // OTP verification endpoint for registration — backend sets the
-    // httpOnly cookie on success and returns the created customer.
+    // OTP verification for registration — backend sets the httpOnly cookie.
     verifyRegistrationOTP: builder.mutation({
-      query: (data) => ({
-        url: "verify-otp",
-        method: "POST",
-        body: data,
-      }),
+      query: (data) => ({ url: "verify-otp", method: "POST", body: data }),
     }),
     resendRegistrationOTP: builder.mutation({
-      query: (data) => ({
-        url: "resend-otp",
-        method: "POST",
-        body: data,
-      }),
+      query: (data) => ({ url: "resend-otp", method: "POST", body: data }),
     }),
 
     saveConsent: builder.mutation({
-      query: (data) => ({
-        url: "consent",
-        method: "POST",
-        body: data,
-      }),
+      query: (data) => ({ url: "consent", method: "POST", body: data }),
     }),
 
     getAdverts: builder.query({
@@ -136,13 +82,9 @@ export const userApi = createApi({
       providesTags: ["Advert"],
     }),
 
-    // Blacklists the current access token server-side and clears the
-    // httpOnly cookie via Set-Cookie on the response.
+    // Blacklists the current access token server-side and clears the cookie.
     logoutUser: builder.mutation({
-      query: () => ({
-        url: "logout",
-        method: "POST",
-      }),
+      query: () => ({ url: "logout", method: "POST" }),
     }),
   }),
 });

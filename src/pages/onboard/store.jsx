@@ -37,8 +37,6 @@ const Store = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  // Pull the logged-in user from Redux (rehydrated via cookie on load),
-  // never from localStorage.
   const user = useSelector((state) => state.user.user);
 
   const getApiUrl = (selectedCategories, page) => {

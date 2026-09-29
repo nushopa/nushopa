@@ -16,7 +16,7 @@ import FloatingButton from "./FloatingButton";
 import { BsFillBasketFill } from "react-icons/bs";
 import useAuth from "../../lib/hooks/useAuth";
 
-const DELIVERY_FEE = 500;
+const DELIVERY_FEE = 1800;
 
 const FloatingCart = () => {
   const { isAuthenticated, user } = useAuth();
