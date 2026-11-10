@@ -18,9 +18,8 @@ import {
   useDecrementMutation,
   useDeleteSingleCartMutation,
 } from "../../services/cart";
+import useDefaultDeliveryFee from "../../lib/hooks/useDefaultDeliveryFee";
 
-// Keep these in sync with FloatingCart
-const DELIVERY_FEE = 1800;
 const SERVICE_CHARGE_RATE = 0.15;
 
 const naira = (n) => `\u20A6${AddCommasToNumber(n)}`;
@@ -28,7 +27,9 @@ const naira = (n) => `\u20A6${AddCommasToNumber(n)}`;
 // Keeps the first `max` words and adds an ellipsis if anything was cut.
 const truncateWords = (text = "", max = 10) => {
   const words = String(text).trim().split(/\s+/);
-  return words.length > max ? `${words.slice(0, max).join(" ")}\u2026` : words.join(" ");
+  return words.length > max
+    ? `${words.slice(0, max).join(" ")}\u2026`
+    : words.join(" ");
 };
 
 const Loader = () => (
@@ -69,6 +70,7 @@ const Cart = () => {
   const [increment] = useIncrementMutation();
   const [decrement] = useDecrementMutation();
   const [deleteCart] = useDeleteSingleCartMutation();
+  const configuredDeliveryFee = useDefaultDeliveryFee();
   const [carts, setCarts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState(null);
@@ -122,11 +124,13 @@ const Cart = () => {
 
   // Order summary maths — identical to FloatingCart
   const subtotal = carts.reduce(
-    (t, item) => t + (item.product_id.product_price * item.product_quatity || 0),
+    (t, item) =>
+      t + (item.product_id.product_price * item.product_quatity || 0),
     0,
   );
   const serviceCharges = subtotal * SERVICE_CHARGE_RATE;
-  const total = subtotal + DELIVERY_FEE + serviceCharges;
+  const deliveryFee = configuredDeliveryFee ?? 0;
+  const total = subtotal + deliveryFee + serviceCharges;
 
   return (
     <DefaultLayout>
@@ -221,7 +225,9 @@ const Cart = () => {
                           <div className="flex items-center justify-self-center rounded-full border border-gray-300">
                             <button
                               onClick={() => runUpdate(item._id, decrement)}
-                              disabled={item.product_quatity <= 1 || !!updatingId}
+                              disabled={
+                                item.product_quatity <= 1 || !!updatingId
+                              }
                               aria-label="Decrease quantity"
                               className="flex h-9 w-9 items-center justify-center rounded-full text-gray-700 hover:bg-gray-100 disabled:opacity-30 disabled:hover:bg-transparent"
                             >
@@ -268,7 +274,14 @@ const Cart = () => {
 
                 <div className="mt-5 space-y-3">
                   <SummaryRow label="Subtotal" value={naira(subtotal)} />
-                  <SummaryRow label="Delivery fee" value={naira(DELIVERY_FEE)} />
+                  <SummaryRow
+                    label="Estimated delivery fee"
+                    value={
+                      configuredDeliveryFee === null
+                        ? "Calculated at checkout"
+                        : naira(deliveryFee)
+                    }
+                  />
                   <SummaryRow
                     label="Service charges"
                     value={naira(serviceCharges)}
@@ -283,6 +296,9 @@ const Cart = () => {
                     {naira(total)}
                   </span>
                 </div>
+                <p className="mt-2 text-xs text-gray-500">
+                  The final fee is based on your delivery area.
+                </p>
 
                 <button
                   onClick={() => navigate("/checkout")}

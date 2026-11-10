@@ -10,7 +10,6 @@ import { Helmet } from "react-helmet-async";
 import AddCommasToNumber from "../../lib/util/addComma";
 import SquadCheckout from "./SquadCheckout";
 
-const DELIVERY_FEE = 500;
 const SERVICE_CHARGE_RATE = 0.15;
 
 export default function Checkout() {
@@ -63,7 +62,7 @@ export default function Checkout() {
     0,
   );
 
-  const delivery = DELIVERY_FEE;
+  const delivery = estimatePrice ?? 0;
   const serviceCharge = Math.round(subtotal * SERVICE_CHARGE_RATE);
   const total = subtotal + delivery + serviceCharge;
 
@@ -208,26 +207,25 @@ export default function Checkout() {
           </div>
 
           {estimatePrice === null ||
-            estimatePrice === undefined ||
-            existingArray.length < 1 ||
-            shop.length == 0 ||
-            loading === true ||
-            isNaN(total) ? (
-              <Button
-                className="mt-4 w-full "
-                onClick={() => navigate("/checkout")}
-                disabled
-              >
-                Checkout
-              </Button>
-            ) : (
-              <SquadCheckout
-                email={user?.email}
-                address={resolvedAddress}
-                userId={userId}
-              />
-            )
-          }
+          estimatePrice === undefined ||
+          existingArray.length < 1 ||
+          shop.length == 0 ||
+          loading === true ||
+          isNaN(total) ? (
+            <Button
+              className="mt-4 w-full "
+              onClick={() => navigate("/checkout")}
+              disabled
+            >
+              Checkout
+            </Button>
+          ) : (
+            <SquadCheckout
+              email={user?.email}
+              address={resolvedAddress}
+              userId={userId}
+            />
+          )}
         </div>
       </div>
     </DefaultLayout>

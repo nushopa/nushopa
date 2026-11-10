@@ -2,49 +2,68 @@ import { useEffect, useState } from "react";
 import { Button, Radio, Typography } from "@material-tailwind/react";
 import { TrashIcon, PlusIcon } from "@heroicons/react/24/outline";
 import Delivery from "../delivery/delivery";
-import axios from "axios";
+import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
+import axiosClient from "../../../lib/axiosClient";
 
 export default function AddressBook({
   handleDeliveryPrice,
-  onAddressAdded,
   selectedAddress,
   setSelectedAddress,
   existingArray,
-  setExistingArray
+  setExistingArray,
 }) {
   const [showAddressBook, setShowAddressBook] = useState(true);
   const [loading, setLoading] = useState(true);
   const [deliveryLoading, setDeliveryLoading] = useState(true);
   const [deliveryPrices, setDeliveryPrices] = useState([]);
-  let baseUrl = import.meta.env.VITE_BASE_URL;
+  const { user } = useSelector((state) => state.user);
+  const userId = user?._id;
 
   useEffect(() => {
     setDeliveryLoading(true);
-    axios
-      .get(`${baseUrl}pricelist`)
+    axiosClient
+      .get("pricelist")
       .then((response) => {
         if (response.data) {
-          setDeliveryPrices(response.data.prices);
+          setDeliveryPrices(response.data.prices ?? []);
         }
+      })
+      .catch((error) => {
+        console.error("Could not load delivery areas:", error);
+        toast.error(
+          error.response?.data?.message || "Could not load delivery areas.",
+        );
       })
       .finally(() => {
         setDeliveryLoading(false);
       });
-  }, [baseUrl]);
+  }, []);
 
   useEffect(() => {
-    let userId = localStorage.getItem("userId");
-    axios
-      .get(`${baseUrl}checkout/address/${userId}`)
+    if (!userId) {
+      setLoading(false);
+      return;
+    }
+
+    axiosClient
+      .get(`checkout/address/${userId}`)
       .then((response) => {
         if (response.data.checkout) {
+          setExistingArray(response.data.checkout);
           setShowAddressBook(true);
         }
+      })
+      .catch((error) => {
+        console.error("Could not load saved addresses:", error);
+        toast.error(
+          error.response?.data?.message || "Could not load saved addresses.",
+        );
       })
       .finally(() => {
         setLoading(false);
       });
-  }, [baseUrl]);
+  }, [userId, setExistingArray]);
 
   // Auto-select the first saved address once addresses have loaded, so the
   // delivery fee populates immediately instead of waiting for a manual click.
@@ -58,7 +77,7 @@ export default function AddressBook({
     if (!deliveryLoading && selectedAddress !== null) {
       const city = existingArray[selectedAddress]?.city;
       const estimatePrice = deliveryPrices.find(
-        (cityObj) => cityObj.city === city
+        (cityObj) => cityObj.city === city,
       )?.estimatePrice;
       handleDeliveryPrice(estimatePrice);
     }
@@ -74,19 +93,40 @@ export default function AddressBook({
     setShowAddressBook(false);
   };
 
-  const handleAddressAdded = () => {
-    onAddressAdded();
-    setShowAddressBook(true);
+  const handleAddressAdded = async () => {
+    try {
+      const { data } = await axiosClient.get(`checkout/address/${userId}`);
+      const addresses = data.checkout ?? [];
+      setExistingArray(addresses);
+      if (addresses.length > 0) {
+        setSelectedAddress(addresses.length - 1);
+      }
+      setShowAddressBook(true);
+      return addresses.length > 0;
+    } catch (error) {
+      console.error(
+        "Address saved, but saved addresses could not refresh:",
+        error,
+      );
+      toast.error(
+        "Address saved, but the address book could not refresh. Please reload checkout.",
+      );
+      return false;
+    }
   };
 
   const handleDeleteAddress = async (id) => {
     try {
-      await axios.delete(`${baseUrl}checkout/address/${id}`);
-      const updatedArray = existingArray.filter((address) => address.doc_id !== id);
+      await axiosClient.delete(`checkout/address/${id}`);
+      const updatedArray = existingArray.filter(
+        (address) => address.doc_id !== id,
+      );
       setExistingArray(updatedArray);
       // If the deleted address was the selected one, clear the selection
       // so the auto-select effect can pick a new default (or clear the fee).
-      const deletedIndex = existingArray.findIndex((address) => address.doc_id === id);
+      const deletedIndex = existingArray.findIndex(
+        (address) => address.doc_id === id,
+      );
       if (deletedIndex === selectedAddress) {
         setSelectedAddress(updatedArray.length > 0 ? 0 : null);
       } else if (deletedIndex < selectedAddress) {
@@ -94,6 +134,7 @@ export default function AddressBook({
       }
     } catch (error) {
       console.error("Failed to delete address:", error);
+      toast.error(error.response?.data?.message || "Could not delete address.");
     }
   };
 

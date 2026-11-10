@@ -2,56 +2,47 @@ import { useState, useEffect } from "react";
 import { Textarea } from "@material-tailwind/react";
 import NaijaStates from "naija-state-local-government";
 import { Select, Option } from "@material-tailwind/react";
-import axios from "axios";
 import { toast } from "react-toastify";
-import { phantomPost } from "phantom-request";
-// import { useDeliveryPricesQuery } from "../../../services/delivery";
+import { useSelector } from "react-redux";
+import axiosClient from "../../../lib/axiosClient";
 
-
-export default function Delivery({ onDeliveryPriceChange }) {
+export default function Delivery({ onDeliveryPriceChange, onAddressAdded }) {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     email: "",
     phoneNumber: "",
     AdditionalPhoneNumber: "",
+    address: "",
+    directions: "",
   });
   const [selectedOption, setSelectedOption] = useState("Lagos");
   const [selectedLga, setSelectedLga] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [deliveryLoading, setDeliveryLoading] = useState(false);
+  const [deliveryLoading, setDeliveryLoading] = useState(true);
   const [deliveryPrices, setDeliveryPrices] = useState([]);
-  let baseUrl = import.meta.env.VITE_BASE_URL
-
-  const { response, error, loading, post } = phantomPost({
-    baseURL: baseUrl,
-    route: "checkout/price",
-  });
+  const { user } = useSelector((state) => state.user);
+  const userId = user?._id;
 
   useEffect(() => {
-    if (loading) {
-      setIsLoading(loading)
-    }
-    if (response) {
-      window.location.reload();
-    }
-    if (error) {
-      toast.error(error.response.data.message)
-    }
-  }, [error, loading, response])
-  useEffect(() => {
-    axios
-      .get(`${baseUrl}pricelist`)
+    axiosClient
+      .get("pricelist")
       .then((response) => {
         if (response.data) {
-          setDeliveryPrices(response.data.prices)
+          setDeliveryPrices(response.data.prices ?? []);
         }
+      })
+      .catch((error) => {
+        console.error("Could not load delivery areas:", error);
+        toast.error(
+          error.response?.data?.message || "Could not load delivery areas.",
+        );
       })
       .finally(() => {
         setDeliveryLoading(false);
       });
-  }, [baseUrl]);
-  let useId = localStorage.getItem("userId")
+  }, []);
+
   useEffect(() => {
     if (deliveryPrices.length > 0) {
       setSelectedLga(deliveryPrices[0].city);
@@ -80,36 +71,56 @@ export default function Delivery({ onDeliveryPriceChange }) {
     }));
   };
   useEffect(() => {
-    if (!deliveryLoading) {
-      // Move the invocation of onDeliveryPriceChange inside useEffect
-      const estimatePrice = deliveryPrices.find(
-        (cityObj) => cityObj.city === selectedLga
-      )?.estimatePrice;
-      onDeliveryPriceChange(estimatePrice);
-    }
+    if (deliveryLoading) return;
+    const estimatePrice = deliveryPrices.find(
+      (cityObj) => cityObj.city === selectedLga,
+    )?.estimatePrice;
+    onDeliveryPriceChange(estimatePrice);
   }, [selectedLga, onDeliveryPriceChange, deliveryPrices, deliveryLoading]);
+
   if (deliveryLoading) {
     return <div>Loading...</div>;
   }
 
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!userId) {
+      toast.error("Your session has expired. Please sign in again.");
+      return;
+    }
+
+    if (!deliveryPrices.some((price) => price.city === selectedLga)) {
+      toast.error("Please select a valid delivery area.");
+      return;
+    }
+
     setIsLoading(true);
-    const postDataInfo = {
-      first_name: formData.firstName,
-      last_name: formData.lastName,
-      email: formData.email,
-      phone_number: formData.phoneNumber,
-      address: formData.address,
-      state: selectedOption,
-      city: selectedLga,
-      additional_phone_number: formData.AdditionalPhoneNumber,
-      directions: formData.directions,
-      customer_id: useId
-    };
-    post(postDataInfo)
-    setIsLoading(false);
+    try {
+      const { data } = await axiosClient.post("checkout/price", {
+        first_name: formData.firstName.trim(),
+        last_name: formData.lastName.trim(),
+        email: formData.email.trim(),
+        phone_number: formData.phoneNumber.trim(),
+        address: formData.address.trim(),
+        state: selectedOption,
+        city: selectedLga,
+        additional_phone_number: formData.AdditionalPhoneNumber.trim(),
+        directions: formData.directions.trim(),
+        customer_id: userId,
+      });
+
+      onDeliveryPriceChange(data.price ?? data.estimatePrice);
+      const refreshed = await onAddressAdded();
+      if (!refreshed) return;
+      toast.success("Delivery address saved.");
+    } catch (error) {
+      console.error("Could not save delivery address:", error);
+      toast.error(
+        error.response?.data?.message || "Could not save delivery address.",
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // const lgas = NaijaStates.lgas(selectedOption).lgas;
@@ -178,6 +189,7 @@ export default function Delivery({ onDeliveryPriceChange }) {
               placeholder="Enter your email"
               value={formData.email}
               onChange={handleChange}
+              required
               className="w-full p-2 border mt-2 rounded-lg outline-none border-[#7B7B7B] border-opacity-50 mb-4"
             />
           </div>
@@ -191,7 +203,7 @@ export default function Delivery({ onDeliveryPriceChange }) {
               Phone Number:
             </label>
             <input
-              type="number"
+              type="tel"
               id="phone number"
               name="phoneNumber"
               required
@@ -210,6 +222,8 @@ export default function Delivery({ onDeliveryPriceChange }) {
             Address:
           </label>
           <Textarea
+            required
+            name="address"
             value={formData.address}
             onChange={(e) => handleChangeTextarea(e, "address")}
           />
@@ -257,13 +271,13 @@ export default function Delivery({ onDeliveryPriceChange }) {
         <div className=" gap-4 md:gap-5 pt-2">
           <div className="w-full">
             <label
-              htmlFor="phone number"
+              htmlFor="directions"
               className="text-[#7B7B7B] font-workSans font-semibold"
             >
               Additional Phone Number:
             </label>
             <input
-              type="number"
+              type="tel"
               id="phone number"
               name="AdditionalPhoneNumber"
               value={formData.AdditionalPhoneNumber}
@@ -281,6 +295,7 @@ export default function Delivery({ onDeliveryPriceChange }) {
             Directions*:
           </label>
           <Textarea
+            id="directions"
             value={formData.directions}
             onChange={(e) => handleChangeTextarea(e, "directions")}
           />

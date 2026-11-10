@@ -15,8 +15,7 @@ import DeleteIcon from "../icons/deleteIcon";
 import FloatingButton from "./FloatingButton";
 import { BsFillBasketFill } from "react-icons/bs";
 import useAuth from "../../lib/hooks/useAuth";
-
-const DELIVERY_FEE = 1800;
+import useDefaultDeliveryFee from "../../lib/hooks/useDefaultDeliveryFee";
 
 const FloatingCart = () => {
   const { isAuthenticated, user } = useAuth();
@@ -35,6 +34,7 @@ const FloatingCart = () => {
   const [increment] = useIncrementMutation();
   const [decrement] = useDecrementMutation();
   const [deleteCart] = useDeleteSingleCartMutation();
+  const configuredDeliveryFee = useDefaultDeliveryFee();
 
   const cartCount = useSelector((state) => state.carte.cartCount);
 
@@ -59,7 +59,8 @@ const FloatingCart = () => {
   }, 0);
 
   const serviceCharges = subtotal * 0.15;
-  const total = subtotal + DELIVERY_FEE + serviceCharges;
+  const deliveryFee = configuredDeliveryFee ?? 0;
+  const total = subtotal + deliveryFee + serviceCharges;
 
   const handleClose = () => setIsOpen(false);
 
@@ -256,7 +257,11 @@ const FloatingCart = () => {
                 </div>
                 <div className="flex justify-between text-base text-gray-700">
                   <span>Delivery Fee</span>
-                  <span>₦{AddCommasToNumber(DELIVERY_FEE)}</span>
+                  <span>
+                    {configuredDeliveryFee === null
+                      ? "At checkout"
+                      : `₦${AddCommasToNumber(deliveryFee)}`}
+                  </span>
                 </div>
                 <div className="flex justify-between text-base text-gray-700">
                   <span> Service Charges</span>
