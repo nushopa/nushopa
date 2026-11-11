@@ -1,17 +1,20 @@
-
 /* eslint-disable no-undef */
 /* global importScripts,  firebase */
 
-importScripts("https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js");
-importScripts("https://www.gstatic.com/firebasejs/10.13.2/firebase-messaging-compat.js");
+importScripts(
+  "https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js",
+);
+importScripts(
+  "https://www.gstatic.com/firebasejs/10.13.2/firebase-messaging-compat.js",
+);
 
 firebase.initializeApp({
-  apiKey: "AIzaSyAhvwAU7wl6-l3txwXVNOIgNLbYW87AdDs",
-  authDomain: "nushopa-web.firebaseapp.com",
-  projectId: "nushopa-web",
-  storageBucket: "nushopa-web.firebasestorage.app",
-  messagingSenderId: "997814702955",
-  appId: "1:997814702955:web:25321038d3bd512350322e",
+  apiKey: "AIzaSyA0PjctaYaZhaN0iTx0CYa3XjqKpmE5HHk",
+  authDomain: "nushopa-3e02e.firebaseapp.com",
+  projectId: "nushopa-3e02e",
+  storageBucket: "nushopa-3e02e.firebasestorage.app",
+  messagingSenderId: "53761534400",
+  appId: "1:53761534400:web:eb3dd83b6adda245ed4025",
 });
 
 const messaging = firebase.messaging();
@@ -28,7 +31,7 @@ messaging.onBackgroundMessage((payload) => {
 // Optional: route a tap on the notification back into the app.
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
-  const orderId = event.notification.data?.orderId;
-  const url = orderId ? `/order-status/${orderId}` : "/";
+  const { orderId, route } = event.notification.data || {};
+  const url = route || (orderId ? `/order-status/${orderId}` : "/");
   event.waitUntil(clients.openWindow(url));
 });

@@ -4,7 +4,7 @@
   "version": "2.0.3",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host localhost --port 5173 --strictPort",
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives",
     "preview": "vite preview",
@@ -28,6 +28,7 @@
     "dompurify": "^3.2.3",
     "dotenv": "^16.3.1",
     "firebase": "^10.14.1",
+    "firebase-admin": "^14.5.0",
     "gsap": "^3.12.5",
     "naija-state-local-government": "^1.1.2",
     "paystack": "^2.0.1",

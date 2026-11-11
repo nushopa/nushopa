@@ -1,7 +1,8 @@
 import { usePushNotifications } from "../hooks/usePushNotifications";
 
 export default function EnableNotificationsButton() {
-  const { permission, requestPermissionAndRegister } = usePushNotifications();
+  const { permission, requestPermissionAndRegister, error } =
+    usePushNotifications();
 
   if (permission === "granted") {
     return <p>✅ Notifications enabled</p>;
@@ -22,6 +23,11 @@ export default function EnableNotificationsButton() {
 
   // permission === "default" — hasn't been asked yet
   return (
-    <button onClick={requestPermissionAndRegister}>Enable order updates</button>
+    <>
+      <button onClick={requestPermissionAndRegister}>
+        Enable order updates
+      </button>
+      {error ? <p role="alert">{error}</p> : null}
+    </>
   );
 }

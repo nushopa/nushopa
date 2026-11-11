@@ -7,12 +7,14 @@ import { PersistGate } from "redux-persist/integration/react";
 import store, { persistor } from "./redux/store";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import CookieBanner from "./components/cookieBanner/CookieBanner.jsx";
+import AnalyticsConsent from "./components/analytics/AnalyticsConsent.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <GoogleOAuthProvider clientId="664962540991-7b5gmbe2035ngf9kcl6leuunrp17jgvv.apps.googleusercontent.com">
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
+          <AnalyticsConsent />
           <App />
           <CookieBanner />
         </PersistGate>
