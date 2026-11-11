@@ -5,20 +5,20 @@ export const fetchProductById = createAsyncThunk(
   "product/fetchProductById",
   async (productId) => {
     const response = await axios.get(
-      `${import.meta.env.VITE_BASE_URL}/product/get/${productId}`
+      `${import.meta.env.VITE_BASE_URL}/product/get/${productId}`,
     );
     return response.data.product;
-  }
+  },
 );
 export const fetchRelatedProducts = createAsyncThunk(
   "product/fetchRelatedProducts",
   async (productCat) => {
     const response = await axios.get(
-      `${import.meta.env.VITE_BASE_URL}/product?product_cat=${productCat}`
+      `${import.meta.env.VITE_BASE_URL}/product?product_cat=${productCat}`,
     );
 
     return response.data;
-  }
+  },
 );
 export const productSlice = createSlice({
   name: "product",
@@ -69,4 +69,3 @@ export const relatedProductSlice = createSlice({
       });
   },
 });
-

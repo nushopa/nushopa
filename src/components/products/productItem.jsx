@@ -65,7 +65,10 @@ export default function ProductItem({
   }, [carter, _id]);
 
   const handleIncrement = async (productId) => {
-    if (!isAuthenticated) { navigate("/sign-in"); return; }
+    if (!isAuthenticated) {
+      navigate("/sign-in");
+      return;
+    }
     try {
       const response = await increment({ id: productId });
       if (response.data) {
@@ -82,7 +85,10 @@ export default function ProductItem({
   };
 
   const handleRemoveFromCart = async (cartItemId) => {
-    if (!isAuthenticated) { navigate("/sign-in"); return; }
+    if (!isAuthenticated) {
+      navigate("/sign-in");
+      return;
+    }
     if (!cartItemId) return;
     try {
       setIsAddingToCart(true);
@@ -104,7 +110,10 @@ export default function ProductItem({
   };
 
   const handleDecrement = async (productId) => {
-    if (!isAuthenticated) { navigate("/sign-in"); return; }
+    if (!isAuthenticated) {
+      navigate("/sign-in");
+      return;
+    }
     try {
       const response = await decrement({ id: productId });
       if (response.data) {
@@ -124,7 +133,10 @@ export default function ProductItem({
   };
 
   const handleAddToCart = async (_id) => {
-    if (!isAuthenticated) { navigate("/sign-in"); return; }
+    if (!isAuthenticated) {
+      navigate("/sign-in");
+      return;
+    }
     if (out_of_stock) return; // guard against stray clicks/enter key
     setIsAddingToCart(true);
     const postDataInfo = { customer_id: userId, product_id: _id };
@@ -148,7 +160,10 @@ export default function ProductItem({
   };
 
   const truncatedProductDes = truncateString(product_des, productDesMaxLength);
-  const truncatedProductName = truncateString(product_name, productNameMaxLength);
+  const truncatedProductName = truncateString(
+    product_name,
+    productNameMaxLength,
+  );
 
   return (
     <Card className="w-56 md:w-72">
@@ -165,7 +180,7 @@ export default function ProductItem({
             product_image={product_image}
             truncatedProductName={truncatedProductName}
           />
-          
+
           <div
             className="absolute top-2 right-2 z-10"
             onClick={(e) => e.stopPropagation()}
@@ -193,7 +208,10 @@ export default function ProductItem({
           </Typography>
         </div>
         {out_of_stock && (
-          <Typography variant="small" className="text-red-600 font-semibold mb-1">
+          <Typography
+            variant="small"
+            className="text-red-600 font-semibold mb-1"
+          >
             Out of Stock
           </Typography>
         )}

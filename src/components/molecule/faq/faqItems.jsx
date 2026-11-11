@@ -6,7 +6,9 @@ const FaqItem = ({ list, handleClick, isOpen, index }) => {
           onClick={() => handleClick(index)}
           className="flex justify-between cursor-pointer items-center bg-white px-4 py-2 w-[95%] md:w-[80%] "
         >
-          <p className="text-md md:text-[1.5rem] w-[80%] md:w-full">{list.question}</p>
+          <p className="text-md md:text-[1.5rem] w-[80%] md:w-full">
+            {list.question}
+          </p>
           <button className="text-[#000] text-[2rem]">
             {isOpen[index] ? "-" : "+"}
           </button>

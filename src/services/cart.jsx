@@ -8,7 +8,6 @@ export const cartApi = createApi({
   }),
   tagTypes: ["Cart"],
   endpoints: (builder) => ({
-
     getCarts: builder.query({
       query: (userId) => `cart/get/${userId}`,
       providesTags: ["Cart"],
@@ -42,7 +41,7 @@ export const cartApi = createApi({
       }),
       invalidatesTags: ["Cart"],
     }),
-    
+
     // delete single cart
     deleteSingleCart: builder.mutation({
       query: (id) => ({

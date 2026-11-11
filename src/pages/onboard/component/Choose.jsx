@@ -65,7 +65,14 @@ const Skeleton = () => (
           }}
         />
       </div>
-      <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "1.5rem" }}>
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          justifyContent: "center",
+          gap: "1.5rem",
+        }}
+      >
         {[1, 2, 3].map((i) => (
           <div
             key={i}
@@ -125,7 +132,9 @@ const StatCard = ({ stat, index }) => {
           transition: "transform 0.45s ease",
         }}
       />
-      <span style={{ fontSize: "1.4rem", marginBottom: "0.25rem", opacity: 0.6 }}>
+      <span
+        style={{ fontSize: "1.4rem", marginBottom: "0.25rem", opacity: 0.6 }}
+      >
         {iconFor(stat.label)}
       </span>
       <span
@@ -264,7 +273,11 @@ const Choose = () => {
             >
               {(item.statistics?.length
                 ? item.statistics
-                : [{ value: "2000+", label: "Happy Customers" }, { value: "150+", label: "Farm Partners" },{ value: "50+", label: "Fresh Products" }]
+                : [
+                    { value: "2000+", label: "Happy Customers" },
+                    { value: "150+", label: "Farm Partners" },
+                    { value: "50+", label: "Fresh Products" },
+                  ]
               ).map((stat, statIndex) => (
                 <StatCard key={statIndex} stat={stat} index={statIndex} />
               ))}

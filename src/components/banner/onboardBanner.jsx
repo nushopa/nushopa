@@ -1,4 +1,4 @@
-const OnboardBanner = ({pageName}) => {
+const OnboardBanner = ({ pageName }) => {
   return (
     <div
       className="w-full 

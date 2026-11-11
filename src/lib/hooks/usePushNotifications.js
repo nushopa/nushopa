@@ -14,10 +14,11 @@ function getOrCreateDeviceId() {
   return id;
 }
 
-
 export function usePushNotifications() {
   const [permission, setPermission] = useState(
-    typeof Notification !== "undefined" ? Notification.permission : "unsupported",
+    typeof Notification !== "undefined"
+      ? Notification.permission
+      : "unsupported",
   );
 
   const requestPermissionAndRegister = useCallback(async () => {

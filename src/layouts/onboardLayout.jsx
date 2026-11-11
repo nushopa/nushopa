@@ -2,7 +2,14 @@ import { useNavigate } from "react-router-dom";
 import OnboardBanner from "../components/banner/onboardBanner";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Avatar, Card, List, ListItem, ListItemPrefix, Typography } from "@material-tailwind/react";
+import {
+  Avatar,
+  Card,
+  List,
+  ListItem,
+  ListItemPrefix,
+  Typography,
+} from "@material-tailwind/react";
 
 export default function OnboardLayout({ children }) {
   const navigate = useNavigate();
@@ -12,14 +19,12 @@ export default function OnboardLayout({ children }) {
 
   let baseUrl = import.meta.env.VITE_BASE_URL;
   useEffect(() => {
-    axios
-      .get(`${baseUrl}product`)
-      .then((response) => {
-        if (response.data) {
-          setDetails(response.data.products);
-          setFilteredDetails(response.data.products); // Initialize filteredDetails with all products
-        }
-      })
+    axios.get(`${baseUrl}product`).then((response) => {
+      if (response.data) {
+        setDetails(response.data.products);
+        setFilteredDetails(response.data.products); // Initialize filteredDetails with all products
+      }
+    });
   }, [baseUrl]);
 
   // Update filteredDetails whenever searchField changes
@@ -29,13 +34,13 @@ export default function OnboardLayout({ children }) {
         product.product_name
           .toLowerCase()
           .includes(searchField.toLowerCase()) ||
-    product.product_cat.toLowerCase().includes(searchField.toLowerCase()) ||
-    product.product_brand_name
-      .toLowerCase()
-      .includes(searchField.toLowerCase()) ||
-    product.product_sub_cat
-      .toLowerCase()
-      .includes(searchField.toLowerCase())
+        product.product_cat.toLowerCase().includes(searchField.toLowerCase()) ||
+        product.product_brand_name
+          .toLowerCase()
+          .includes(searchField.toLowerCase()) ||
+        product.product_sub_cat
+          .toLowerCase()
+          .includes(searchField.toLowerCase()),
     );
     setFilteredDetails(filteredProducts);
   }, [searchField, details]);
@@ -91,7 +96,11 @@ export default function OnboardLayout({ children }) {
                   />
                 </ListItemPrefix>
                 <div>
-                  <Typography variant="h6" color="blue-gray" className="truncate">
+                  <Typography
+                    variant="h6"
+                    color="blue-gray"
+                    className="truncate"
+                  >
                     {item?.product_name}
                   </Typography>
                   <Typography

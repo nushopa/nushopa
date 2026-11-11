@@ -10,8 +10,8 @@ export default function EnableNotificationsButton() {
   if (permission === "denied") {
     return (
       <p>
-          Notifications are blocked. To enable them, allow notifications for
-        this site in your browser&apos;s settings, then reload.
+        Notifications are blocked. To enable them, allow notifications for this
+        site in your browser&apos;s settings, then reload.
       </p>
     );
   }
@@ -22,8 +22,6 @@ export default function EnableNotificationsButton() {
 
   // permission === "default" — hasn't been asked yet
   return (
-    <button onClick={requestPermissionAndRegister}>
-      Enable order updates
-    </button>
+    <button onClick={requestPermissionAndRegister}>Enable order updates</button>
   );
 }

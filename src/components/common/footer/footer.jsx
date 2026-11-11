@@ -37,19 +37,17 @@ export function FooterWithSitemap() {
   };
 
   const newsletterColumn = sitemap.find(
-    ({ title }) => title === "Subscribe to our Newsletter"
+    ({ title }) => title === "Subscribe to our Newsletter",
   );
   const navColumns = sitemap.filter(
-    ({ title }) => title !== "Subscribe to our Newsletter"
+    ({ title }) => title !== "Subscribe to our Newsletter",
   );
 
   return (
     <footer className="w-full bg-mainGreen text-white">
       <div className="mx-auto w-full max-w-7xl px-8 py-16">
-
         {/* Top section: Logo + Nav columns + Newsletter */}
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-5 pb-12 border-b border-white/20">
-
           {/* Logo & tagline */}
           <div className="lg:col-span-1 flex flex-col gap-4">
             <a href="/">
@@ -75,7 +73,10 @@ export function FooterWithSitemap() {
                 {Array.isArray(links) &&
                   links.map((link, index) => {
                     if (typeof link !== "object") return null;
-                    if (isLoggedIn && (link.label === "Sign Up" || link.label === "Log In"))
+                    if (
+                      isLoggedIn &&
+                      (link.label === "Sign Up" || link.label === "Log In")
+                    )
                       return null;
                     return (
                       <li key={index}>
@@ -164,7 +165,6 @@ export function FooterWithSitemap() {
             </a>
           </div>
         </div>
-
       </div>
     </footer>
   );

@@ -18,7 +18,6 @@ const Company = () => {
     <section className="w-full bg-gray-50 py-16 px-6 md:px-12">
       {companyData.map((section, index) => (
         <div key={index} className="max-w-5xl mx-auto">
-
           <p className="text-xs font-semibold tracking-[0.2em] uppercase text-[#1a3c2e] mb-4">
             Company
           </p>
@@ -36,7 +35,6 @@ const Company = () => {
               </p>
             ))}
           </div>
-
         </div>
       ))}
     </section>

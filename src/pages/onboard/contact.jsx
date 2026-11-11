@@ -127,6 +127,6 @@ const Contact = () => {
       <FooterWithSitemap />
     </>
   );
-}
+};
 
-export default Contact
+export default Contact;

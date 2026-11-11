@@ -1,5 +1,5 @@
 import { Typography } from "@material-tailwind/react";
- 
+
 export function ImagePlacehoderSkeleton() {
   return (
     <div className="flex w-full animate-pulse flex-wrap my-10 items-start gap-8">

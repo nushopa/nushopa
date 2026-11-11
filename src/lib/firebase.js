@@ -14,7 +14,7 @@ const firebaseConfig = {
   storageBucket: "nushopa-web.firebasestorage.app",
   messagingSenderId: "997814702955",
   appId: "1:997814702955:web:25321038d3bd512350322e",
-  measurementId: "G-4MPFSTHXR3"
+  measurementId: "G-4MPFSTHXR3",
 };
 
 // Initialize Firebase
@@ -33,7 +33,7 @@ let messagingPromise = null;
 export function getMessagingIfSupported() {
   if (!messagingPromise) {
     messagingPromise = isSupported().then((supported) =>
-      supported ? getMessaging(app) : null
+      supported ? getMessaging(app) : null,
     );
   }
   return messagingPromise;

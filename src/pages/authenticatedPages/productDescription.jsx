@@ -313,7 +313,6 @@ export default function ProductDescription() {
 
           {/* ---------- Buy box ---------- */}
           <div className={`min-w-0 ${C.ink}`}>
-           
             <h1 className="mt-1 break-words text-2xl font-medium md:text-3xl">
               {product.product_name}
             </h1>

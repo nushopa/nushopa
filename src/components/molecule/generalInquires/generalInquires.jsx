@@ -8,7 +8,7 @@ const GeneralInquiries = () => {
       .fetch('*[_type == "generalInquiries"] | order(_createdAt asc)')
       .then((data) => {
         setGeneralInquires(data);
-      })
+      });
   }, []);
   return (
     <div className="px-2 ">

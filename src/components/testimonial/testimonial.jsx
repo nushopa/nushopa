@@ -8,7 +8,7 @@ const builder = imageUrlBuilder(client);
 
 const Testimonial = () => {
   const [staticTestimonial, setStaticTestimonial] = useState(
-    [] || staticTestimonials
+    [] || staticTestimonials,
   );
 
   useEffect(() => {
@@ -25,7 +25,6 @@ const Testimonial = () => {
 
   return (
     <div>
-     
       <div className="overflow-x-auto w-full mx-auto">
         <div className="flex flex-row md:grid my-5 md:grid-cols-3 gap-4">
           {staticTestimonial.map((testimonial, index) => (

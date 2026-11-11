@@ -1,5 +1,5 @@
 import { FaBell, FaBellSlash, FaLongArrowAltRight } from "react-icons/fa";
-import { usePushNotifications } from '../../lib/hooks/usePushNotifications';
+import { usePushNotifications } from "../../lib/hooks/usePushNotifications";
 
 const NotificationBell = ({ variant = "icon", onNavigate }) => {
   const { permission, requestPermissionAndRegister } = usePushNotifications();

@@ -14,7 +14,7 @@ export const itemsNavigationLinks = [
   { url: "/Processed", label: "Processed" },
 ];
 export const tabList = [
-  { name: "Most recent", numOf: 30, active: true},
+  { name: "Most recent", numOf: 30, active: true },
   { name: "Roots and Tubers" },
   { name: "Perishables" },
   { name: "Seeds" },

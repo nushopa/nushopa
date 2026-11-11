@@ -5,15 +5,14 @@ const SearchBar = ({
   placeholder = "Search products by name, category, brand...",
   value,
   onChange,
-  onSearch,                   
+  onSearch,
   suggestions = [],
   onSelectSuggestion,
   className = "",
-  showSuggestions = true,      
+  showSuggestions = true,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const wrapperRef = useRef(null);
-
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -26,7 +25,8 @@ const SearchBar = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const shouldShowSuggestions = isFocused && value?.trim() && suggestions.length > 0 && showSuggestions;
+  const shouldShowSuggestions =
+    isFocused && value?.trim() && suggestions.length > 0 && showSuggestions;
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {

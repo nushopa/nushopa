@@ -210,7 +210,6 @@ const POLICY_CONTENT = [
   block("Support form: available in the app under Help & Support"),
 ];
 
-
 const serializers = {
   types: {
     block: ({ node, children }) => {
@@ -261,7 +260,6 @@ const serializers = {
 };
 
 const PrivacyPolicy = () => {
- 
   return (
     <OnboardLayout>
       <Helmet>
@@ -273,8 +271,6 @@ const PrivacyPolicy = () => {
       </Helmet>
 
       <div className="bg-white px-5 pt-8 pb-14 md:px-12 md:pt-14 md:pb-24 rounded-lg">
-       
-
         <div className="md:grid md:grid-cols-[200px_minmax(0,1fr)] md:gap-x-14">
           {/* Table of contents */}
           <nav

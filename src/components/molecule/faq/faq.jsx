@@ -10,18 +10,17 @@ const Faq = () => {
     client
       .fetch('*[_type == "FaqList"] | order(_createdAt asc)')
       .then((data) => {
-        setFaqlist(data[0].faqs)
-      })
-
+        setFaqlist(data[0].faqs);
+      });
   }, []);
   const handleClick = (id) => {
     setIsOpen({
       ...isOpen,
-      [id]: !isOpen[id]
+      [id]: !isOpen[id],
     });
   };
 
-  return ( 
+  return (
     <>
       {faqList.map((list, index) => (
         <FaqItem
@@ -34,6 +33,6 @@ const Faq = () => {
       ))}
     </>
   );
-}
- 
+};
+
 export default Faq;

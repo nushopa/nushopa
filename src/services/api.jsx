@@ -28,13 +28,25 @@ export const userApi = createApi({
       query: (data) => ({ url: "login", method: "POST", body: data }),
     }),
     forgottenPassword: builder.mutation({
-      query: (data) => ({ url: "customers/forget", method: "POST", body: data }),
+      query: (data) => ({
+        url: "customers/forget",
+        method: "POST",
+        body: data,
+      }),
     }),
     verifyOTP: builder.mutation({
-      query: (data) => ({ url: "customers/verify", method: "POST", body: data }),
+      query: (data) => ({
+        url: "customers/verify",
+        method: "POST",
+        body: data,
+      }),
     }),
     resetPassword: builder.mutation({
-      query: (data) => ({ url: "customers/update", method: "POST", body: data }),
+      query: (data) => ({
+        url: "customers/update",
+        method: "POST",
+        body: data,
+      }),
     }),
     addReview: builder.mutation({
       query: (data) => ({ url: "review/review", method: "POST", body: data }),
@@ -51,14 +63,22 @@ export const userApi = createApi({
 
     // ── Payment / Paystack flow ─────────────────────────────────────────
     initializePayment: builder.mutation({
-      query: (data) => ({ url: "payment/initialize", method: "POST", body: data }),
+      query: (data) => ({
+        url: "payment/initialize",
+        method: "POST",
+        body: data,
+      }),
     }),
     getOrderStatus: builder.query({
       query: (reference) => `payment/status/${reference}`,
     }),
 
     addContact: builder.mutation({
-      query: ({ data }) => ({ url: "/contact/contact", method: "POST", body: data }),
+      query: ({ data }) => ({
+        url: "/contact/contact",
+        method: "POST",
+        body: data,
+      }),
     }),
 
     // create user - sends OTP, no session yet

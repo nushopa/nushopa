@@ -12,7 +12,7 @@ const TermsAndConditions = () => {
       .fetch('*[_type == "TermsAndConditionsPage"] | order(_createdAt asc)')
       .then((data) => {
         setTermsAndConditions(data);
-      })
+      });
   }, []);
   return (
     <OnboardLayout>
@@ -32,8 +32,8 @@ const TermsAndConditions = () => {
             </h1>
             <div className="font-workSans text-[#7B7B7B]">
               <p>
-                Welcome to Nushopa! These terms and conditions outline the
-                rules and regulations for the use of Nushopa's website.
+                Welcome to Nushopa! These terms and conditions outline the rules
+                and regulations for the use of Nushopa's website.
               </p>
 
               <p>

@@ -46,7 +46,7 @@ const InputField = ({
             w-full px-3 py-2 text-sm border rounded-lg transition-all duration-200
             focus:ring-2 focus:ring-blue-500 focus:border-blue-500
             ${isPassword ? "pr-10" : ""}
-            ${ disabled ? "bg-gray-100 dark:bg-gray-800 cursor-not-allowed" : "hover:border-gray-400 dark:hover:border-gray-600" }
+            ${disabled ? "bg-gray-100 dark:bg-gray-800 cursor-not-allowed" : "hover:border-gray-400 dark:hover:border-gray-600"}
             ${error ? "border-red-500 bg-red-50 dark:bg-red-950/20 focus:ring-red-500 focus:border-red-500" : "border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"}
           `}
         />

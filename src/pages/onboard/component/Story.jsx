@@ -19,7 +19,7 @@ const Story = () => {
       {StoryData.map((section, index) => (
         <div key={index} className="max-w-5xl mx-auto">
           <p className="text-xs font-semibold tracking-[0.2em] uppercase text-[#D9D9D990] mb-4">
-           Who we are
+            Who we are
           </p>
 
           <h2 className="text-3xl md:text-4xl font-bold text-[#ffff]  mb-8 leading-tight">

@@ -4,8 +4,6 @@ import ProductItem from "../products/productItem";
 import { CircularPagination } from "../pagination/pagination";
 import { Loader } from "../molecule/loader/tabLoader";
 
-
-
 const useDebounce = (value, delay) => {
   const [debouncedValue, setDebouncedValue] = useState(value);
 
@@ -38,30 +36,33 @@ export default function TabItem({ category, carter }) {
     }
   };
 
-  const fetchDataAndSetState = useCallback(async (page = 1) => {
-    setLoading(true);
-    let baseUrl = import.meta.env.VITE_BASE_URL;
-    const apiUrl = getApiUrl(debouncedCategory, page);
-    const url = `${baseUrl}${apiUrl}`;
+  const fetchDataAndSetState = useCallback(
+    async (page = 1) => {
+      setLoading(true);
+      let baseUrl = import.meta.env.VITE_BASE_URL;
+      const apiUrl = getApiUrl(debouncedCategory, page);
+      const url = `${baseUrl}${apiUrl}`;
 
-    try {
-      const response = await axios.get(url, {
-        headers: { 
-          'Cache-Control': 'no-cache', 
-          'Pragma': 'no-cache' 
-        },
-      });
-      const data = response.data;
+      try {
+        const response = await axios.get(url, {
+          headers: {
+            "Cache-Control": "no-cache",
+            Pragma: "no-cache",
+          },
+        });
+        const data = response.data;
 
-      setGeneralProduct(data.products);
-      setTotalPages(data.totalPages);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    } finally {
-      setLoading(false);
-      (false);
-    }
-  }, [debouncedCategory]);
+        setGeneralProduct(data.products);
+        setTotalPages(data.totalPages);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+        false;
+      }
+    },
+    [debouncedCategory],
+  );
 
   useEffect(() => {
     setCurrentPage(1);
@@ -99,7 +100,6 @@ export default function TabItem({ category, carter }) {
               <h2 className="text-xl font-workSans font-bold text-mainGreen">
                 {category}
               </h2>
-             
             </div>
             <div className="overflow-x-auto md:overflow-hidden w-full mx-auto">
               <div className="flex flex-row md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 md:gap-6">

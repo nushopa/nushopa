@@ -181,7 +181,7 @@ export default function ProductItemStore({
             product_image={product_image}
             truncatedProductName={truncatedProductName}
           />
-          
+
           <div
             className="absolute top-2 right-2 z-10"
             onClick={(e) => e.stopPropagation()}
@@ -209,7 +209,10 @@ export default function ProductItemStore({
           </Typography>
         </div>
         {out_of_stock && (
-          <Typography variant="small" className="text-red-600 font-semibold mb-1">
+          <Typography
+            variant="small"
+            className="text-red-600 font-semibold mb-1"
+          >
             Out of Stock
           </Typography>
         )}

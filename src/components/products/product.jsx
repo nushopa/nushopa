@@ -38,20 +38,22 @@ export default function ProductsList() {
 
       <div className={`my-9 grid grid-cols-1 ${loading ? "hidden" : ""}`}>
         {/* Render all uncategorized products in a single row */}
-        
 
         {/* Render categorized products in rows */}
         {categories.map((category, index) => (
           <div key={index} className="mb-6">
             <div className="flex justify-between flex-row mb-6 items-center px-5">
-              <div >
+              <div>
                 <h2 className="text-xl font-workSans font-bold text-mainGreen  ">
                   {category}
                 </h2>
               </div>
               <div>
-                <Link to="/" className="px-4 py-2 rounded-md text-mainGreen bg-transparent border border-green-900">
-                  view more 
+                <Link
+                  to="/"
+                  className="px-4 py-2 rounded-md text-mainGreen bg-transparent border border-green-900"
+                >
+                  view more
                 </Link>
               </div>
             </div>

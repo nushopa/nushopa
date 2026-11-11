@@ -13,7 +13,7 @@ import { consentApi } from "@/services/consentapi";
 const persistConfig = {
   key: "root",
   storage,
- 
+
   blacklist: [
     "user",
     userApi.reducerPath,

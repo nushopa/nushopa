@@ -2,7 +2,10 @@ function splitIntoParagraphs(text = "", sentencesPerParagraph = 3) {
   const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
   const paragraphs = [];
   for (let i = 0; i < sentences.length; i += sentencesPerParagraph) {
-    const chunk = sentences.slice(i, i + sentencesPerParagraph).join(" ").trim();
+    const chunk = sentences
+      .slice(i, i + sentencesPerParagraph)
+      .join(" ")
+      .trim();
     if (chunk) paragraphs.push(chunk);
   }
   return paragraphs;
@@ -61,7 +64,6 @@ const SplitSection = ({ section, sectionIndex }) => {
             </p>
           ))}
         </div>
-
       </div>
     </div>
   );

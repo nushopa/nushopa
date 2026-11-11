@@ -51,7 +51,8 @@ export function CircularPagination({ currentPage, totalPages, onPageChange }) {
         onClick={handlePrevious}
         disabled={currentPage === 1}
       >
-        <ArrowLeftIcon strokeWidth={2} className="h-3 w-3 sm:h-4 sm:w-4 bg" /> Previous
+        <ArrowLeftIcon strokeWidth={2} className="h-3 w-3 sm:h-4 sm:w-4 bg" />{" "}
+        Previous
       </Button>
       <div className="flex items-center gap-1 sm:gap-2 flex-wrap justify-center">
         {generatePageNumbers().map((page, index) => (

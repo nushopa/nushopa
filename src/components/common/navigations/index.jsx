@@ -18,7 +18,7 @@ const Navigations = () => {
           ...data.slice(0, homeIndex),
         ];
         setNavigationLinks(arrangedData);
-      })
+      });
   }, []);
 
   return (
@@ -27,7 +27,7 @@ const Navigations = () => {
         <DesktopNavigation navigationItems={navigationLinks} />
       </div>
       <div className="flex md:hidden bg-[#f4f4f4] mx-auto justify-center font-workSans sticky top-2 left-0  items-center">
-        <MbileNavbar navigationItems={navigationLinks}/>
+        <MbileNavbar navigationItems={navigationLinks} />
       </div>
     </div>
   );

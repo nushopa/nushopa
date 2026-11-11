@@ -1,7 +1,13 @@
 import { Drawer } from "@material-tailwind/react";
 import { FiCheck, FiX } from "react-icons/fi";
 
-export default function CategoryDrawer({ open, closeDrawer, categories, selectedCategories, handleCategoryToggle }) {
+export default function CategoryDrawer({
+  open,
+  closeDrawer,
+  categories,
+  selectedCategories,
+  handleCategoryToggle,
+}) {
   return (
     <Drawer open={open} onClose={closeDrawer} className="p-4 block md:hidden">
       <div className="mr-4 bg-white w-full md:w-[25%] md:h-[20rem] h-screen overflow-y-auto p-4 rounded-lg shadow-lg">
@@ -30,7 +36,13 @@ export default function CategoryDrawer({ open, closeDrawer, categories, selected
                   }`}
                 >
                   <span>{category}</span>
-                  {isActive && <FiCheck size={16} className="text-mainGreen" strokeWidth={2.5} />}
+                  {isActive && (
+                    <FiCheck
+                      size={16}
+                      className="text-mainGreen"
+                      strokeWidth={2.5}
+                    />
+                  )}
                 </button>
               </li>
             );

@@ -14,16 +14,12 @@ const firebaseConfig = {
   storageBucket: "farm2home-1d36d.appspot.com",
   messagingSenderId: "618026725728",
   appId: "1:618026725728:web:792e065ca2dcf38935ee05",
-  measurementId: "G-E6GH98VGEN"
+  measurementId: "G-E6GH98VGEN",
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app)
+const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
-provider.addScope('profile');
-export {
-  auth, 
-  provider, 
-  signInWithPopup
-}
+provider.addScope("profile");
+export { auth, provider, signInWithPopup };

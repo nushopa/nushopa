@@ -1,4 +1,3 @@
-
 const Breadcrumb = ({ categories }) => {
   return (
     <ol className="flex items-center whitespace-nowrap" aria-label="Breadcrumb">
@@ -49,5 +48,5 @@ const Breadcrumb = ({ categories }) => {
     </ol>
   );
 };
- 
+
 export default Breadcrumb;

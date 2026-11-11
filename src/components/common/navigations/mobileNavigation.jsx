@@ -48,7 +48,7 @@ export function MbileNavbar({ navigationItems }) {
   useEffect(() => {
     window.addEventListener(
       "resize",
-      () => window.innerWidth >= 960 && setOpenNav(false)
+      () => window.innerWidth >= 960 && setOpenNav(false),
     );
   }, []);
 
@@ -225,7 +225,6 @@ export function MbileNavbar({ navigationItems }) {
       ))}
     </ul>
   );
-  
 
   return (
     <div className="max-h-[780px] w-[calc(100%+48px)] border-b-2 border-mainGreen">
@@ -275,7 +274,11 @@ export function MbileNavbar({ navigationItems }) {
             </Button>
           </div>
           {/* Optionally, for larger screens show ProfileMenu */}
-          {user ? <div className="hidden lg:block"><ProfileMenu /></div> : null}
+          {user ? (
+            <div className="hidden lg:block">
+              <ProfileMenu />
+            </div>
+          ) : null}
         </div>
         <Collapse open={openNav}>
           {/* Demarcator (divider) between the main nav header and the navigation list */}

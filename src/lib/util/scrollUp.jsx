@@ -4,4 +4,3 @@ export const scrollToTop = () => {
     behavior: "smooth", // This enables smooth scrolling
   });
 };
-  

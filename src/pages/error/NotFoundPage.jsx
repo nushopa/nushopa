@@ -16,24 +16,24 @@ const NotFoundPage = () => {
     gsap.fromTo(
       textRef.current,
       { opacity: 0, y: -50 },
-      { opacity: 1, y: 0, duration: 1 }
+      { opacity: 1, y: 0, duration: 1 },
     );
     gsap.fromTo(
       imageRef.current,
       { opacity: 0, scale: 0.8 },
-      { opacity: 1, scale: 1, duration: 1.5, delay: 0.5 }
+      { opacity: 1, scale: 1, duration: 1.5, delay: 0.5 },
     );
     gsap.fromTo(
       buttonRef.current,
       { opacity: 0, y: 50 },
-      { opacity: 1, y: 0, duration: 1, delay: 1.5 }
+      { opacity: 1, y: 0, duration: 1, delay: 1.5 },
     );
   }, []);
 
   return (
     <>
       <Navigations />
-      <div 
+      <div
         ref={container}
         className="min-h-screen flex flex-col items-center py-8 bg-gradient-to-br from-green-100 to-white"
       >

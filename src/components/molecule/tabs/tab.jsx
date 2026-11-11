@@ -6,7 +6,7 @@ import {
   TabPanel,
 } from "@material-tailwind/react";
 
-export function TabsWithIcon({data,activeTabValue, handleTabClick}) {
+export function TabsWithIcon({ data, activeTabValue, handleTabClick }) {
   return (
     <Tabs value={activeTabValue} className="w-full ">
       <TabsHeader
@@ -20,11 +20,17 @@ export function TabsWithIcon({data,activeTabValue, handleTabClick}) {
           <Tab
             key={value}
             value={value}
-            onClick={()=>handleTabClick(value)}
-            className={activeTabValue == value ? "text-mainGreen bg-transparent" : "bg-transparent "}
+            onClick={() => handleTabClick(value)}
+            className={
+              activeTabValue == value
+                ? "text-mainGreen bg-transparent"
+                : "bg-transparent "
+            }
           >
             <div className="flex flex-row  gap-2">
-              <div className="font-semibold font-workSans w-[6.5rem] md:w-[11.5rem] text-md md:text-lg">{label}</div>
+              <div className="font-semibold font-workSans w-[6.5rem] md:w-[11.5rem] text-md md:text-lg">
+                {label}
+              </div>
             </div>
           </Tab>
         ))}

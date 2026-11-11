@@ -25,7 +25,7 @@ const OTPInput = ({ setOtpCode }) => {
       // If backspace is pressed and the current box is empty, move to the previous box
       inputRefs.current[index - 1].focus();
     }
-  
+
     if (event.key === "Tab") {
       // Prevent default tab behavior if the current box is empty
       if (!otp[index]) {
@@ -35,7 +35,7 @@ const OTPInput = ({ setOtpCode }) => {
       }
     }
   };
-  
+
   return (
     <div className="flex justify-center items-center mt-4 md:mt-8">
       {otp.map((digit, index) => (

@@ -1,6 +1,5 @@
 import { BsFillBasketFill } from "react-icons/bs";
 
-
 const FloatingButton = ({
   onClick,
   badgeCount = 0,

@@ -6,10 +6,14 @@ export const SITEMAP = [
         label: "Email Address: info@Nushopa.com",
         targetLink: "mailto:info@Nushopa.com",
       },
-      
-      { label: "Phone Number: +2348034249444", targetLink: "tel:+2348034249444" },
+
       {
-        label: "Office Address: 14B, King Ologunkutere Street, Parkview Estate, Ikoyi, Lagos Island. Nigeria",
+        label: "Phone Number: +2348034249444",
+        targetLink: "tel:+2348034249444",
+      },
+      {
+        label:
+          "Office Address: 14B, King Ologunkutere Street, Parkview Estate, Ikoyi, Lagos Island. Nigeria",
         targetLink: "#",
       }, // Add the actual address or leave it as "#"
     ],

@@ -43,12 +43,12 @@ export default function MyOrder() {
 
   function getStatusColor(status) {
     switch (status) {
-    case "Delivered":
-      return "mainGreen";
-    case "Processing":
-      return "mainOrange";
-    default:
-      return "shipped";
+      case "Delivered":
+        return "mainGreen";
+      case "Processing":
+        return "mainOrange";
+      default:
+        return "shipped";
     }
   }
 

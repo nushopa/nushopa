@@ -67,7 +67,7 @@ const DesktopNavigation = ({ navigationItems }) => {
           .includes(searchField.toLowerCase()) ||
         product.product_sub_cat
           .toLowerCase()
-          .includes(searchField.toLowerCase())
+          .includes(searchField.toLowerCase()),
     );
     setFilteredDetails(filteredProducts);
   }, [searchField, details]);
