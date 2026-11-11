@@ -41,7 +41,7 @@ const HeaderInfo = () => {
     if (trimmed) {
       navigate(`/?q=${encodeURIComponent(trimmed)}`, { replace: true });
     }
-  }, [searchQuery]);
+  }, [searchQuery, navigate]);
 
   const handleSearch = (query) => {
     if (query?.trim()) {
@@ -112,7 +112,6 @@ const HeaderInfo = () => {
                     >
                       Contact
                     </Link>
-                  
                   </div>
                 )}
               </div>
