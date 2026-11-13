@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import axiosClient from "../../../lib/axiosClient";
 
-export default function Delivery({ onDeliveryPriceChange, onAddressAdded }) {
+export default function Delivery({ onAddressAdded }) {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -70,14 +70,6 @@ export default function Delivery({ onDeliveryPriceChange, onAddressAdded }) {
       [field]: value,
     }));
   };
-  useEffect(() => {
-    if (deliveryLoading) return;
-    const estimatePrice = deliveryPrices.find(
-      (cityObj) => cityObj.city === selectedLga,
-    )?.estimatePrice;
-    onDeliveryPriceChange(estimatePrice);
-  }, [selectedLga, onDeliveryPriceChange, deliveryPrices, deliveryLoading]);
-
   if (deliveryLoading) {
     return <div>Loading...</div>;
   }
@@ -96,7 +88,7 @@ export default function Delivery({ onDeliveryPriceChange, onAddressAdded }) {
 
     setIsLoading(true);
     try {
-      const { data } = await axiosClient.post("checkout/price", {
+      await axiosClient.post("checkout/price", {
         first_name: formData.firstName.trim(),
         last_name: formData.lastName.trim(),
         email: formData.email.trim(),
@@ -109,7 +101,6 @@ export default function Delivery({ onDeliveryPriceChange, onAddressAdded }) {
         customer_id: userId,
       });
 
-      onDeliveryPriceChange(data.price ?? data.estimatePrice);
       const refreshed = await onAddressAdded();
       if (!refreshed) return;
       toast.success("Delivery address saved.");

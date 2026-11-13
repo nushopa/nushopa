@@ -1,19 +1,23 @@
 import { toast } from "react-toastify";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useInitializePaymentMutation } from "../../services/api";
 
-const SquadCheckout = ({ email, address, userId }) => {
+const SquadCheckout = ({ email, address, userId, deliveryQuoteId }) => {
   const [initializePayment] = useInitializePaymentMutation();
   const [txn, setTxn] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const startedFor = useRef(null);
+
   const startTransaction = () => {
     setLoading(true);
     setError(null);
+    setTxn(null);
     initializePayment({
       customer_id: userId,
       address,
+      delivery_quote_id: deliveryQuoteId,
       email,
       platform: "web",
     })
@@ -21,20 +25,36 @@ const SquadCheckout = ({ email, address, userId }) => {
       .then((data) => setTxn(data))
       .catch((err) => {
         console.error("initializePayment error:", err);
-        setError("Could not start checkout. Please try again.");
+        // Show the server's message when it gave one (e.g. expired quote)
+        setError(
+          err?.data?.message || "Could not start checkout. Please try again.",
+        );
+        // Allow the effect or retry button to start a fresh attempt
+        startedFor.current = null;
       })
       .finally(() => setLoading(false));
   };
 
   useEffect(() => {
-    if (userId && address && email) {
+    if (userId && address && email && deliveryQuoteId) {
+      if (startedFor.current === deliveryQuoteId) return; // already started
+      startedFor.current = deliveryQuoteId;
       startTransaction();
     } else {
+      startedFor.current = null;
+      setTxn(null);
       setLoading(false);
-      setError("Missing checkout details. Please select an address.");
+      setError(
+        "Missing checkout details. Please select an address and delivery option.",
+      );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId, address, email]);
+  }, [userId, address, email, deliveryQuoteId]);
+
+  const handleRetry = () => {
+    startedFor.current = deliveryQuoteId;
+    startTransaction();
+  };
 
   const goToCheckout = () => {
     if (txn?.checkout_url) {
@@ -47,8 +67,8 @@ const SquadCheckout = ({ email, address, userId }) => {
   if (error) {
     return (
       <button
-        onClick={startTransaction}
-        className="mt-4 w-full h-11 rounded-md text-sm font-semibold bg-red-600 text-white"
+        onClick={handleRetry}
+        className="mt-4 w-full min-h-11 rounded-md px-3 py-2 text-sm font-semibold bg-red-600 text-white"
       >
         {error} — Tap to retry
       </button>

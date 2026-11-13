@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { StepperWithContent } from "../../components/atoms/stepper/stepper";
 import DefaultLayout from "../../layouts/defaultLayout";
 import AddressBook from "../../components/molecule/addressBook/addressBook";
@@ -14,9 +14,13 @@ const SERVICE_CHARGE_RATE = 0.15;
 
 export default function Checkout() {
   const [status, setStatus] = useState("delivery");
-  const [estimatePrice, setEstimatePrice] = useState(null);
   const [existingArray, setExistingArray] = useState([]);
   const [selectedAddress, setSelectedAddress] = useState(null);
+  const [deliveryMode, setDeliveryMode] = useState("standard");
+  const [deliveryOptions, setDeliveryOptions] = useState(null);
+  const [quoteLoading, setQuoteLoading] = useState(false);
+  const [quoteError, setQuoteError] = useState("");
+  const [quoteRefreshKey, setQuoteRefreshKey] = useState(0);
   const [shop, setShop] = useState([]);
   let navigate = useNavigate();
   const { user } = useSelector((state) => state.user);
@@ -52,22 +56,64 @@ export default function Checkout() {
     fetchData();
   }, [userId]);
 
-  const handleDeliveryPrice = useCallback((estimatePrice) => {
-    setEstimatePrice(estimatePrice);
-  }, []);
-
   const subtotal = shop?.reduce(
     (total, item) =>
       total + item.product_id.product_price * item.product_quatity,
     0,
   );
 
-  const delivery = estimatePrice ?? 0;
+  const delivery = deliveryOptions?.[deliveryMode]?.deliveryFee ?? 0;
   const serviceCharge = Math.round(subtotal * SERVICE_CHARGE_RATE);
   const total = subtotal + delivery + serviceCharge;
 
   const resolvedAddress =
     selectedAddress !== null ? existingArray[selectedAddress] : null;
+  const selectedQuote = deliveryOptions?.[deliveryMode];
+
+  useEffect(() => {
+    if (!userId || !resolvedAddress) {
+      setDeliveryOptions(null);
+      setQuoteError("");
+      setQuoteLoading(false);
+      setDeliveryMode("standard");
+      return;
+    }
+
+    let cancelled = false;
+    setDeliveryOptions(null);
+    setQuoteError("");
+    setQuoteLoading(true);
+
+    axiosClient
+      .post("checkout/delivery-options", {
+        customer_id: userId,
+        address: resolvedAddress,
+      })
+      .then(({ data }) => {
+        if (cancelled) return;
+        const options = data?.options ?? null;
+        setDeliveryOptions(options);
+        setDeliveryMode((current) =>
+          current === "fast" && !options?.fast?.available
+            ? "standard"
+            : current,
+        );
+      })
+      .catch((error) => {
+        if (cancelled) return;
+        console.error("Could not load delivery quotes:", error);
+        setQuoteError(
+          error.response?.data?.message || "Could not load delivery prices.",
+        );
+      })
+      .finally(() => {
+        if (!cancelled) setQuoteLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [userId, resolvedAddress, quoteRefreshKey]);
 
   return (
     <DefaultLayout>
@@ -151,12 +197,77 @@ export default function Checkout() {
             }
           >
             <AddressBook
-              handleDeliveryPrice={handleDeliveryPrice}
               selectedAddress={selectedAddress}
               setSelectedAddress={setSelectedAddress}
               existingArray={existingArray}
               setExistingArray={setExistingArray}
             />
+            {resolvedAddress && (
+              <div className="mt-6 rounded-md border border-gray-200 p-4">
+                <div className="mb-3 font-medium">Delivery speed</div>
+                <div className="flex flex-col gap-3 sm:flex-row">
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="deliveryMode"
+                      value="standard"
+                      checked={deliveryMode === "standard"}
+                      onChange={() => setDeliveryMode("standard")}
+                      disabled={quoteLoading || !deliveryOptions?.standard}
+                    />
+                    <span>Standard delivery</span>
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="deliveryMode"
+                      value="fast"
+                      checked={deliveryMode === "fast"}
+                      onChange={() => setDeliveryMode("fast")}
+                      disabled={
+                        quoteLoading || !deliveryOptions?.fast?.available
+                      }
+                    />
+                    <span>Fast delivery</span>
+                  </label>
+                </div>
+                {quoteLoading && (
+                  <p className="mt-2 text-sm text-gray-600">
+                    Getting delivery prices…
+                  </p>
+                )}
+                {quoteError && (
+                  <div className="mt-2 text-sm text-red-700">
+                    <p>{quoteError}</p>
+                    <button
+                      type="button"
+                      className="mt-1 underline"
+                      onClick={() => setQuoteRefreshKey((key) => key + 1)}
+                    >
+                      Retry
+                    </button>
+                  </div>
+                )}
+                {!quoteLoading &&
+                  !quoteError &&
+                  deliveryOptions?.fast?.message && (
+                    <div className="mt-2 text-sm text-gray-600">
+                      <p>{deliveryOptions.fast.message}</p>
+                      {deliveryOptions.fast.message.includes(
+                        "temporarily unavailable",
+                      ) && (
+                        <button
+                          type="button"
+                          className="mt-1 underline"
+                          onClick={() => setQuoteRefreshKey((key) => key + 1)}
+                        >
+                          Retry fast delivery quote
+                        </button>
+                      )}
+                    </div>
+                  )}
+              </div>
+            )}
           </div>
         </div>
 
@@ -180,7 +291,9 @@ export default function Checkout() {
           </div>
           <div className="mt-5 flex border-b border-[#7E7E7E] pt-3 pb-1 justify-between items-center">
             <div className="text-[#7E7E7E] text-[20px] font-medium font-workSans">
-              Delivery Fee:
+              {deliveryMode === "fast"
+                ? "Fast delivery fee:"
+                : "Standard delivery fee:"}
             </div>
             <div className="text-black text-xl font-medium font-workSans">
               &#8358;
@@ -206,11 +319,13 @@ export default function Checkout() {
             </div>
           </div>
 
-          {estimatePrice === null ||
-          estimatePrice === undefined ||
+          {delivery === null ||
+          delivery === undefined ||
+          !selectedQuote?.quoteId ||
           existingArray.length < 1 ||
           shop.length == 0 ||
           loading === true ||
+          quoteLoading ||
           isNaN(total) ? (
             <Button
               className="mt-4 w-full "
@@ -224,6 +339,7 @@ export default function Checkout() {
               email={user?.email}
               address={resolvedAddress}
               userId={userId}
+              deliveryQuoteId={selectedQuote.quoteId}
             />
           )}
         </div>

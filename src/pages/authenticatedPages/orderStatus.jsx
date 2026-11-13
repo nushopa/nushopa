@@ -23,7 +23,9 @@ export default function OrderStatus() {
 
     if (data.status === "fulfilled" && data.order) {
       dispatch(setCartCount(0));
-      navigate(`/order/${data.order.orderID}`);
+      navigate(
+        import.meta.env.DEV ? "/my-order" : `/order/${data.order.orderID}`,
+      );
     } else if (data.status === "pending") {
       setAttempts((a) => a + 1);
     }

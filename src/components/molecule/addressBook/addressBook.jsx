@@ -7,7 +7,6 @@ import { toast } from "react-toastify";
 import axiosClient from "../../../lib/axiosClient";
 
 export default function AddressBook({
-  handleDeliveryPrice,
   selectedAddress,
   setSelectedAddress,
   existingArray,
@@ -15,30 +14,8 @@ export default function AddressBook({
 }) {
   const [showAddressBook, setShowAddressBook] = useState(true);
   const [loading, setLoading] = useState(true);
-  const [deliveryLoading, setDeliveryLoading] = useState(true);
-  const [deliveryPrices, setDeliveryPrices] = useState([]);
   const { user } = useSelector((state) => state.user);
   const userId = user?._id;
-
-  useEffect(() => {
-    setDeliveryLoading(true);
-    axiosClient
-      .get("pricelist")
-      .then((response) => {
-        if (response.data) {
-          setDeliveryPrices(response.data.prices ?? []);
-        }
-      })
-      .catch((error) => {
-        console.error("Could not load delivery areas:", error);
-        toast.error(
-          error.response?.data?.message || "Could not load delivery areas.",
-        );
-      })
-      .finally(() => {
-        setDeliveryLoading(false);
-      });
-  }, []);
 
   useEffect(() => {
     if (!userId) {
@@ -72,22 +49,6 @@ export default function AddressBook({
       setSelectedAddress(0);
     }
   }, [loading, existingArray, selectedAddress, setSelectedAddress]);
-
-  useEffect(() => {
-    if (!deliveryLoading && selectedAddress !== null) {
-      const city = existingArray[selectedAddress]?.city;
-      const estimatePrice = deliveryPrices.find(
-        (cityObj) => cityObj.city === city,
-      )?.estimatePrice;
-      handleDeliveryPrice(estimatePrice);
-    }
-  }, [
-    deliveryPrices,
-    deliveryLoading,
-    selectedAddress,
-    existingArray,
-    handleDeliveryPrice,
-  ]);
 
   const handleAddAddressClick = () => {
     setShowAddressBook(false);
@@ -191,10 +152,7 @@ export default function AddressBook({
           </div>
         ))
       ) : (
-        <Delivery
-          onDeliveryPriceChange={handleDeliveryPrice}
-          onAddressAdded={handleAddressAdded}
-        />
+        <Delivery onAddressAdded={handleAddressAdded} />
       )}
       {showAddressBook && (
         <div>

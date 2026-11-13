@@ -89,7 +89,8 @@ export default function OrderDetails() {
   // don't propagate NaN into the UI.
   const deliveryCharges =
     subtotal != null
-      ? (orderDetails?.amount_paid ?? 0) - subtotal - serviceCharges
+      ? (orderDetails?.delivery_fee ??
+        (orderDetails?.amount_paid ?? 0) - subtotal - serviceCharges)
       : 0;
 
   const handleReviewSubmission = () => {
@@ -237,6 +238,14 @@ export default function OrderDetails() {
                 Delivery Code:{" "}
                 <span className="inline-flex flex-wrap text-gray-600">
                   {orderDetails?.delivery_code}
+                </span>
+              </div>
+              <div className="text-black font-medium text-sm ">
+                Delivery Method:{" "}
+                <span className="inline-flex flex-wrap text-gray-600">
+                  {orderDetails?.delivery_mode === "fast"
+                    ? "Fast delivery"
+                    : "Standard delivery"}
                 </span>
               </div>
               <div className="text-black font-medium text-sm ">
