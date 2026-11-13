@@ -27,6 +27,7 @@ const Auth = ({
 
   return (
     <div className="auth-root min-h-screen w-full auth-bg flex items-center justify-center overflow-hidden relative">
+      {/* ── Floating particles ── */}
       {PARTICLES.map((p, i) => (
         <div
           key={i}
@@ -43,15 +44,13 @@ const Auth = ({
       ))}
 
       <div className="w-full px-4 py-8">
+        {/* ── CENTER layout (OTP / Forgot Password) ── */}
         {isCentered ? (
           <div className="centered-auth-wrap">
             <div className="centered-auth-card">
-              <button
-                className="centered-logo-wrap"
-                onClick={() => navigate("/")}
-              >
+              <div className="centered-logo-wrap">
                 <img src={IMG} alt="Farm2Home" />
-              </button>
+              </div>
               <div className="centered-form-fade">{children}</div>
             </div>
           </div>
@@ -59,14 +58,16 @@ const Auth = ({
           <div
             className={`auth-grid ${formOnLeft ? "form-left" : "form-right"}`}
           >
+            {/* Form card */}
             <div className="auth-card-col w-full max-w-md mx-auto">
               <div
                 className={`auth-card ${formOnLeft ? "card-slide-left" : "card-slide-right"}`}
               >
-                <div className="logo-wrap" onClick={() => navigate("/")}>
+                <div className="logo-wrap">
                   <img src={IMG} alt="Farm2Home" />
                 </div>
                 <div className="form-fade">{children}</div>
+                {/* Mobile-only nav link */}
                 <div className="mt-5 text-center lg:hidden">
                   <button
                     className="mobile-nav-btn"
@@ -78,8 +79,9 @@ const Auth = ({
               </div>
             </div>
 
+            {/* Panel */}
             <div
-              className={`auth-panel-col hidden lg:flex flex-col items-start justify-center p-8 space-y-2 relative ${
+              className={`auth-panel-col hidden lg:flex flex-col items-center justify-center p-8 space-y-2 relative ${
                 formOnLeft ? "panel-slide-right" : "panel-slide-left"
               }`}
             >

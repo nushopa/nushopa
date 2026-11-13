@@ -10,11 +10,6 @@ import { InputField } from "./component/InputField";
 
 const CUSTOMER_ROLE = 2001;
 
-const redirectToGoogleAuth = () => {
-  const backendUrl = import.meta.env.VITE_BASE_URL.replace(/\/$/, "");
-  window.location.href = `${backendUrl}/auth/google?platform=web`;
-};
-
 const UserSignIn = () => {
   const [formData, setFormData] = useState({
     email: "",
@@ -113,38 +108,6 @@ const UserSignIn = () => {
         >
           {isLoading ? "Signing in..." : "Sign In"}
         </button>
-
-        <div className="relative flex w-[90%] mx-auto flex-row py-6">
-          <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700 my-auto" />
-          <span className="px-3 text-sm text-gray-500">or</span>
-          <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700 my-auto" />
-        </div>
-
-        <div className="flex justify-center gap-6">
-          <button
-            type="button"
-            onClick={redirectToGoogleAuth}
-            className="cursor-pointer"
-            aria-label="Sign in with Google"
-          >
-            <img
-              className="w-12"
-              src="https://res.cloudinary.com/phantom1245/image/upload/v1702037705/farm2home/Frame_268_fpbpmd.png"
-              alt="google icon"
-              loading="lazy"
-            />
-          </button>
-          <div>
-            <a href="/">
-              <img
-                className="w-12"
-                src="https://res.cloudinary.com/phantom1245/image/upload/v1702037689/farm2home/Frame_267_queazd.png"
-                alt="facebook icon"
-                loading="lazy"
-              />
-            </a>
-          </div>
-        </div>
       </form>
     </Auth>
   );
