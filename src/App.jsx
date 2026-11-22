@@ -28,67 +28,74 @@ import OrderDetails from "./pages/authenticatedPages/orderDetails.jsx";
 import ProductDescription from "./pages/authenticatedPages/productDescription.jsx";
 import AuthCallback from "./pages/auth/AuthCallback.jsx";
 import OrderStatus from "./pages/authenticatedPages/orderStatus";
+import useAuth from "./lib/hooks/useAuth.js";
+import { TawkProvider } from "./components/chat/ChatWidget.jsx";
 
 function App() {
+  const { user } = useAuth();
   return (
     <HelmetProvider>
-      {/* Rehydrates the logged-in user from the httpOnly cookie on load */}
-      <SessionBootstrap />
+      <TawkProvider user={user}>
+        <SessionBootstrap />
 
-      <Router>
-        <Routes>
-          <Route element={<MainLayout />}>
-            <Route path="/" element={<GuestLanding />} />
-            <Route path="/about-us" element={<Abouts />} />
-            <Route path="/help" element={<Helps />} />
-            <Route path="/logistics" element={<Logistics />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route
-              path="/terms-and-conditions"
-              element={<TermsAndConditions />}
-            />
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-
-            {/* Auth routes (Header hidden on these) */}
-            <Route path="/sign-in" element={<UserSignIn />} />
-            <Route path="/sign-up" element={<UserSignUp />} />
-            <Route path="/verify-otp" element={<OTPVerification />} />
-            <Route path="/forgotten-password" element={<ForgottenPassword />} />
-            <Route path="/otp-password" element={<OtpPassword />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/auth/callback" element={<AuthCallback />} />
-
-            {/* Protected routes */}
-            <Route element={<ProtectedRoute />}>
-              <Route path="/dashboard" element={<GuestLanding />} />
-              <Route path="/cart" element={<Cart />} />
-              <Route path="/checkout" element={<Checkout />} />
-              <Route path="/my-order" element={<MyOrder />} />
-              <Route path="/order/:id" element={<OrderDetails />} />
+        <Router>
+          <Routes>
+            <Route element={<MainLayout />}>
+              <Route path="/" element={<GuestLanding />} />
+              <Route path="/about-us" element={<Abouts />} />
+              <Route path="/help" element={<Helps />} />
+              <Route path="/logistics" element={<Logistics />} />
+              <Route path="/contact" element={<Contact />} />
               <Route
-                path="/order-status/:reference"
-                element={<OrderStatus />}
+                path="/terms-and-conditions"
+                element={<TermsAndConditions />}
               />
-              <Route path="/product/:id" element={<ProductDescription />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+
+              {/* Auth routes (Header hidden on these) */}
+              <Route path="/sign-in" element={<UserSignIn />} />
+              <Route path="/sign-up" element={<UserSignUp />} />
+              <Route path="/verify-otp" element={<OTPVerification />} />
+              <Route
+                path="/forgotten-password"
+                element={<ForgottenPassword />}
+              />
+              <Route path="/otp-password" element={<OtpPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/auth/callback" element={<AuthCallback />} />
+
+              {/* Protected routes */}
+              <Route element={<ProtectedRoute />}>
+                <Route path="/dashboard" element={<GuestLanding />} />
+                <Route path="/cart" element={<Cart />} />
+                <Route path="/checkout" element={<Checkout />} />
+                <Route path="/my-order" element={<MyOrder />} />
+                <Route path="/order/:id" element={<OrderDetails />} />
+                <Route
+                  path="/order-status/:reference"
+                  element={<OrderStatus />}
+                />
+                <Route path="/product/:id" element={<ProductDescription />} />
+              </Route>
             </Route>
-          </Route>
 
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-      </Router>
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </Router>
 
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
+      </TawkProvider>
     </HelmetProvider>
   );
 }

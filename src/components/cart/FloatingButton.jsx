@@ -4,7 +4,7 @@ const FloatingButton = ({
   onClick,
   badgeCount = 0,
   icon,
-  position = "bottom-16 right-6",
+  position = "bottom-20 right-6",
   colorClass = "bg-mainGreen hover:bg-green-700",
   ariaLabel = "Floating action button",
 }) => {
