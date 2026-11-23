@@ -51,9 +51,6 @@ const HeaderInfo = () => {
 
   const handleLogout = async () => {
     try {
-      // Blacklists the access token and clears the httpOnly cookie
-      // server-side. This is the only thing that "kills" the token —
-      // there's nothing client-side to remove it from.
       await logoutApi().unwrap();
     } catch (_backendError) {
       console.warn("Backend logout failed, clearing client state anyway.");
@@ -101,10 +98,10 @@ const HeaderInfo = () => {
                       Company
                     </Link>
                     <Link
-                      to="/logistics"
+                      to="/merchant"
                       className="hover:text-green-200 transition-colors"
                     >
-                      Logistics
+                      Merchant
                     </Link>
                     <Link
                       to="/contact"

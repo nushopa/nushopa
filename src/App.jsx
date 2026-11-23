@@ -44,7 +44,7 @@ function App() {
               <Route path="/" element={<GuestLanding />} />
               <Route path="/about-us" element={<Abouts />} />
               <Route path="/help" element={<Helps />} />
-              <Route path="/logistics" element={<Logistics />} />
+              <Route path="/merchant" element={<Logistics />} />
               <Route path="/contact" element={<Contact />} />
               <Route
                 path="/terms-and-conditions"

@@ -32,7 +32,7 @@ export default function Logistics() {
               <div className="mt-8 flex flex-col sm:flex-row justify-center gap-6">
                 <button
                   onClick={() =>
-                    (window.location.href = "https://marketrep.netlify.app/")
+                    (window.location.href = "https://rep.nushopa.com")
                   }
                   className="flex items-center justify-center gap-2 bg-mainGreen hover:bg-green-600 transition-all duration-300 text-white font-semibold py-3 px-6 rounded-full shadow-lg transform hover:scale-105"
                 >
@@ -41,8 +41,7 @@ export default function Logistics() {
                 </button>
                 <button
                   onClick={() =>
-                    (window.location.href =
-                      "https://Nushopa-driver.netlify.app/")
+                    (window.location.href = "https://rider.nushopa.com")
                   }
                   className="flex items-center justify-center gap-2 bg-white hover:bg-gray-200 transition-all duration-300 text-mainGreen font-semibold py-3 px-6 rounded-full shadow-lg transform hover:scale-105"
                 >
