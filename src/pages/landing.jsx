@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../lib/apiBase.js";
 import { useDispatch, useSelector } from "react-redux";
 import { useState, useEffect, Suspense } from "react";
 import axios from "axios";
@@ -33,7 +34,7 @@ const Landing = () => {
   const [filteredDetails, setFilteredDetails] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  let baseUrl = import.meta.env.VITE_BASE_URL;
+  let baseUrl = API_BASE_URL;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -64,24 +65,30 @@ const Landing = () => {
 
   useEffect(() => {
     let userId = localStorage.getItem("userId");
-    let baseUrl = import.meta.env.VITE_BASE_URL;
+    let baseUrl = API_BASE_URL;
     if (userId !== null) {
-      axios.get(`${baseUrl}cart/get/${userId}`).then((response) => {
-        if (response.data) {
-          setCarter(response.data.cart);
-          dispatch(setCarte(response.data.cart));
-        }
-      });
+      axios
+        .get(`${baseUrl}cart/get/${userId}`, { timeout: 15000 })
+        .then((response) => {
+          if (response.data) {
+            setCarter(response.data.cart);
+            dispatch(setCarte(response.data.cart));
+          }
+        })
+        .catch(() => {});
     }
 
-    //fetch products
-    axios.get(`${baseUrl}product`).then((response) => {
-      if (response.data) {
-        setDetails(response.data.products);
-        setFilteredDetails(response.data.products);
-      }
-      setLoading(false);
-    });
+    //fetch products — never leave the page stuck on the loader if this fails
+    axios
+      .get(`${baseUrl}product`, { timeout: 15000 })
+      .then((response) => {
+        if (response.data) {
+          setDetails(response.data.products ?? []);
+          setFilteredDetails(response.data.products ?? []);
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, [dispatch]);
 
   // Update filteredDetails whenever searchField changes
