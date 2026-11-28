@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../../lib/apiBase.js";
 import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import ProductItem from "../products/productItem";
@@ -25,6 +26,7 @@ export default function TabItem({ category, carter }) {
   const [generalProduct, setGeneralProduct] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [error, setError] = useState(null);
   const debouncedCategory = useDebounce(category, 300); // Debounce category changes
 
   const getApiUrl = (category, page = 1) => {
@@ -39,12 +41,14 @@ export default function TabItem({ category, carter }) {
   const fetchDataAndSetState = useCallback(
     async (page = 1) => {
       setLoading(true);
-      let baseUrl = import.meta.env.VITE_BASE_URL;
+      setError(null);
+      let baseUrl = API_BASE_URL;
       const apiUrl = getApiUrl(debouncedCategory, page);
       const url = `${baseUrl}${apiUrl}`;
 
       try {
         const response = await axios.get(url, {
+          timeout: 15000,
           headers: {
             "Cache-Control": "no-cache",
             Pragma: "no-cache",
@@ -52,13 +56,20 @@ export default function TabItem({ category, carter }) {
         });
         const data = response.data;
 
-        setGeneralProduct(data.products);
-        setTotalPages(data.totalPages);
-      } catch (error) {
-        console.error("Error fetching data:", error);
+        setGeneralProduct(data.products ?? []);
+        setTotalPages(data.totalPages ?? 1);
+      } catch (err) {
+        console.error("Error fetching data:", url, err);
+        setGeneralProduct([]);
+        setError(
+          err.response
+            ? `Server error (${err.response.status})`
+            : err.code === "ECONNABORTED"
+              ? "The server is taking too long to respond"
+              : "Network/CORS error — could not reach the server",
+        );
       } finally {
         setLoading(false);
-        false;
       }
     },
     [debouncedCategory],
@@ -131,7 +142,28 @@ export default function TabItem({ category, carter }) {
         ))}
       </div>
 
-      {!loading && (
+      {!loading && error && (
+        <div className="my-12 text-center">
+          <p className="mb-3 text-gray-700">
+            Couldn&apos;t load products. {error}.
+          </p>
+          <button
+            type="button"
+            onClick={() => fetchDataAndSetState(currentPage)}
+            className="rounded bg-mainGreen px-5 py-2 text-white"
+          >
+            Retry
+          </button>
+        </div>
+      )}
+
+      {!loading && !error && generalProduct.length === 0 && (
+        <p className="my-12 text-center text-gray-600">
+          No products found in this category yet.
+        </p>
+      )}
+
+      {!loading && !error && generalProduct.length > 0 && (
         <div className="flex justify-center my-6">
           <CircularPagination
             currentPage={currentPage}
