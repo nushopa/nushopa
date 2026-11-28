@@ -18,9 +18,13 @@ import {
   useDecrementMutation,
   useDeleteSingleCartMutation,
 } from "../../services/cart";
-import useDefaultDeliveryFee from "../../lib/hooks/useDefaultDeliveryFee";
-
-const SERVICE_CHARGE_RATE = 0.15;
+import useEstimatedDeliveryFee from "../../lib/hooks/useEstimatedDeliveryFee";
+import {
+  MIN_ORDER_SUBTOTAL,
+  calcServiceCharge,
+  amountToMinimum,
+  meetsMinimumOrder,
+} from "../../lib/util/orderRules";
 
 const naira = (n) => `\u20A6${AddCommasToNumber(n)}`;
 
@@ -70,7 +74,7 @@ const Cart = () => {
   const [increment] = useIncrementMutation();
   const [decrement] = useDecrementMutation();
   const [deleteCart] = useDeleteSingleCartMutation();
-  const configuredDeliveryFee = useDefaultDeliveryFee();
+  const configuredDeliveryFee = useEstimatedDeliveryFee();
   const [carts, setCarts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState(null);
@@ -128,7 +132,8 @@ const Cart = () => {
       t + (item.product_id.product_price * item.product_quatity || 0),
     0,
   );
-  const serviceCharges = subtotal * SERVICE_CHARGE_RATE;
+  const serviceCharges = calcServiceCharge(subtotal);
+  const belowMinimum = !meetsMinimumOrder(subtotal);
   const deliveryFee = configuredDeliveryFee ?? 0;
   const total = subtotal + deliveryFee + serviceCharges;
 
@@ -300,9 +305,21 @@ const Cart = () => {
                   The final fee is based on your delivery area.
                 </p>
 
+                {belowMinimum && (
+                  <p
+                    role="alert"
+                    className="mt-4 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800"
+                  >
+                    The minimum order is {naira(MIN_ORDER_SUBTOTAL)}. Add{" "}
+                    <strong>{naira(amountToMinimum(subtotal))}</strong> more to
+                    checkout.
+                  </p>
+                )}
+
                 <button
                   onClick={() => navigate("/checkout")}
-                  className="mt-6 h-12 w-full rounded-lg bg-mainGreen text-sm font-medium text-white hover:opacity-90"
+                  disabled={belowMinimum}
+                  className="mt-6 h-12 w-full rounded-lg bg-mainGreen text-sm font-medium text-white hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   Proceed to checkout
                 </button>

@@ -15,7 +15,13 @@ import DeleteIcon from "../icons/deleteIcon";
 import FloatingButton from "./FloatingButton";
 import { BsFillBasketFill } from "react-icons/bs";
 import useAuth from "../../lib/hooks/useAuth";
-import useDefaultDeliveryFee from "../../lib/hooks/useDefaultDeliveryFee";
+import useEstimatedDeliveryFee from "../../lib/hooks/useEstimatedDeliveryFee";
+import {
+  MIN_ORDER_SUBTOTAL,
+  calcServiceCharge,
+  amountToMinimum,
+  meetsMinimumOrder,
+} from "../../lib/util/orderRules";
 
 const FloatingCart = () => {
   const { isAuthenticated, user } = useAuth();
@@ -34,7 +40,7 @@ const FloatingCart = () => {
   const [increment] = useIncrementMutation();
   const [decrement] = useDecrementMutation();
   const [deleteCart] = useDeleteSingleCartMutation();
-  const configuredDeliveryFee = useDefaultDeliveryFee();
+  const configuredDeliveryFee = useEstimatedDeliveryFee(isOpen ? 1 : 0);
 
   const cartCount = useSelector((state) => state.carte.cartCount);
 
@@ -57,8 +63,8 @@ const FloatingCart = () => {
   const subtotal = carts.reduce((total, item) => {
     return total + (item.product_id.product_price * item.product_quatity || 0);
   }, 0);
-
-  const serviceCharges = subtotal * 0.15;
+  const serviceCharges = calcServiceCharge(subtotal);
+  const belowMinimum = !meetsMinimumOrder(subtotal);
   const deliveryFee = configuredDeliveryFee ?? 0;
   const total = subtotal + deliveryFee + serviceCharges;
 
@@ -271,7 +277,19 @@ const FloatingCart = () => {
                   <span className="text-gray-800">Total</span>
                   <span>₦{AddCommasToNumber(total)}</span>
                 </div>
-
+                {belowMinimum && (
+                  <p
+                    role="alert"
+                    className="rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800"
+                  >
+                    Minimum order is ₦{AddCommasToNumber(MIN_ORDER_SUBTOTAL)}.
+                    Add{" "}
+                    <strong>
+                      ₦{AddCommasToNumber(amountToMinimum(subtotal))}
+                    </strong>{" "}
+                    more to checkout.
+                  </p>
+                )}
                 <div className="grid grid-cols-2 gap-3 pt-2">
                   <button
                     onClick={() => {

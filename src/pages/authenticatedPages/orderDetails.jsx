@@ -15,6 +15,7 @@ import {
 import { useAddReviewMutation } from "../../services/api";
 import { toast } from "react-toastify";
 import AddCommasToNumber from "../../lib/util/addComma";
+import { calcServiceCharge } from "../../lib/util/orderRules";
 
 const Loader = () => {
   return <div>loading</div>;
@@ -71,11 +72,6 @@ export default function OrderDetails() {
     day: "2-digit",
   });
 
-  // FIX: guard against items whose product_id is null/undefined
-  // (e.g. the referenced product was later deleted). Previously this
-  // threw "Cannot read properties of null (reading 'product_price')"
-  // during render, which blanked the whole page with no error boundary
-  // to catch it.
   const subtotal = orderDetails?.products?.reduce(
     (total, item) =>
       total +
@@ -83,7 +79,7 @@ export default function OrderDetails() {
     0,
   );
 
-  const serviceCharges = (subtotal ?? 0) * 0.15;
+  const serviceCharges = calcServiceCharge(subtotal ?? 0);
 
   // FIX: guard in case subtotal/amount_paid aren't available yet, so we
   // don't propagate NaN into the UI.

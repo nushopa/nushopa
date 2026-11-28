@@ -10,7 +10,12 @@ import { Helmet } from "react-helmet-async";
 import AddCommasToNumber from "../../lib/util/addComma";
 import SquadCheckout from "./SquadCheckout";
 
-const SERVICE_CHARGE_RATE = 0.15;
+import {
+  MIN_ORDER_SUBTOTAL,
+  calcServiceCharge,
+  amountToMinimum,
+  meetsMinimumOrder,
+} from "../../lib/util/orderRules";
 
 export default function Checkout() {
   const [status, setStatus] = useState("delivery");
@@ -63,7 +68,9 @@ export default function Checkout() {
   );
 
   const delivery = deliveryOptions?.[deliveryMode]?.deliveryFee ?? 0;
-  const serviceCharge = Math.round(subtotal * SERVICE_CHARGE_RATE);
+  const serviceCharge = calcServiceCharge(subtotal);
+  const belowMinimum =
+    !loading && shop.length > 0 && !meetsMinimumOrder(subtotal);
   const total = subtotal + delivery + serviceCharge;
 
   const resolvedAddress =
@@ -319,7 +326,28 @@ export default function Checkout() {
             </div>
           </div>
 
-          {delivery === null ||
+          {belowMinimum && (
+            <div
+              role="alert"
+              className="mt-4 rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-800"
+            >
+              The minimum order is &#8358;
+              {AddCommasToNumber(MIN_ORDER_SUBTOTAL)}. Add{" "}
+              <strong>
+                &#8358;{AddCommasToNumber(amountToMinimum(subtotal))}
+              </strong>{" "}
+              more to your cart to continue.
+              <button
+                type="button"
+                className="ml-1 underline"
+                onClick={() => navigate("/")}
+              >
+                Keep shopping
+              </button>
+            </div>
+          )}
+          {belowMinimum ||
+          delivery === null ||
           delivery === undefined ||
           !selectedQuote?.quoteId ||
           existingArray.length < 1 ||
@@ -328,9 +356,9 @@ export default function Checkout() {
           quoteLoading ||
           isNaN(total) ? (
             <Button
-              className="mt-4 w-full "
+              className="py-3.5 bg-mainGreen hover:bg-green-700 text-white font-medium rounded-xl transition disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-mainGreen"
               onClick={() => navigate("/checkout")}
-              disabled
+              disabled={belowMinimum}
             >
               Checkout
             </Button>
